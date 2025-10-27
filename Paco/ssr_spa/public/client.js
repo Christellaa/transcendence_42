@@ -1,28 +1,51 @@
 async function loadPage(route) {
-	const app = document.getElementById('app')
 	const location = `/${route || ''}`
 	const res = await fetch(location, { headers: { type: 'hydrate' } })
 	const html = await res.text()
-	console.log(html)
 	const parser = new DOMParser()
-	const doc = parser.parseFromString(html, 'text/html')
-	const newAppBody = doc.querySelector('body page')
-	const newAppStyle = doc.querySelector('temp-style')
-	const newAppTitle = doc.querySelector('title').innerText
+	const htmlDoc = parser.parseFromString(html, 'text/html')
 
-	if (newAppTitle) document.title = newAppTitle
+	updateDom(htmlDoc)
+}
 
-	document.querySelectorAll('head temp-style').forEach(el => el.remove())
-	
-	if (newAppStyle) {
-		const $head = document.querySelector('head')
-		$head.append(newAppStyle)
+function updateDom(htmlDoc) {
+	const $mainPage = document.querySelector('page')
+	const $htmlDocPage = htmlDoc.querySelector('page')
+	const $htmlDocTitle = htmlDoc.querySelector('head title')
+	const $htmlDocStyle = htmlDoc.querySelector('head style')
+	const $htmlDocScript = htmlDoc.querySelector('body script[type="module"]')
+
+	if ($htmlDocTitle) document.title = $htmlDocTitle.innerHTML
+
+	updateStyleModule($htmlDocStyle)
+
+	if ($mainPage && $htmlDocPage) {
+		$mainPage.innerHTML = $htmlDocPage.innerHTML
+		$mainPage.setAttribute('type', $htmlDocPage.getAttribute('type'))
 	}
 
-	if (res) {
-		app.innerHTML = ''
-		app.appendChild(newAppBody)
-	} else console.log(location)
+	runFunction($htmlDocScript)
+}
+
+function updateStyleModule(htmlDocStyle) {
+	const $head = document.querySelector('head')
+
+	$head.querySelectorAll('style[module]').forEach($el => $el.remove())
+	$head.appendChild(htmlDocStyle)
+}
+
+function runFunction(htmlDocScript) {
+	if (htmlDocScript) {
+		const newScript = document.createElement('script')
+
+		if (htmlDocScript.type) newScript.type = htmlDocScript.type
+		if (htmlDocScript.src) {
+			newScript.src = htmlDocScript.src
+		} else {
+			newScript.textContent = htmlDocScript.textContent
+		}
+		document.body.appendChild(newScript)
+	}
 }
 
 async function navigate(route) {
@@ -35,9 +58,7 @@ window.addEventListener('popstate', () => {
 	loadPage(route)
 })
 
-document.addEventListener('DOMContentLoaded', () => {
-	// loadPage(location.pathname.replace('/', '') || '')
-
+document.addEventListener('DOMContentLoaded', _ => {
 	document.body.addEventListener('click', e => {
 		const target = e.target.closest('a[data-route]')
 		if (target) {

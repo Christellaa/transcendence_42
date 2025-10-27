@@ -12,14 +12,15 @@ fastify.register(fastifyStatic, {
 });
 async function getHTML(route, type) {
     return new Promise(async (resolve, reject) => {
+        let page;
         if (type === 'hydrate') {
             const filePath = path.join(__dirname, 'srcs/pages', `${route}.html`);
-            resolve(await readFile(filePath, 'utf8'));
+            page = await readFile(filePath, 'utf8').catch(() => reject(null));
         }
         else {
-            const page = await renderTemplateFromFile(`${route}.html`).catch(() => reject(null));
-            resolve(page);
+            page = await renderTemplateFromFile(`${route}.html`).catch(() => reject(null));
         }
+        resolve(page);
     });
 }
 fastify.route({
@@ -31,7 +32,6 @@ fastify.route({
         const type = req.headers.type;
         if (route === '')
             route = 'index';
-        console.log(route);
         if (validRoutes.includes(route)) {
             const html = await getHTML(route, type).catch(() => {
                 return reply.status(404).send();
