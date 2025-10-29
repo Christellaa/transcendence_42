@@ -14,11 +14,13 @@ RUN apt-get install -y nodejs
 
 RUN npm i -g pnpm
 
-COPY app/package*.json app/pnpm-lock.yaml* ./
+# Copier tous les fichiers/dossiers essentiels pour l'applications
+COPY package.json ./
+COPY srcs ./
+COPY pnpm-lock.yaml ./
+COPY tsconfig.json ./
 
 RUN pnpm install
-
-COPY app ./
 
 EXPOSE 3000
 
