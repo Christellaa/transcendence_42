@@ -1,6 +1,6 @@
 up:
 	mkdir -p ~/sgoinfre
-	docker compose build
+	docker compose build --no-cache
 	docker compose up -d
 
 it:
@@ -12,3 +12,6 @@ down:
 nuke:
 	docker ps -q | xargs -r docker stop
 	docker system prune -fa --volumes
+
+fclean:
+	find . -type d -name node_modules -prune -exec rm -rf '{}' +

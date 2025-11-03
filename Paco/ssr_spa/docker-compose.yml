@@ -1,9 +1,0 @@
-services:
-  backend:
-    build:
-      dockerfile: Dockerfile
-    container_name: backend
-    ports:
-      - 3000:3000
-    volumes:
-      - "./srcs:/app/srcs"

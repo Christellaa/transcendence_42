@@ -14,7 +14,6 @@ RUN apt-get install -y nodejs
 
 RUN npm i -g pnpm
 
-# Copier tous les fichiers/dossiers essentiels pour l'applications
 COPY package.json ./
 COPY srcs ./srcs
 COPY pnpm-lock.yaml ./

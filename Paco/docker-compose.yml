@@ -1,0 +1,29 @@
+services:
+  blockchain:
+    build:
+      context: ./blockchain
+      dockerfile: Dockerfile
+    container_name: blockchain
+    ports:
+      - 3001:3001
+    volumes:
+      - "./blockchain/srcs:/app/srcs"
+    networks:
+      - transcendence
+
+  backend:
+    build:
+      context: ./ssr_spa
+      dockerfile: Dockerfile
+    container_name: backend
+    ports:
+      - 3000:3000
+    volumes:
+      - "./ssr_spa/srcs:/app/srcs"
+    networks:
+      - transcendence
+
+networks:
+  transcendence:
+    name: transcendence_network
+    driver: bridge
