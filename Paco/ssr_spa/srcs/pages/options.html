@@ -1,0 +1,36 @@
+<head>
+	<title>Options</title>
+	<style module>
+		page {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			height: 100vh;
+			color: #fff;
+		}
+
+		page-title {
+			margin-bottom: 8rem;
+		}
+
+		main-menu-buttons {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+		}
+	</style>
+</head>
+
+<page type="index">
+	<page-title class="text-6xl">Options</page-title>
+	<main-menu-buttons>
+		<span class="button traverse text-3xl" data-action="updateLanguage" data-length="3" data-currentOption="0" data-selected="true">Language</span>
+		<span class="button traverse text-3xl">Contrast</span>
+		<span class="button traverse text-3xl">Text Size</span>
+		<span class="button traverse text-3xl">Theme</span>
+		<span data-route="" class="button traverse text-4xl">Back</span>
+	</main-menu-buttons>
+</page>
+
+<script type="module" src="public/modules/options.js"></script>
