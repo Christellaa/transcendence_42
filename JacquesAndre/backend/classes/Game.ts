@@ -1,6 +1,6 @@
 import { board, arena } from "./board.js";
 import { Player } from "./Player.js";
-import { Ball } from "./Ball.js";
+import { Ball, Impact } from "./Ball.js";
 import User from "./User.js";
 
 export class Game
@@ -8,7 +8,7 @@ export class Game
 
 private players: Player[]
 private ball: Ball
-private ballIA : {x:number, y:number, vx:number, vy:number}
+private predictions : Impact[]
 private intervalId : any
 private IAinterval : any
 
@@ -16,17 +16,17 @@ constructor (player0: User, player1: User)
 {
 	if (!player0 || !player1) throw new Error("Deux joueurs sont requis");
 
-	this.ball = new Ball(arena.centerX, arena.centerY)
-	this.ballIA = {...this.ball}
+	this.ball = new Ball()
+	this.predictions = []
 
-	const nbPlayer = 5
+	const nbPlayer = 3
 
 	this.players = [
 		new Player(0, nbPlayer, player0),
 		new Player(1, nbPlayer, player1),
 		new Player(2, nbPlayer, new User("", "Neo")),
-		new Player(3, nbPlayer, new User("", "Mia")),
-		new Player(4, nbPlayer, new User("", "Pac")),
+		// new Player(3, nbPlayer, new User("", "Mia")),
+		// new Player(4, nbPlayer, new User("", "Pac")),
 		// new Player(5, nbPlayer, new User("", "Man")),
 		// new Player(6, nbPlayer, new User("", "Wai")),
 		// new Player(7, nbPlayer, new User("", "Tai")),
@@ -55,8 +55,7 @@ public destroy()
 		p.user.status = "chat";
 	// const socket = p.user.socket;
 	// if (socket) {
-	// 	socket.removeAllListeners("message");
-	// 	socket.removeAllListeners("close");
+	// 	socket.removeListener("message", this.handleInput);
 	// }
 	// 3. Remettre l'état du joueur à "chat" ou autre
 	});
@@ -64,6 +63,7 @@ public destroy()
 	// 4. Nettoyage interne (facultatif mais sûr)
 	this.players = []
 	this.ball = null as any
+	this.predictions = []
 }//destroy()
 
 private broadcast(data: any): void
@@ -71,6 +71,7 @@ private broadcast(data: any): void
 	const msg = JSON.stringify(data)
 	this.players.forEach(p => p.user.socket?.send(msg))
 }//broadcast
+
 
 private setupSockets()
 {
@@ -87,14 +88,17 @@ private setupSockets()
 
 private startGameLoop()
 {
-	this.intervalId = setInterval(() => this.gameTick(), 15)
-	this.IAinterval = setInterval(() => {this.ballIA={...this.ball}}, 1000)
+	const hertz = 60
+	const tick_ms = 1000 / hertz
+	const tick_ai = 1000
+	this.intervalId = setInterval(() => this.gameTick(), tick_ms)
+	this.IAinterval = setInterval(() => { this.predictions=this.ball.predictImpact(hertz) }, tick_ai)
 }//startGameLoop()
 
 private gameTick()
 {
 	// const dt = 0.015; // 15ms
-	this.players.forEach(p=>p.handleKey(this.ballIA))
+	this.players.forEach(p=>p.handleKey(this.predictions))
 
 	if (this.players.some(p => p.pause)) return;
 
@@ -137,22 +141,28 @@ private gameTick()
 
 		if (endgame)
 		{
-			const message = this.formatRanking();
-			this.broadcast({ type: "end", end: { message } });
+			this.broadcast({ type: "end", players: this.players.map(p => ({
+				pseudo: p.user.pseudo,
+				score: p.score,
+				ai:p.ai
+			})) });
 			this.destroy()
 			return;
 		}
 
 		if (bounced)
 		{
-			this.ball.vx -= 2.05 * dot * nx;
-			this.ball.vy -= 2.05 * dot * ny;
+			let coef = 2
+			if (this.ball.vx*this.ball.vx + this.ball.vy*this.ball.vy < 100) coef = 2.1
+			this.ball.vx -= coef * dot * nx;
+			this.ball.vy -= coef * dot * ny;
 
 			// 1) angle actuel
 			const angle = Math.atan2(this.ball.vy, this.ball.vx);
 
 			// 2) perturbation aléatoire (en radians)
-			const randomAngle = (Math.random() - 0.5) * 1.0; // ±0.5 rad ≈ ±28°
+			const dispersion = 0  // 0.5
+			const randomAngle = (Math.random() - 0.5) * dispersion; // ±0.5 rad ≈ ±28°
 
 			// 3) appliquer la rotation
 			const speed = Math.sqrt(this.ball.vx**2 + this.ball.vy**2);
@@ -176,14 +186,16 @@ private gameTick()
 
 	this.broadcast({
 	type: "state",
-	ball: { dist, theta },
+	ball: { dist, theta, x:this.ball.x, y:this.ball.y },
+	impacts:this.predictions,
 	players: this.players.map(p => ({
 		minAngle:p.minAngle,
 		maxAngle:p.maxAngle,
-		pseudo: p.pseudo,
+		pseudo: p.user.pseudo,
 		angle: p.angle,
 		score: p.score,
-		paddleSize: p.paddleSize
+		paddleSize: p.paddleSize,
+		ai:p.ai
 	})),
 	changeColor
 	});
@@ -195,7 +207,8 @@ private formatRanking(): string
 	const bestScore = sorted[0].score;
 	return sorted.map(p => {
 	const crown = p.score === bestScore ? " 👑" : "";
-	return `${p.user.pseudo}${crown} (${p.score}pts)`;
+	const AI = p.ai?"🤖":""
+	return `${AI}${p.user.pseudo}${crown} (${p.score})`;
 	}).join(", ");
 }//formatRanking()
 

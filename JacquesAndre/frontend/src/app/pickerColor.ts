@@ -2,10 +2,10 @@
 
 
 export const color = {
-player: ["#F00","#0F0","#00F","#F0F","#0FF","#FF0","#F50","#05F"],
-playerComp :  ["#500","#050","#005","#505","#055","#550","#520","#025"],
-colorBall : "#DDD",
-colorBallComp : "#555"
+player: ["#FF0000","#00FF00","#0000FF","#FF00FF","#00FFFF","#FFFF00","#FF5500","#0055FF"],
+playerComp :  ["#550000","#005500","#000055","#550055","#005555","#555500","#552200","#002255"],
+colorBall : "#DEDEDE",
+colorBallComp : "#545454"
 }
 
 function colorContrasted(hex: any)
