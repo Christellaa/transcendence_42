@@ -1,60 +1,78 @@
 <head>
 	<title>Home</title>
 	<style module>
-		page {
-			display: flex;
-			flex-direction: column;
-			align-items: center;
-			justify-content: center;
-			height: 100vh;
-			color: #fff;
+		.wave span {
+			font-size: 5.5rem;
+			display: inline-block;
+			width: 24px;
+			color: hsl(196, 100%, 65%);
+			animation: bounce 2000ms ease-in-out infinite, rainbow 2000ms linear infinite;
 		}
 
-		page-title {
-			margin-bottom: 8rem;
+		.wave span:nth-child(1) {
+			animation-delay: 0s;
+		}
+		.wave span:nth-child(2) {
+			animation-delay: 0.1s;
+		}
+		.wave span:nth-child(3) {
+			animation-delay: 0.2s;
+		}
+		.wave span:nth-child(4) {
+			margin-right: 1rem;
+			animation-delay: 0.3s;
+		}
+		.wave span:nth-child(5) {
+			animation-delay: 0.4s;
+		}
+		.wave span:nth-child(6) {
+			animation-delay: 0.5s;
+		}
+		.wave span:nth-child(7) {
+			animation-delay: 0.6s;
+		}
+		.wave span:nth-child(8) {
+			animation-delay: 0.7s;
 		}
 
-		main-menu-buttons {
-			display: flex;
-			flex-direction: column;
-			align-items: center;
+		@keyframes bounce {
+			0%,
+			100% {
+				transform: translateY(0);
+			}
+			50% {
+				transform: translateY(-30px);
+			}
 		}
 
-		nav-button.y-nav[data-selected='true']::after {
-			content: ' >';
-			opacity: 1;
-		}
-
-		nav-button.y-nav[data-selected='true']::before {
-			content: '< ';
-			opacity: 1;
-		}
-
-		nav-button.y-nav::after {
-			content: ' >';
-			opacity: 0;
-			transition-property: opacity;
-			transition-duration: 300ms;
-			transition-timing-function: ease-in-out;
-		}
-		nav-button.y-nav::before {
-			content: '< ';
-			opacity: 0;
-			transition-property: opacity;
-			transition-duration: 300ms;
-			transition-timing-function: ease-in-out;
+		@keyframes rainbow {
+			0%{
+				filter: hue-rotate(0deg);
+			}
+			100% {
+				filter: hue-rotate(360deg);
+			}
 		}
 	</style>
 </head>
 
 <page type="index">
-	<page-title class="text-8xl">Pong Pong</page-title>
-	<main-menu-buttons>
+	<page-title class="wave">
+		<span>P</span>
+		<span>o</span>
+		<span>n</span>
+		<span>g</span>
+		<span>P</span>
+		<span>o</span>
+		<span>n</span>
+		<span>g</span>
+	</page-title>
+	<menu-buttons>
 		<nav-button data-route="" class="traverse button text-5xl mb-4" data-selected="true">Start Game</nav-button>
 		<nav-button data-route="options" class="traverse button text-3xl">Options</nav-button>
 		<nav-button data-route="login" class="y-nav button traverse text-3xl" id="loginButton">Login</nav-button>
 		<nav-button class="traverse button text-3xl">Exit</nav-button>
-	</main-menu-buttons>
+	</menu-buttons>
 </page>
 
-<script type="module" src="/modules/index.js"></script>
+<script type="module" src="modules/index.js"></script>

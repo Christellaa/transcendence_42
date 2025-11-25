@@ -15,8 +15,6 @@ PageChangeStore.subscribe(newPage => {
 })
 
 KeyboardStore.subscribe(key => {
-	console.log('Key pressed: ', key)
-
 	if (key === 'ArrowDown') {
 		currentIdx = (currentIdx + 1) % buttonList.length
 	} else if (key === 'ArrowUp') {

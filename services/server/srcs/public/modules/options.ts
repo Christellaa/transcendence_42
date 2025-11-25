@@ -1,61 +1,38 @@
-const langs = ['En', 'Fr', 'Es']
+import { CurrentButtonStore } from '../stores/current_button.store.js'
+import { KeyboardStore } from '../stores/keyboard.store.js'
+
+const actions = {
+	updateLanguage: {
+		min: 0,
+		max: 2,
+		steps: 1,
+		values: ['En', 'Fr', 'Es'],
+		innerText: ['Language (En)', 'Langue (Fr)', 'Lenguage (Es)']
+	}
+}
 
 const $page: HTMLElement = document.querySelector('page[type=options]')!
 
-const cleanPage = () => {
-	console.log('Cleaning Page Options')
-	$page.removeEventListener('cleanup', cleanPage)
-}
+let currentButton: HTMLElement
 
-console.log('Adding event listener options')
-$page.addEventListener('cleanup', cleanPage)
+const unsubCurrentButtonStore = CurrentButtonStore.subscribe(el => (currentButton = el))
 
-function updateLanguage(origin: 'init' | 'event') {
-	const $languageOption = document.querySelector('span[data-action="updateLanguage"]') as HTMLSpanElement
-	if (!$languageOption) return
-	const currentOption: number | undefined = Number($languageOption?.dataset?.currentoption)
-	let lang
+const unsubKeyStore = KeyboardStore.subscribe(key => {
+	if (['ArrowLeft', 'ArrowRight'].includes(key)) {
+		const data = currentButton.dataset
+		if (data && data?.action) {
+			const action = actions[data.action]
+			const currentOption = data.currentoption
 
-	if (currentOption !== undefined) lang = langs[currentOption] || langs[0]
-
-	if (origin === 'init') lang = localStorage.getItem('lang')
-
-	$languageOption.innerText = `Language (${lang})`
-	localStorage.setItem('lang', lang)
-}
-
-function updateTextSize(origin: 'init' | 'event') {
-	const $textSize = document.querySelector('span[data-action="updateTextSize"]') as HTMLSpanElement
-	if (!$textSize) return
-	let textSize: string | undefined = $textSize?.dataset?.currentoption
-
-	if (origin === 'init') {
-		textSize = localStorage.getItem('textSize') || '16'
-		$textSize.dataset.currentoption = textSize
+			currentButton.innerText = action.innerText[currentOption]
+		}
 	}
-	$textSize.innerText = `Text Size (${textSize}px)`
+})
 
-	document.documentElement.style.setProperty('--text-size', `${textSize}px`)
-	localStorage.setItem('textSize', textSize)
+const cleanPage = () => {
+	$page.removeEventListener('cleanup', cleanPage)
+	unsubCurrentButtonStore()
+	unsubKeyStore()
 }
 
-function handleOptionClick(evt: any) {
-	let dataset = evt.target.dataset
-
-	if (dataset.action === 'updateLanguage') updateLanguage('event')
-	if (dataset.action === 'updateTextSize') updateTextSize('event')
-}
-
-export function initOptionEvents() {
-	document.querySelectorAll<HTMLElement>('span.traverse').forEach($el => {
-		$el.addEventListener('click', handleOptionClick)
-	})
-	updateLanguage('init')
-	updateTextSize('init')
-}
-
-export function cleanOptionEvents() {
-	document.querySelectorAll<HTMLElement>('span.traverse').forEach($el => {
-		$el.removeEventListener('click', handleOptionClick)
-	})
-}
+$page.addEventListener('cleanup', cleanPage)
