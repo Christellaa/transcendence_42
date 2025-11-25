@@ -1,4 +1,5 @@
 import vaultLib from 'node-vault';
+import { log } from '../logs.ts';
 
 const VAULT_ADDR = process.env.VAULT_ADDR;
 const VAULT_TOKEN = process.env.VAULT_DEV_ROOT_TOKEN_ID;
@@ -19,6 +20,7 @@ export async function getSecret(request:Request) {
     try {
         const secret = await vault.read(`secret/data/${name}`);
         console.log('\x1b[32m%s\x1b[0m', `Secret ${name} retrieved from Vault`);
+        log(`Secret ${name} retrieved from Vault`, 'info');
         res = { status: 200, message: secret.data.data.value };
     }
     catch (error:unknown) {
@@ -33,11 +35,13 @@ export async function setSecret(name: string, value: string) {
     try {
         await vault.write(`secret/data/${name}`, { data: { value } });
         console.log('\x1b[32m%s\x1b[0m', `Secret ${name} set in Vault`);
+        log(`Secret ${name} set in Vault`, 'info');
         res = { status: 200, message: 'Secret set' };
     }
     catch (error:unknown) {
         res = { status: 500, message: 'Error setting secret' };
-        console.error('\x1b[32m%s\x1b[0m', `Error setting secret ${name} in Vault:`, error);
+        // console.error('\x1b[32m%s\x1b[0m', `Error setting secret ${name} in Vault:`, error);
+        log(`Error setting secret ${name} in Vault: ${error}`, 'error');
     }
     return Response.json(res);
 }
