@@ -1,7 +1,7 @@
 import Fastify, { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify'
 import path from 'path'
 import { readFile } from 'fs/promises'
-import { existsSync, readFileSync, readSync } from 'fs'
+import { existsSync, readFileSync } from 'fs'
 import fastifyStatic from '@fastify/static'
 import { renderTemplateFromFile } from './functions/renderTemplateFromFile.fn.js'
 import { publicWatcher } from './services/publicWatcher.service.js'
