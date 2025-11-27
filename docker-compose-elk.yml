@@ -2,9 +2,8 @@ services:
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.15.0
     container_name: elasticsearch
-    ports:
-      - "9200:9200"
-      # - "9300:9300"
+    expose:
+      - 9200
     # volumes:
       # - ./services/elk/elasticsearch/data:/usr/share/elasticsearch/data
     environment:
@@ -20,13 +19,12 @@ services:
       retries: 5
     networks:
       - elk
+    labels:
+      - "projectLabel=transcendence"
 
   logstash:
     image: docker.elastic.co/logstash/logstash:8.15.0
     container_name: logstash
-    ports:
-      - "5044:5044"
-      # - "9600:9600"
     volumes:
       - ./services/elk/logstash/pipeline:/usr/share/logstash/pipeline:ro
       - ./logs:/app/logs:ro
@@ -36,9 +34,9 @@ services:
       - xpack.monitoring.enabled=false
       # - xpack.monitoring.elasticsearch.username=bro
       # - xpack.monitoring.elasticsearch.password=changeme
-    # depends_on:
-    #   elasticsearch:
-    #     condition: service_healthy
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:9600/_node/pipelines"]
       interval: 10s
@@ -46,6 +44,8 @@ services:
       retries: 5
     networks:
       - elk
+    labels:
+      - "projectLabel=transcendence"
 
   kibana:
     build:
@@ -56,10 +56,7 @@ services:
       - "5601:5601"
     volumes:
       - ./services/elk/kibana/imports:/usr/share/kibana/imports
-      - ./services/elk/kibana/import_dashboards.sh:/usr/local/bin/import_dashboards.sh
       # - ./services/elk/kibana/data:/usr/share/kibana/data
-    # entrypoint: ["/bin/bash", "-c", "/usr/local/bin/import_dashboards.sh & /usr/local/bin/kibana-docker"]
-    # command: ["/bin/bash", "-c", "/usr/local/bin/kibana-docker & apt-get update && apt-get install -y jq"]
     environment:
       - server.name=kibana
       - server.host=localhost
@@ -72,6 +69,8 @@ services:
         condition: service_healthy
     networks:
       - elk
+    labels:
+      - "projectLabel=transcendence"
 
 networks:
   transcendence:

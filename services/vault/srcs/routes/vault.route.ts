@@ -19,13 +19,12 @@ export async function getSecret(request:Request) {
     let res;
     try {
         const secret = await vault.read(`secret/data/${name}`);
-        console.log('\x1b[32m%s\x1b[0m', `Secret ${name} retrieved from Vault`);
         log(`Secret ${name} retrieved from Vault`, 'info');
         res = { status: 200, message: secret.data.data.value };
     }
     catch (error:unknown) {
        res = { status: 500, message: 'Error getting secret' };
-       console.error('\x1b[32m%s\x1b[0m', `Error getting secret ${name} from Vault:`, error);
+       log(`Error getting secret ${name} from Vault: ${error}`, 'error');
     }
     return Response.json(res);
 }
@@ -34,13 +33,11 @@ export async function setSecret(name: string, value: string) {
     let res;
     try {
         await vault.write(`secret/data/${name}`, { data: { value } });
-        console.log('\x1b[32m%s\x1b[0m', `Secret ${name} set in Vault`);
         log(`Secret ${name} set in Vault`, 'info');
         res = { status: 200, message: 'Secret set' };
     }
     catch (error:unknown) {
         res = { status: 500, message: 'Error setting secret' };
-        // console.error('\x1b[32m%s\x1b[0m', `Error setting secret ${name} in Vault:`, error);
         log(`Error setting secret ${name} in Vault: ${error}`, 'error');
     }
     return Response.json(res);

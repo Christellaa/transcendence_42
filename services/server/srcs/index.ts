@@ -9,6 +9,7 @@ import __dirname, { setDirName } from './functions/dirname.fn.js'
 import cookie from '@fastify/cookie'
 import { authRoutes, metricsRoutes, userRoutes } from './routes/handler.route.js'
 import { totalHttpRequests } from './services/prometheus.service.js'
+import { log } from './logs.js'
 
 const fastify: FastifyInstance = Fastify()
 const validRoutes = ['index', 'about', 'login', 'options', 'register', 'dashboard', 'users']
@@ -77,8 +78,10 @@ const start = async () => {
 	try {
 		await fastify.listen({ host: '0.0.0.0', port: 3000 })
 		console.log('Server running on http://localhost:3000')
+		log('Server running on http://localhost:3000', 'info')
 	} catch (err) {
 		fastify.log.error(err)
+		log(`Server failed to start: ${err}`, 'error')
 		process.exit(1)
 	}
 }

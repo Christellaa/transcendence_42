@@ -3,6 +3,7 @@ import { UserType } from '../types/request.type.ts'
 import { ErrorResponseType } from '../types/error.type.ts'
 import { queries_latency_histogram } from '../services/prometheus.service.ts'
 import { methodType, queryObjectType } from '../types/query.type.ts'
+import { log } from '../logs.ts'
 
 export async function executeMethod(method: methodType, res: any, db: Database, query: any){
 	switch (method) {
@@ -86,6 +87,6 @@ export function pushLog(start_time: bigint, db: Database, query_info: queryObjec
 		executed_at
 	])
 	.catch((err) => {
-		console.error('Failed to log query in queries_log table:', err)
+		log('Failed to log query in queries_log table:', 'error')
 	})
 }

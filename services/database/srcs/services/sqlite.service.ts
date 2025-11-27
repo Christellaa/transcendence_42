@@ -1,11 +1,12 @@
 import sqlite3 from 'sqlite3'
+import { log } from '../logs';
 
 export default function initDb() {
     const db = new sqlite3.Database('./data/db.sqlite', (err) => {
         if (err)
-            return console.error('\x1b[32m%s\x1b[0m', 'Could not connect to database', err);
+            return log(`Could not connect to database: ${err}`, 'error');
         else
-            console.log('\x1b[32m%s\x1b[0m', 'Connected to database');
+            log('Connected to database', 'info');
     });
     db.run(`
         CREATE TABLE IF NOT EXISTS users (

@@ -1,5 +1,6 @@
 import { generateKeys } from "./generateKeys.ts";
 import { routes } from "./routes/handler.route.ts";
+import { log } from "./logs.ts";
 
 const PORT = 6988;
 
@@ -12,7 +13,7 @@ async function main() {
             return new Response("Route not Known", { status: 404 });
         }
     });
-    console.log(`Listening on http://localhost:${PORT}`);
+    log(`Listening on http://localhost:${PORT}`, 'info');
 }
 
 main();

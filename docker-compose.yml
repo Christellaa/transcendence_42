@@ -13,8 +13,11 @@ services:
         condition: service_healthy
     volumes:
       - "./services/server/srcs:/app/srcs"
+      - ./logs:/app/logs
     networks:
       - transcendence
+    labels:
+      - "projectLabel=transcendence"
 
   waf:
     build:
@@ -26,12 +29,15 @@ services:
       - "./services/waf/srcs:/app/srcs"
       - "./services/waf/rules:/app/rules"
       - "./services/waf/package.json:/app/package.json"
+      - ./logs:/app/logs
     ports:
       - "443:443"
     depends_on:
       - server
     networks:
       - transcendence
+    labels:
+      - "projectLabel=transcendence"
 
   vault:
     build:
@@ -40,6 +46,8 @@ services:
     container_name: vault
     ports:
       - "6988:6988"
+    expose:
+      - 8200
     volumes:
       # - vault:/app/services/vault
       - ./services/vault/srcs:/app/services/vault/srcs
@@ -59,7 +67,7 @@ services:
     networks:
       - transcendence
     labels:
-      filebeat.network: transcendence
+      - "projectLabel=transcendence"
 
   database:
     build:
@@ -72,6 +80,7 @@ services:
       # - database:/app/services/database
       - ./services/database/srcs:/app/services/database/srcs
       - ./services/database/data:/app/services/database/data
+      - ./logs:/app/logs
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:6989/health"]
       interval: 2s
@@ -82,6 +91,8 @@ services:
         condition: service_healthy
     networks:
       - transcendence
+    labels:
+      - "projectLabel=transcendence"
 
 networks:
   transcendence:

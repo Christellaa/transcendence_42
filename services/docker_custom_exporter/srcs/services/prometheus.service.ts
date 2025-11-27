@@ -25,10 +25,9 @@ register.registerMetric(totalImages)
 
 export async function updateMetrics() {
   const containers = await docker.listContainers({ all: true })
-  runningContainers.set(containers.filter(c => c.State === 'running' && c.Labels && c.Labels['com.docker.compose.project'] === 'transcendence_42').length)
-  stoppedContainers.set(containers.filter(c => c.State !== 'running' && c.Labels && c.Labels['com.docker.compose.project'] === 'transcendence_42').length)
+  runningContainers.set(containers.filter(c => c.State === 'running' && c.Labels && c.Labels['projectLabel'] === 'transcendence').length)
+  stoppedContainers.set(containers.filter(c => c.State !== 'running' && c.Labels && c.Labels['projectLabel'] === 'transcendence').length)
   const images = await docker.listImages()
-  // filtre projet
-  const realImages = images.filter(img => img.RepoTags && img.RepoTags.length > 0)
+  const realImages = images.filter(img => img.RepoTags && img.RepoTags.length > 0 && img.RepoTags.some(tag => tag.includes('transcendence-')))
   totalImages.set(realImages.length)
 }

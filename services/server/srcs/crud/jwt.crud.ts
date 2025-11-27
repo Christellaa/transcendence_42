@@ -1,5 +1,6 @@
 import { SignJWT, jwtVerify, jwtDecrypt, EncryptJWT, importJWK, CryptoKey, JWK } from 'jose';
 import { getSecret } from '../services/vault.service.js';
+import { log } from '../logs.js';
 
 export async function getJwsSecret() {
     const jwkObject = JSON.parse(await getSecret('jws_secret'));
@@ -45,9 +46,10 @@ export async function signJWS(id: number, secretKey: CryptoKey) {
 export async function verifyJWS(token: string, secretKey: CryptoKey) {
     try {
         const { payload } = await jwtVerify(token, secretKey);
+        log(`Verified JWS payload: ${JSON.stringify(payload)}`, 'info');
         return payload;
     } catch (error: unknown) {
-        console.error('\x1b[32m%s\x1b[0m', 'Invalid token:', error);
+        log(`Invalid JWS token: ${error}`, 'error');
     }
 }
 
@@ -62,9 +64,10 @@ export async function encryptJWE(payload: string, secretKey: CryptoKey) {
 export async function decryptJWE(token: string, secretKey: CryptoKey) {
     try {
         const { payload } = await jwtDecrypt(token, secretKey);
+        log(`Decrypted JWE payload: ${payload}`, 'info');
         return payload;
     }
     catch (error: unknown) {
-        console.error('\x1b[32m%s\x1b[0m', 'Invalid or expired JWE token:', error);
+        log(`Invalid or expired JWE token: ${error}`, 'error');
     }
 }
