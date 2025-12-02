@@ -157,8 +157,8 @@ Bun.serve({
 		}
 
 		const url = new URL(req.url)
-		
-		let result = await fetch(`http://server:3000${url.pathname}`, {
+
+		let result = await fetch(`https://server:3000${url.pathname}`, {
 			method: req.method,
 			headers: req.headers,
 			body: bodyText
@@ -172,8 +172,8 @@ Bun.serve({
 			})
 			.catch(err => {
 				return {
-					status: 500,
-					headers: '',
+					status: 418,
+					headers: req.headers,
 					blob: err
 				}
 			})

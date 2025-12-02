@@ -33,7 +33,7 @@ userListDiv.style.display = 'none'
 
 lobbyDiv.addEventListener('mouseenter', async () => {
 	try {
-		const res = await fetch('https://localhost:3000/api/lobby')
+		const res = await fetch('https://localhost:443/api/lobby')
 		const lobby = await res.json()
 		updateUserList(lobby.users)
 		// Positionner la liste juste sous la lobby
@@ -227,7 +227,7 @@ function sendMPMessage(targetPseudo: string, text: string) {
 
 async function refreshLobbyId() {
 	try {
-		const res = await fetch('https://localhost:3000/api/lobby')
+		const res = await fetch('https://localhost:443/api/lobby')
 		if (!res.ok) throw new Error(`https ${res.status}: ${res.statusText}`)
 		lobby = await res.json()
 		console.log('lobby: ', json_stringify(lobby))
@@ -239,7 +239,7 @@ async function refreshLobbyId() {
 
 async function refreshUser() {
 	try {
-		const res = await fetch(`https://localhost:3000/api/user?userId=${user.userId}`)
+		const res = await fetch(`https://localhost:443/api/user?userId=${user.userId}`)
 		if (!res.ok) throw new Error(`https ${res.status}: ${res.statusText}`)
 		const json = await res.json()
 		user.pseudo = json.pseudo
@@ -325,7 +325,7 @@ async function refreshWebSocket() {
 
 	if (!user.userId) return console.warn('Lobby ou user non défini, impossible d’ouvrir WebSocket.')
 
-	const ws = new WebSocket(`wss://localhost:3000/api/ws?userId=${user.userId}`)
+	const ws = new WebSocket(`wss://localhost:443/api/ws?userId=${user.userId}`)
 	user.websocket = ws
 
 	ws.addEventListener('open', () => {
@@ -385,7 +385,7 @@ export default async function chat(element: HTMLDivElement) {
 		buttonPseudo.addEventListener('click', async () => {
 			let status
 			try {
-				const res = await fetch('https://localhost:3000/api/lobby', {
+				const res = await fetch('https://localhost:443/api/lobby', {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },
 					body: json_stringify({ pseudo: inputPseudo.value })

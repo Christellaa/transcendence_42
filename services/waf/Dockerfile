@@ -1,6 +1,7 @@
 FROM debian:bookworm-slim
 
 ENV DEBIAN_FRONTEND=noninteractive
+ENV NODE_TLS_REJECT_UNAUTHORIZED=0
 
 ARG TARGETARCH
 
