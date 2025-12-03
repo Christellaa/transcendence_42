@@ -124,7 +124,6 @@ fastify.get('/api/ws', { websocket: true }, (socket, req) => {
 	const cleanId = sanitizeHtml(userId)
 	console.log(`Connexion avec userId='${cleanId}'`)
 	const user = lobby.getUser(cleanId)
-	console.log('User lobby: ', user)
 	if (!user) return socket.close()
 		console.log('Socket closed')
 	lobby.refreshWebsocket(cleanId, socket)

@@ -1,6 +1,6 @@
 import fs from 'fs'
 import path from 'path'
-import {} from 'bun'
+import { } from 'bun'
 import { type RuleType, type TargetType } from '../types/rules.type'
 import { sanitizeURL } from 'url-sanitizer'
 import os from 'os'
@@ -142,20 +142,62 @@ async function allowRequest(req: Request, bodyText: string): Promise<boolean> {
 	return true
 }
 
+// permet de typer le champ data de l'objet Bun.Server
+interface WAFWebSocketData {
+  backendUrl: string;
+  ws_backend?: WebSocket;
+}
+
+
 Bun.serve({
 	port: 443,
+	key: fs.readFileSync('./certs/key.pem'),
+	cert: fs.readFileSync('./certs/cert.pem'),
 	websocket: {
-		async message(ws, message) {
-			console.log(new Date().toLocaleString())
-			// messages from backend get sent out automatically
-			console.log("WebSocket: ", ws)
-			console.log("Message: ", message)
+		open(ws_frontend : Bun.ServerWebSocket<WAFWebSocketData>)
+		{
+			console.log("WAF: Frontend WSS connected")
+			// pour chaque websocket ouverte depuis le frontend on construit une websocket vers le backend
+			const ws_backend = new WebSocket(ws_frontend.data?.backendUrl)
+			ws_frontend.data.ws_backend = ws_backend
+
+			ws_backend.onopen = () => console.log("WAF → Backend WSS connected")
+
+			// backend → frontend
+			ws_backend.onmessage = (event) => ws_frontend.send(event.data)
+			ws_backend.onclose = () => ws_frontend.close()
+			ws_backend.onerror = () => ws_frontend.close()
+		},
+
+		// frontend → backend
+		message(ws_frontend : Bun.ServerWebSocket<WAFWebSocketData>, msg)
+		{
+			const ws_backend = ws_frontend.data?.ws_backend
+			if (!ws_backend || ws_backend.readyState !== ws_backend.OPEN) return console.log("Backend WS not ready")
+			ws_backend.send(msg)
+		},
+
+		close(ws_frontend : Bun.ServerWebSocket<WAFWebSocketData>)
+		{
+			const ws_backend = ws_frontend.data?.ws_backend
+			ws_backend?.close()
+			console.log("WAF → Frontend WSS closed")
 		}
+		//fin de gestion des websockets
 	},
-	fetch: async req => {
-		console.log(new Date().toLocaleString())
-		console.log(req.method)
-		console.log(req.url)
+	fetch: async (req, server) => {
+		console.log(`from bun: ${new Date().toLocaleString()} ${req.method} ${req.url} ${server.url.protocol}`)
+
+		const url = new URL(req.url)
+
+		if (req.headers.get("upgrade") === "websocket") // upgrade de la requete intiale vers websocket
+		{
+			if (!(await allowRequest(req, "")))	return new Response("Forbidden", { status: 403 })
+			const backendUrl = `wss://server:3000${url.pathname}${url.search}`
+			const upgraded = server.upgrade(req, { data: { backendUrl } })
+			if (!upgraded) return new Response("Failed to upgrade WS", { status: 500 })
+			return
+		}
 
 		const reqBuffer = await req.arrayBuffer()
 		const bodyText = new TextDecoder().decode(reqBuffer)
@@ -164,7 +206,6 @@ Bun.serve({
 			return new Response('Forbidden', { status: 403 })
 		}
 
-		const url = new URL(req.url)
 		// console.log(url)
 		let result = await fetch(`https://server:3000${url.pathname}${url.search}`, {
 			method: req.method,
@@ -187,9 +228,7 @@ Bun.serve({
 			})
 		return new Response(result.blob, { status: result.status, headers: result.headers })
 	},
-	key: fs.readFileSync('./certs/key.pem'),
-	cert: fs.readFileSync('./certs/cert.pem')
-})
+}) as Bun.Server<WAFWebSocketData>
 
 log('Bun WAF running on port 443', 'info')
 console.log('Bun WAF running on port 443')
