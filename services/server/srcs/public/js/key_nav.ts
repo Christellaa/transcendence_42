@@ -14,22 +14,40 @@ PageChangeStore.subscribe(newPage => {
 	buttonList = getTraverable()
 })
 
-KeyboardStore.subscribe(key => {
-	if (key === 'ArrowDown') {
+KeyboardStore.subscribe(keyEvt => {
+	if (!['ArrowDown', 'ArrowUp'].includes(keyEvt.key)) return
+	if (keyEvt.key === 'ArrowDown') {
 		currentIdx = (currentIdx + 1) % buttonList.length
-	} else if (key === 'ArrowUp') {
+	} else if (keyEvt.key === 'ArrowUp') {
 		currentIdx = (currentIdx - 1 + buttonList.length) % buttonList.length
 	}
 	unselectButtons()
 	let currentButton = buttonList[currentIdx]
 	if (currentButton?.dataset?.selected !== undefined) {
 		currentButton.dataset.selected = 'true'
+		currentButton.focus()
 		CurrentButtonStore.emit(currentButton)
 	}
 })
 
-KeyboardStore.subscribe(key => {
-	if (key === 'Enter') {
+KeyboardStore.subscribe(keyEvt => {
+	if (!['ArrowDown', 'ArrowUp'].includes(keyEvt.key)) return
+	if (keyEvt.key === 'ArrowDown') {
+		currentIdx = (currentIdx + 1) % buttonList.length
+	} else if (keyEvt.key === 'ArrowUp') {
+		currentIdx = (currentIdx - 1 + buttonList.length) % buttonList.length
+	}
+	unselectButtons()
+	let currentButton = buttonList[currentIdx]
+	if (currentButton?.dataset?.selected !== undefined) {
+		currentButton.dataset.selected = 'true'
+		currentButton.focus()
+		CurrentButtonStore.emit(currentButton)
+	}
+})
+
+KeyboardStore.subscribe(keyEvt => {
+	if (keyEvt.key === 'Enter') {
 		let currentButton = buttonList[currentIdx]
 		if (currentButton) {
 			const newRoute = currentButton.getAttribute('data-route')

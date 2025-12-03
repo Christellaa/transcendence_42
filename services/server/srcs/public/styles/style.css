@@ -17,7 +17,7 @@ h1 {
 	color: rebeccapurple;
 }
 
-.traverse {
+:not(input)[tabindex] {
 	padding: 0.5rem 1rem;
 	margin-bottom: 0.5rem;
 	transform: scale(1);
@@ -27,7 +27,7 @@ h1 {
 	cursor: pointer;
 }
 
-.traverse[data-selected='true'] {
+:not(input)[data-selected='true'][tabindex] {
 	background-color: rgba(0, 0, 0, 0.75);
 	transform: scale(1.2);
 }
@@ -48,7 +48,7 @@ img {
 	z-index: -1;
 	opacity: 1;
 	transition-property: opacity;
-	transition-duration: 300ms;
+	transition-duration: 100ms;
 	transition-timing-function: linear;
 }
 

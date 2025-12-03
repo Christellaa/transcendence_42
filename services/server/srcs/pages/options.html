@@ -6,19 +6,20 @@
 <page type="options">
 	<page-title>Options</page-title>
 	<menu-buttons>
-		<nav-button class="button traverse text-3xl y-nav" data-action="updateLanguage" data-currentOption="1" data-selected="true"
+		<nav-button tabindex="1" class="button text-3xl y-nav" data-action="updateLanguage" data-currentOption="1" data-selected="true"
 			>Language <state value="lang"></state
 		></nav-button>
-		<span class="button traverse text-3xl">Contrast</span>
+		<span tabindex="2" class="button text-3xl">Contrast</span>
 		<nav-button
-			class="button traverse text-3xl y-nav"
+			tabindex="3"
+			class="button text-3xl y-nav"
 			data-action="updateTextSize"
 			data-state-key="textSize"
 			data-state-value="16"
 			>Text Size <state value="textSize"></state
 		></nav-button>
-		<nav-button class="y-nav button traverse text-3xl">Theme</nav-button>
-		<span data-route="" class="button traverse text-4xl">Back</span>
+		<nav-button tabindex="4" class="y-nav button text-3xl">Theme</nav-button>
+		<span data-route="" tabindex="5" class="button text-4xl">Back</span>
 	</menu-buttons>
 </page>
 

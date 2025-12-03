@@ -1,5 +1,8 @@
 import { KeyboardStore } from '../stores/keyboard.store.js'
 
 document.addEventListener('keyup', (evt: KeyboardEvent) => {
-	KeyboardStore.emit(evt.key)
+	KeyboardStore.emit({
+		key: evt.key,
+		isShift: evt.shiftKey
+	})
 })

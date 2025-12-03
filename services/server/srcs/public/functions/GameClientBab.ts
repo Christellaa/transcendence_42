@@ -26,9 +26,19 @@ let camera: BABYLON.FreeCamera
 
 const babylonCanvas = document.getElementById('babylonCanvas') as HTMLCanvasElement // Get the canvas element
 const engine: BABYLON.Engine = new BABYLON.Engine(babylonCanvas, true) // Generate the BABYLON 3D engine
+let scene: BABYLON.Scene
+
+export function getEngine() {
+	return engine
+}
+
+export function getScene() {
+	return scene
+}
+
 const createScene = function (engine: BABYLON.Engine, canvas: HTMLCanvasElement) {
 	// default playground scene
-	const scene = new BABYLON.Scene(engine)
+	scene = new BABYLON.Scene(engine)
 	scene.clearColor = new BABYLON.Color4(0, 0, 0, 1) // noir pur pour style
 
 	// simple camera
@@ -79,7 +89,7 @@ const createScene = function (engine: BABYLON.Engine, canvas: HTMLCanvasElement)
 
 	return scene
 }
-const scene: BABYLON.Scene = createScene(engine, babylonCanvas)
+scene = createScene(engine, babylonCanvas)
 
 const run = function () {
 	engine.runRenderLoop(() => {

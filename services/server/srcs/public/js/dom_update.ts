@@ -17,7 +17,7 @@ export async function loadPage(route: string) {
 	if (selectedElement) CurrentButtonStore.emit(selectedElement)
 }
 
-function updateDom(htmlDoc: Document) {
+async function updateDom(htmlDoc: Document) {
 	const $mainPage: HTMLElement | null = document.querySelector('page')
 	const $htmlDocPage: HTMLElement | null = htmlDoc.querySelector('page')
 	const $htmlDocTitle: HTMLTitleElement | null = htmlDoc.querySelector('head title')
@@ -35,7 +35,11 @@ function updateDom(htmlDoc: Document) {
 	}
 
 	if ($htmlDocScript.length > 0) {
-		$htmlDocScript.forEach(scriptEl => runFunction(scriptEl))
+		// $htmlDocScript.forEach(scriptEl => runFunction(scriptEl))
+
+		for (const scriptEl of $htmlDocScript) {
+			await runFunction(scriptEl)
+		}
 	}
 
 	PageChangeStore.emit(document.title)
@@ -48,19 +52,24 @@ function updateStyleModule(htmlDocStyle: HTMLStyleElement) {
 	$head.appendChild(htmlDocStyle)
 }
 
-async function runFunction(htmlDocScript: HTMLScriptElement) {
-	if (htmlDocScript) {
-		document.querySelectorAll('body script[type="module"]:not([keep])').forEach($el => {
-			$el.remove()
-		})
-		const newScript: HTMLScriptElement = document.createElement('script')
-		if (htmlDocScript.type) newScript.type = htmlDocScript.type
-		if (htmlDocScript.src) {
-			const res = await (await fetch(htmlDocScript.src)).text()
-			newScript.textContent = res
-		} else {
-			newScript.textContent = htmlDocScript.textContent
+function runFunction(htmlDocScript: HTMLScriptElement) {
+	return new Promise(async (resolve, reject) => {
+		if (htmlDocScript) {
+			document.querySelectorAll('body script[type="module"]:not([keep])').forEach($el => {
+				$el.remove()
+			})
+			const newScript: HTMLScriptElement = document.createElement('script')
+			if (htmlDocScript.type) newScript.type = htmlDocScript.type
+			if (htmlDocScript.src) {
+				const res = await (await fetch(htmlDocScript.src)).text()
+				// console.log(res)
+				newScript.textContent = res
+			} else {
+				newScript.textContent = htmlDocScript.textContent
+			}
+			document.body.appendChild(newScript)
+			resolve(null)
 		}
-		document.body.appendChild(newScript)
-	}
+		resolve(null)
+	})
 }

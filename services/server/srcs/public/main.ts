@@ -6,14 +6,24 @@ const $bgContainer = document.querySelector('background-container')
 if ($bgContainer) {
 	const $bgVideo = $bgContainer.querySelector('video') as HTMLVideoElement
 	const $bgImg = $bgContainer.querySelector('img') as HTMLImageElement
-	$bgVideo.addEventListener('canplaythrough', evt => {
+
+	$bgVideo.addEventListener('progress', showBGVideo)
+
+	function showBGVideo() {
+		$bgVideo.removeEventListener('progress', showBGVideo)
 		$bgImg.style.opacity = '0'
 		setTimeout(() => {
 			$bgVideo.play()
-		}, 300)
-	})
+		}, 100)
+	}
 }
 
 PageChangeStore.emit('')
 const selectedElement: HTMLElement = document.querySelector('*[data-selected=true]') as HTMLElement
 if (selectedElement) CurrentButtonStore.emit(selectedElement)
+
+// document.addEventListener('keydown', function (event) {
+// 	if (event.key === 'Tab') {
+// 		event.preventDefault()
+// 	}
+// })

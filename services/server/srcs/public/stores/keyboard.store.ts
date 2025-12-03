@@ -1,4 +1,9 @@
-type Subscriber = (key: string) => void
+export type KeyboardKeyEvent = {
+	key: string
+	isShift: boolean
+}
+
+type Subscriber = (keyboardKeyEvent: KeyboardKeyEvent) => void
 
 export const KeyboardStore = (function () {
 	const subscribers = new Set<Subscriber>()
@@ -8,8 +13,8 @@ export const KeyboardStore = (function () {
 		return () => subscribers.delete(fn)
 	}
 
-	function emit(key: string) {
-		for (const fn of subscribers) fn(key)
+	function emit(keyboardKeyEvent: KeyboardKeyEvent) {
+		for (const fn of subscribers) fn(keyboardKeyEvent)
 	}
 
 	return { subscribe, emit }

@@ -1,6 +1,8 @@
-import { setWss } from '../functions/GameClientBab.js'
+import { getEngine, getScene, setWss } from '../functions/GameClientBab.js'
 import { json_parse, json_stringify } from '../functions/json_wrapper.js'
 import { cleanHistory, handleIncomingMessage, loadChatHistory } from '../functions/messagesLocalStorage.js'
+
+const $page: HTMLElement = document.querySelector('page[type=game]')!
 
 let user: {
 	userId: string
@@ -419,3 +421,12 @@ export default async function chat(element: HTMLDivElement) {
 }
 
 chat(chatDiv)
+
+const cleanPage = () => {
+	$page.removeEventListener('cleanup', cleanPage)
+	console.log('Cleaning')
+	getEngine().dispose()
+	getScene().dispose()
+}
+
+$page.addEventListener('cleanup', cleanPage)
