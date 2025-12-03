@@ -2,7 +2,7 @@ import { json_stringify } from './json_wrapper.js'
 import { arena, board } from './board.js'
 import { color, toggleColor } from './pickerColor.js'
 import { Impact } from '../classes/Ball.js'
-
+// import * as BABYLON from "babylonjs"
 /**
  * Version complète : draw 2D existant + visualisation BabylonJS
  *
@@ -14,31 +14,53 @@ import { Impact } from '../classes/Ball.js'
  * - Y dans Babylon est l'axe vertical (on garde la scène à Y = 0.5 pour la visibilité).
  */
 
+setTimeout(() => {
+	console.log("BABYLON game: ", window.BabylonState)
+}, 2000);
+
+let scene: BABYLON.Scene | null
+
+async function initBabylon(canvas: HTMLCanvasElement) {
+	const BABYLON2 = await import('/lib/babylon.js')
+	console.log("BABYLON2", BABYLON2)
+	console.log("BABYLON", BABYLON)
+	const BabylonState = window.BabylonState
+	if (BabylonState.engine) {
+		BabylonState.engine.dispose()
+		BabylonState.engine = null
+	}
+	if (BabylonState.scene) {
+		BabylonState.scene.dispose()
+		BabylonState.scene = null
+	}
+	const engine: BABYLON.Engine | null = new BABYLON.Engine(canvas, true) // Generate the BABYLON 3D engine
+	scene = new BABYLON.Scene(engine)
+	initScene(scene, canvas)
+	BabylonState.engine = engine
+	BabylonState.scene = scene
+	BabylonState.canvas = canvas
+
+	engine.runRenderLoop(() => 	scene.render())
+}
+
 // ---------- DOM / canvas 2D (ton code existant) ----------
 const score = document.getElementById('score')
 const gameContainer = document.getElementById('game-container')
 const canvas = document.createElement('canvas')
 const ctx = canvas.getContext('2d')
 canvas.width = board.width
+canvas.width = 60
 canvas.height = board.height
+canvas.height = 60
 gameContainer?.appendChild(canvas)
 let camera: BABYLON.FreeCamera
 
 const babylonCanvas = document.getElementById('babylonCanvas') as HTMLCanvasElement // Get the canvas element
-const engine: BABYLON.Engine = new BABYLON.Engine(babylonCanvas, true) // Generate the BABYLON 3D engine
-let scene: BABYLON.Scene
+babylonCanvas.width = board.width
+babylonCanvas.height = board.height
 
-export function getEngine() {
-	return engine
-}
-
-export function getScene() {
-	return scene
-}
-
-const createScene = function (engine: BABYLON.Engine, canvas: HTMLCanvasElement) {
+const initScene = function (scene: BABYLON.Scene, canvas: HTMLCanvasElement) {
 	// default playground scene
-	scene = new BABYLON.Scene(engine)
 	scene.clearColor = new BABYLON.Color4(0, 0, 0, 1) // noir pur pour style
 
 	// simple camera
@@ -87,16 +109,31 @@ const createScene = function (engine: BABYLON.Engine, canvas: HTMLCanvasElement)
 	// ground.material = groundMat;
 	// ground.position.y = -0.5;
 
-	return scene
-}
-scene = createScene(engine, babylonCanvas)
+	scene.registerBeforeRender(() => {
+	if (!state || end) return
 
-const run = function () {
-	engine.runRenderLoop(() => {
-		scene.render()
-	})
+	// 0 -> 1 selon la distance du centre
+
+	// const r1 = state.ball.dist;
+	// const r2 = arena.radius;
+
+	// const dTheta = state.ball.theta - anglePlayer;
+	// const dist = Math.sqrt(r1*r1 + r2*r2 - 2*r1*r2*Math.cos(dTheta));
+
+	// const ratio = Math.min(1, 0.5 * dist / arena.radius);
+
+	// // smoothstep: transition plus douce et cinématique
+	// const smooth = ratio //* ratio * (3 - 2 * ratio);
+
+	// const minFov = 0.8;
+	// const maxFov = 0.5 * state.players.length; // modifiable pour plus de "fisheye"
+
+	camera.fov = state.players.length * 0.3
+
+	updateBabylonFromState()
+})
 }
-run()
+
 
 // ---------- game state + input (ton code) ----------
 let state = {
@@ -133,6 +170,7 @@ export function setWss(webSocket: any, pseu: string) {
 	} //onmessage
 	end = false
 	start()
+	initBabylon(babylonCanvas)
 } //setWss
 
 document.addEventListener('keydown', e => {
@@ -145,7 +183,7 @@ document.addEventListener('keyup', e => {
 const debug = document.getElementById('debug')
 
 function start() {
-	draw()
+	// draw()
 	// lance la boucle d'inputs côté réseau
 	const idInterval = setInterval(async () => {
 		if (end) return clearInterval(idInterval)
@@ -217,9 +255,8 @@ function formatScore(players: any, end: boolean = false): string {
 		.map((p: any) => {
 			const crown = p.score === bestScore ? '👑' : ''
 			const AI = p.ai ? '🤖' : ''
-			return `<span style="background-color:${p.bg}; color:${
-				p.color
-			};" class="font-extrabold whitespace-nowrap break-keep">${AI}${p.pseudo.slice(0, 5)}${crown} (${p.score})</span>`
+			return `<span style="background-color:${p.bg}; color:${p.color
+				};" class="font-extrabold whitespace-nowrap break-keep">${AI}${p.pseudo.slice(0, 5)}${crown} (${p.score})</span>`
 		})
 		.join('')
 }
@@ -471,32 +508,10 @@ function updateBabylonFromState() {
 }
 
 // Register update loop in Babylon
-scene.registerBeforeRender(() => {
-	if (!state || end) return
 
-	// 0 -> 1 selon la distance du centre
-
-	// const r1 = state.ball.dist;
-	// const r2 = arena.radius;
-
-	// const dTheta = state.ball.theta - anglePlayer;
-	// const dist = Math.sqrt(r1*r1 + r2*r2 - 2*r1*r2*Math.cos(dTheta));
-
-	// const ratio = Math.min(1, 0.5 * dist / arena.radius);
-
-	// // smoothstep: transition plus douce et cinématique
-	// const smooth = ratio //* ratio * (3 - 2 * ratio);
-
-	// const minFov = 0.8;
-	// const maxFov = 0.5 * state.players.length; // modifiable pour plus de "fisheye"
-
-	camera.fov = state.players.length * 0.3
-
-	updateBabylonFromState()
-})
 
 // initialise tout de suite (créera des meshes vides tant que state.players n'est pas encore fourni)
-initBabylonVisuals()
+// initBabylonVisuals()
 
 // ---------- intégration avec toggleColor change (si user change la couleur) ----------
 /**

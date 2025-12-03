@@ -1,6 +1,14 @@
 import { CurrentButtonStore } from './stores/current_button.store.js'
 import { PageChangeStore } from './stores/page_change.js'
 
+var BabylonState = {
+				engine:null as BABYLON.Engine | null,
+				scene:null as BABYLON.Scene | null,
+				canvas:null as HTMLCanvasElement | null
+			}
+
+window.BabylonState = BabylonState
+
 const $bgContainer = document.querySelector('background-container')
 
 if ($bgContainer) {

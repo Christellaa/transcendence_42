@@ -1,4 +1,4 @@
-import { getEngine, getScene, setWss } from '../functions/GameClientBab.js'
+import { setWss } from '../functions/GameClientBab.js'
 import { json_parse, json_stringify } from '../functions/json_wrapper.js'
 import { cleanHistory, handleIncomingMessage, loadChatHistory } from '../functions/messagesLocalStorage.js'
 
@@ -344,7 +344,7 @@ async function refreshWebSocket() {
 
 	ws.addEventListener('message', e => {
 		const message: any = json_parse(e.data)
-		console.log(message)
+		// console.log(message)
 		if (!message) return
 		if (message?.type === 'error') console.log('received: ', message)
 		if (message?.type === 'duel' && message?.action === 'accept') return setWss(user.websocket, user.pseudo)
@@ -422,11 +422,10 @@ export default async function chat(element: HTMLDivElement) {
 
 chat(chatDiv)
 
-const cleanPage = () => {
-	$page.removeEventListener('cleanup', cleanPage)
-	console.log('Cleaning')
-	getEngine().dispose()
-	getScene().dispose()
-}
+// const cleanPage = () => {
+// 	$page.removeEventListener('cleanup', cleanPage)
+// 	console.log('Cleaning')
+// 	cleanBabylon()
+// }
 
-$page.addEventListener('cleanup', cleanPage)
+// $page.addEventListener('cleanup', cleanPage)

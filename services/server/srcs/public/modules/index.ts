@@ -1,6 +1,9 @@
 import { CurrentButtonStore } from '../stores/current_button.store.js'
 import { KeyboardStore } from '../stores/keyboard.store.js'
 
+console.log("BABYLON index: ", BABYLON)
+
+
 type LoginButtonValues = {
 	[key: string]: {
 		id: string

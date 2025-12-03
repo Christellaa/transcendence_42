@@ -277,18 +277,23 @@
 			background-color: #4cff00;
 			color: #222;
 		}
+		page
+		{
+			display: flex;
+			flex-direction: row;
+		}
 	</style>
 </head>
 
 <page type="game">
 	<div id="chat"></div>
-	<!-- <div id="game-container">
+	<div id="game-container">
 		<div id="score"></div>
 		<div id="debug"></div>
-	</div> -->
+	</div>
 	<canvas id="babylonCanvas"></canvas>
 	<span data-route="" tabindex="1" class="button text-4xl">Back</span>
 </page>
 
-<script type="module" src="lib/babylon.js"></script>
+<!-- <script type="module" src="lib/babylon.js"></script> -->
 <script type="module" src="modules/game.js"></script>

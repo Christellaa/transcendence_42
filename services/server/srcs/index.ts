@@ -5,7 +5,6 @@ import { existsSync, readFileSync } from 'fs'
 import sanitizeHtml from 'sanitize-html'
 import fastifyStatic from '@fastify/static'
 import fastifyWebsocket from '@fastify/websocket'
-import cors from '@fastify/cors'
 import { applyTemplate } from './functions/applyTemplate.fn.js'
 import __dirname, { setDirName } from './functions/dirname.fn.js'
 import { publicWatcher } from './services/publicWatcher.service.js'
@@ -27,11 +26,6 @@ const fastify: FastifyInstance = Fastify({
 		key: fs.readFileSync(path.join(__dirname(), 'certs/key.pem')),
 		cert: fs.readFileSync(path.join(__dirname(), 'certs/cert.pem'))
 	}
-})
-
-await fastify.register(cors, {
-	origin: 'https://localhost:5173',
-	credentials: true
 })
 
 const lobby = new Lobby()
