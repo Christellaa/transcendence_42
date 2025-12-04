@@ -17,6 +17,10 @@ h1 {
 	color: rebeccapurple;
 }
 
+[tabindex]:focus{
+	outline: none;
+}
+
 :not(input)[tabindex] {
 	padding: 0.5rem 1rem;
 	margin-bottom: 0.5rem;

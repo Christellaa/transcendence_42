@@ -1,5 +1,5 @@
 export type KeyboardKeyEvent = {
-	key: string
+	value: string
 	isShift: boolean
 }
 

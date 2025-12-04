@@ -42,7 +42,7 @@ let currentButton: HTMLElement
 const unsubCurrentButtonStore = CurrentButtonStore.subscribe(el => (currentButton = el))
 
 const unsubKeyStore = KeyboardStore.subscribe(key => {
-	if (['ArrowLeft', 'ArrowRight'].includes(key)) {
+	if (['ArrowLeft', 'ArrowRight'].includes(key.value)) {
 		const data = currentButton.dataset
 		if (data && data?.stateValue) {
 			const action = actions[data.action]
@@ -52,7 +52,7 @@ const unsubKeyStore = KeyboardStore.subscribe(key => {
 			const max = action.max
 			const steps = action.steps
 			let newValue
-			if (key === 'ArrowLeft') {
+			if (key.value === 'ArrowLeft') {
 				newValue = current - steps
 				if (newValue < min) newValue = max
 			} else {

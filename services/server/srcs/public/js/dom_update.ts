@@ -1,7 +1,7 @@
 // import { cleanEvents, initEvents } from './events.js'
 
 import { CurrentButtonStore } from '../stores/current_button.store.js'
-import { PageChangeStore } from '../stores/page_change.js'
+import { PageDestroyStore, PageUpdateStore } from '../stores/page_state.js'
 
 export async function loadPage(route: string) {
 	const location: string = `/${route || ''}`
@@ -25,6 +25,8 @@ async function updateDom(htmlDoc: Document) {
 	const $htmlDocScript: HTMLScriptElement[] | null[] = htmlDoc.querySelectorAll('body script[type="module"]')
 
 	$mainPage?.dispatchEvent(new Event('cleanup'))
+	PageDestroyStore.emit('')
+
 	if ($htmlDocTitle) document.title = $htmlDocTitle.innerHTML
 
 	if ($htmlDocStyle) updateStyleModule($htmlDocStyle)
@@ -42,7 +44,7 @@ async function updateDom(htmlDoc: Document) {
 		}
 	}
 
-	PageChangeStore.emit(document.title)
+	PageUpdateStore.emit(document.title)
 }
 
 function updateStyleModule(htmlDocStyle: HTMLStyleElement) {

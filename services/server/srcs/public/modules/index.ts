@@ -1,9 +1,6 @@
 import { CurrentButtonStore } from '../stores/current_button.store.js'
 import { KeyboardStore } from '../stores/keyboard.store.js'
 
-console.log("BABYLON index: ", BABYLON)
-
-
 type LoginButtonValues = {
 	[key: string]: {
 		id: string
@@ -31,7 +28,7 @@ let currentButton: HTMLElement
 const unsubCurrentButtonStore = CurrentButtonStore.subscribe(el => (currentButton = el))
 
 const unsubKeyStore = KeyboardStore.subscribe(key => {
-	if (['ArrowLeft', 'ArrowRight'].includes(key)) {
+	if (['ArrowLeft', 'ArrowRight'].includes(key.value)) {
 		const nextValue = loginButtonValues[currentButton.id]
 		if (nextValue) {
 			currentButton.innerText = nextValue.inner
