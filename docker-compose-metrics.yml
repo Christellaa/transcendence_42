@@ -5,7 +5,6 @@ services:
       dockerfile: Dockerfile
     container_name: grafana
     restart: unless-stopped
-    user: '0' # root, otherwisse find right id with cmd 'id -u'
     ports:
       - "${GRAFANA_PORT}:${GRAFANA_PORT}"
     volumes:
@@ -13,14 +12,22 @@ services:
       - ./services/metrics/grafana/provisioning/datasources/datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml:ro
       - ./services/metrics/grafana/dashboards:${GRAFANA_DASHBOARDS_PATH}
     environment:
+      - GF_LOG_LEVEL=error
       - GF_SERVER_HTTP_PORT=${GRAFANA_PORT}
-      - GF_SECURITY_ADMIN_USER=${GRAFANA_USER}
-      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PWD}
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PWD}
       - GF_SERVER_PROTOCOL=https
-      - GF_ROOT_URL=https://localhost:${GRAFANA_PORT}
+      - GF_USERS_HOME_PAGE=/dashboards
+      - GF_ROOT_URL=${GRAFANA_ADDR}
       - GF_SERVER_CERT_FILE=${GRAFANA_CERT_PATH}
       - GF_SERVER_CERT_KEY=${GRAFANA_KEY_PATH}
       - GRAFANA_DASHBOARDS_PATH=${GRAFANA_DASHBOARDS_PATH}
+      - GRAFANA_URL_HEALTH=${GRAFANA_URL_HEALTH}
+      - GRAFANA_ADDR=${GRAFANA_ADDR}
+      - GRAFANA_USER_NAME=${GRAFANA_USER_NAME}
+      - GRAFANA_USER_MAIL=${GRAFANA_USER_MAIL}
+      - GRAFANA_USER_LOGIN=${GRAFANA_USER_LOGIN}
+      - GRAFANA_USER_PWD=${GRAFANA_USER_PWD}
     networks:
       - metrics
     labels:

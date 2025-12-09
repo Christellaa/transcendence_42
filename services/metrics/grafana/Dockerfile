@@ -17,9 +17,9 @@ RUN openssl req -x509 -nodes \
 
 RUN chmod 755 ./certs/grafana.key
 
+COPY ./entrypoint.sh .
+RUN chmod +x ./entrypoint.sh
+
 USER grafana
 
-CMD ["grafana-server", "--homepath=/usr/share/grafana", "--config=/etc/grafana/grafana.ini", "web"]
-
-# TODO:
-## readonly access to dashboards
+ENTRYPOINT ["./entrypoint.sh"]
