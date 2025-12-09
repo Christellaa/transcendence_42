@@ -22,7 +22,7 @@ import { v4 as uuidv4 } from 'uuid'
 
 const MAX_MESSAGE_LENGTH = 150
 
-const validRoutes = ['index', 'about', 'login', 'options', 'register', 'dashboard', 'users', 'game']
+const validRoutes = ['index', 'about', 'login', 'options', 'register', 'dashboard', 'users', 'game', 'chat', 'chat/mp']
 
 const fastify: FastifyInstance = Fastify({
 	https: {
