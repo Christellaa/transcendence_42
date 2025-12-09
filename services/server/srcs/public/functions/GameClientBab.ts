@@ -48,7 +48,7 @@ export function launchGame(webSocket: WebSocket, pseu: string)
 			case 'state':
 				{
 					state = data
-					renderer2D.resume()
+					// renderer2D.resume()
 					if (anglePlayer === -1)
 					{
 						anglePlayer = initAnglePlayer(state.players)
@@ -59,7 +59,7 @@ export function launchGame(webSocket: WebSocket, pseu: string)
 				}
 			case 'pause':
 				{
-					renderer2D.pause()
+					// renderer2D.pause()
 					break
 				}
 			case 'end':

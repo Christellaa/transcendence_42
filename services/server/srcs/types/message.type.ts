@@ -1,9 +1,9 @@
-type ChatType = {
+export type ChatType = {
 	type : 'chat',
 	text : string
 }
 
-type MpType = {
+export type MpType = {
 	type: 'mp',
 	to: string,
 	text: string,
@@ -14,9 +14,11 @@ export type InputType = {
 	key: KeyType
 }
 
-export type KeyType = "none" | "+" | "-" | "space" | "chagGPT"
+export type StatusType = "chat" | "game"
 
-type DuelType = {
+export type KeyType = "none" | "+" | "-" | "space" | "chatGPT"
+
+export type DuelType = {
 	type: 'duel',
 	to: string,
 	action: 'propose' | 'accept' | 'decline'
@@ -28,34 +30,29 @@ export type FrontType = FrontErrorType | FrontChatType | FrontMpTypeFrom | Front
 
 export type FrontErrorType = {
 	type: 'error' | 'system',
-	text: string,
-	timestamp: number
+	text: string
 }
 
 export type FrontChatType = {
 	type: 'chat',
 	from: string,
-	text: string,
-	timestamp: number
+	text: string
 }
 
 export type FrontMpTypeFrom = {
 	type: 'mp',
 	from: string,
-	text: string,
-	timestamp: number
+	text: string
 }
 
 export type FrontMpTypeTo = {
 	type: 'mp',
 	to: string,
-	text: string,
-	timestamp: number
+	text: string
 }
 
 export type DuelResponse = {
 	type: 'duel',
 	action: 'propose' | 'decline'
-	from: string,
-	timestamp:number
+	from: string
 }

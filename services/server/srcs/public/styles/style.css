@@ -21,7 +21,7 @@ h1 {
 	outline: none;
 }
 
-:not(input)[tabindex] {
+:not(input)[tabindex]:not(canvas)[tabindex] {
 	padding: 0.5rem 1rem;
 	margin-bottom: 0.5rem;
 	transform: scale(1);

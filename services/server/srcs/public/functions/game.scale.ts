@@ -2,7 +2,7 @@ export const board = {
 	width : 600,
 	height : 600,
 	ballSize : 10,
-	paddleWidth : 20
+	paddleWidth : 30
 }
 
 export const arena = {

@@ -4,7 +4,6 @@ import User from "./User.js";
 import { arena, board } from "../public/functions/game.scale.js"
 import type { Impact, GameState, Countdown, GamePause } from "../types/game.type.js";
 import type { InputType } from "../types/message.type.js"
-import { json_parse } from "../public/functions/json_wrapper.js";
 
 const hertz = 60
 const tick_ms = 1000 / hertz
@@ -27,7 +26,7 @@ constructor (player0: User, player1: User)
 
 	this.ball = new Ball()
 	this.predictions = this.ball.predictImpact(hertz)
-	const nbPlayer = 7
+	const nbPlayer = 5
 
 	this.players = [
 		new Player(0, nbPlayer, player0),
@@ -35,8 +34,8 @@ constructor (player0: User, player1: User)
 		new Player(2, nbPlayer, new User("", "Neo")),
 		new Player(3, nbPlayer, new User("", "Mia")),
 		new Player(4, nbPlayer, new User("", "Pac")),
-		new Player(5, nbPlayer, new User("", "Man")),
-		new Player(6, nbPlayer, new User("", "Wai")),
+		// new Player(5, nbPlayer, new User("", "Man")),
+		// new Player(6, nbPlayer, new User("", "Wai")),
 		// new Player(7, nbPlayer, new User("", "Tai")),
 		// new Player(8, nbPlayer, new User("", "Boa")),
 		// new Player(9, nbPlayer, new User("", "Noa")),
@@ -86,40 +85,31 @@ private broadcast(data: GameState | Countdown | GamePause): void
 
 private async startCountdown(): Promise<void>
 {
-    let count = 3;
-
-    this.broadcast({ type: "countdown", value: count.toString() });
-
-    return new Promise(resolve => {
-        const timer = setInterval(() => {
-
-            count--;
-
-            if (count > 0) {
-                this.broadcast({ type: "countdown", value: count.toString() });
-            }
-            else {
-                clearInterval(timer);
-                this.broadcast({ type: "countdown", value: "GO" });
-
-                setTimeout(() => {
-                    resolve();
-                }, 500);
-            }
-
-        }, 1000);
-    });
+	let count = 3;
+	this.broadcast({ type: "countdown", value: count.toString() });
+	return new Promise(resolve => {
+		const timer = setInterval(() => {
+			count--;
+			if (count > 0)
+			{
+				this.broadcast({ type: "countdown", value: count.toString() })
+			}
+			else
+				{
+				clearInterval(timer);
+				this.broadcast({ type: "countdown", value: "GO" })
+				setTimeout(() => {
+					resolve();
+				}, 500);
+			}
+		}, 1000);
+	});
 }
 
 
 private setupSockets()
 {
 	this.players.forEach((p: Player) => {
-		p.user.socket?.on("message", (msg: any) => {
-			const data = json_parse(msg.toString()) as InputType
-			if (!data) return
-			p.key = data.key;
-		})
 		p.user.socket?.on("close", () => this.destroy())
 	})
 }//setupSockets()
@@ -149,16 +139,15 @@ private gameTick()
 
 	this.ball.x += this.ball.vx
 	this.ball.y += this.ball.vy
-
 	const dx = this.ball.x - arena.centerX
 	const dy = this.ball.y - arena.centerY
-	const dist = Math.sqrt(dx * dx + dy * dy)
+	let dist = Math.sqrt(dx * dx + dy * dy)
 	let theta = Math.atan2(dy, dx)
 	if (theta < 0) theta += 2 * Math.PI
 	let changeColor = false
-
 	if (dist >= arena.radius - board.ballSize)
 	{
+		dist = arena.radius - board.ballSize
 		changeColor = true
 		let playerBounced : Player | undefined = undefined
 		let endgame : boolean = false
@@ -194,14 +183,11 @@ private gameTick()
 
 			// 1) angle actuel
 			const angle = Math.atan2(this.ball.vy, this.ball.vx)
-
 			// 2) perturbation en fonction des derniers deplacement du joueur
 			const speed = Math.sqrt(this.ball.vx**2 + this.ball.vy**2)
 			const newAngle = angle + playerBounced.tangenteSpeed
-
 			this.ball.vx = speed * Math.cos(newAngle)
 			this.ball.vy = speed * Math.sin(newAngle)
-
 			// 4) repositionnement
 			const margin = 0.5
 			this.ball.x = arena.centerX + nx * (arena.radius - board.ballSize - margin)
@@ -215,7 +201,6 @@ private gameTick()
 			this.ball.x = arena.centerX
 			this.ball.y = arena.centerY
 			// this.players.forEach(p => p.resetAngle());
-
 			// 2) Lancer le countdown
 			this.startCountdown().then(() => {
 				if (!this.ball) return

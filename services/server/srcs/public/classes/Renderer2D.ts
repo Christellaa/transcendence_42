@@ -80,7 +80,7 @@ private draw()
 private drawBall(ctx: CanvasRenderingContext2D, state: GameState)
 {
     const angle = this.getAnglePlayer();
-    const { centerX, centerY, radius } = arena;
+    const { centerX, centerY } = arena;
 
     const ballX =
         centerX + state.ball.dist * Math.cos(state.ball.theta + angle);
@@ -95,9 +95,9 @@ private drawBall(ctx: CanvasRenderingContext2D, state: GameState)
 
 private drawPlayers(ctx: CanvasRenderingContext2D, state: GameState)
 {
-    const angle = this.getAnglePlayer();
-    const { centerX, centerY, radius } = arena;
-    const paddleWidth = board.paddleWidth;
+    const angle = this.getAnglePlayer()
+    const { centerX, centerY, radius } = arena
+    const paddleWidth = board.paddleWidth / 2
 
     state.players.forEach((p, index) => {
         const aStart = p.angle - p.paddleSize + angle;
@@ -109,22 +109,22 @@ private drawPlayers(ctx: CanvasRenderingContext2D, state: GameState)
         // background arc
         ctx.beginPath();
         ctx.strokeStyle = this.color.playerComp[index];
-        ctx.lineWidth = paddleWidth;
-        ctx.arc(centerX, centerY, radius + paddleWidth / 2, bgStart, bgEnd);
+        ctx.lineWidth = 2 * paddleWidth;
+        ctx.arc(centerX, centerY, radius + paddleWidth, bgStart, bgEnd);
         ctx.stroke();
 
         // paddle arc
         ctx.beginPath();
         ctx.strokeStyle = this.color.player[index];
-        ctx.lineWidth = paddleWidth;
-        ctx.arc(centerX, centerY, radius + paddleWidth / 2, aStart, aEnd);
+        ctx.lineWidth = 2 * paddleWidth;
+        ctx.arc(centerX, centerY, radius + paddleWidth, aStart, aEnd);
         ctx.stroke();
 
         // Optionnel : petit repère pour voir le centre du joueur
-        const x = centerX + (radius + paddleWidth / 2) * Math.cos(p.angle + angle)
-        const y = centerY + (radius + paddleWidth / 2) * Math.sin(p.angle + angle)
+        const x = centerX + (radius + paddleWidth) * Math.cos(p.angle + angle)
+        const y = centerY + (radius + paddleWidth) * Math.sin(p.angle + angle)
         ctx.beginPath()
-        ctx.arc(x, y, paddleWidth / 2, 0, Math.PI * 2)
+        ctx.arc(x, y, paddleWidth, 0, Math.PI * 2)
         ctx.fillStyle = this.color.colorBall
         ctx.fill()
     });

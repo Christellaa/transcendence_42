@@ -36,8 +36,6 @@ constructor(canvas: HTMLCanvasElement, deps: {
 	canvas.width = board.width
 	canvas.height = board.height
 	canvas.style.position = "fixed"
-	canvas.style.top = "10"
-	canvas.style.left = "10"
 }
 
 pause() { this.paused = true; }
@@ -66,7 +64,6 @@ private async initBabylon()
 {
 	await import('/lib/babylon.js')
 	console.log("BABYLON after import", BABYLON)
-	// const engine: BABYLON.Engine = new BABYLON.Engine(canvas, true)
 	this.engine = new BABYLON.Engine(this.canvas, true, { preserveDrawingBuffer: true, stencil: true, premultipliedAlpha: true })
 	this.scene = new BABYLON.Scene(this.engine)
 	this.initScene()
@@ -74,35 +71,35 @@ private async initBabylon()
 
 private initScene ()
 {
-	this.canvas.width = 1440
-	this.canvas.height = 720
+	this.canvas.width = board.width
+	this.canvas.height = board.height
 	this.canvas.style.position = "fixed"
-	this.canvas.style.top = "0px"
-	this.canvas.style.left = "0px"
+	this.canvas.style.top = "100px"
+	this.canvas.style.left = "100px"
 	const state = this.getState()
+	const radius = arena.radius * this.worldScale
+
 	// scene.clearColor = new BABYLON.Color4(0, 0, 0, 1) // noir pur pour style
 	this.scene.clearColor = new BABYLON.Color4(0, 0, 0, 0)  // transparent
-	const camera: BABYLON.FreeCamera = new BABYLON.FreeCamera('camera1', new BABYLON.Vector3(0, 8, -35), this.scene)
-	camera.setTarget(BABYLON.Vector3.Zero())
-	camera.fov = 0.8
+
+	// 📌 Caméra orbitale autour du centre
+	const camDist = radius * 2.5     // distance = à ajuster
+
+	const camera = new BABYLON.ArcRotateCamera(
+		"cam",
+		this.getAnglePlayer() - Math.PI / 2,          // rotation horizontale
+		0,         // inclinaison top-down
+		camDist,               // distance
+		BABYLON.Vector3.Zero(),
+		this.scene
+	)
+
+	camera.lowerBetaLimit = 0
+	camera.upperBetaLimit = Math.PI
+	camera.fov = (this.getState()?.players.length || 3) * 0.3
+
 	camera.attachControl(this.canvas, true)
-	camera.fov = (state?.players.length || 3) * 0.3
-	// 📌 Camera grand angle + contre-plongée
-	// const camera = new BABYLON.ArcRotateCamera(
-	//     "cam",
-	//     -Math.PI / 2,         // rotation horizontale
-	//     Math.PI / 2.8,        // inclinaison — baisse la caméra vers le bas
-	//     100,                   // distance
-	//     new BABYLON.Vector3(0, 0, 0),
-	//     scene
-	// );
 
-	// camera.fov = 0.8;          // grand angle (0.8 à 1.1 recommandé)
-	// camera.lowerBetaLimit = -2.2;
-	// camera.upperBetaLimit = 2.2;
-	// camera.attachControl(canvas, true);
-
-	// simple light
 	const light = new BABYLON.HemisphericLight('light', new BABYLON.Vector3(0, 10, 0), this.scene)
 	light.intensity = 2.2
 	// ☀️ Soleil lointain
@@ -113,13 +110,10 @@ private initScene ()
 	)
 	sun.intensity = 2.2
 
-	const shadowGen = new BABYLON.ShadowGenerator(2048, sun)
-	shadowGen.useExponentialShadowMap = true
-	this.scene.fogMode = BABYLON.Scene.FOGMODE_EXP2
-	this.scene.fogDensity = 0.006
-	this.scene.fogColor = new BABYLON.Color3(0.02, 0.02, 0.05)
 	this.scene.registerBeforeRender(() => {
 		if (!state || this.getEnd()) return
+		// 🎯 mettre à jour uniquement la rotation caméra si angle joueur change
+		camera.alpha = this.getAnglePlayer() - Math.PI / 2
 		this.updateBabylonFromState(this.scene)
 	})
 } //initScene
@@ -131,33 +125,29 @@ private createArcMesh(
 	radiusPx: number,
 	startAngle: number,
 	endAngle: number,
-	thicknessPx: number,
+	thickness: number,
 	scene: BABYLON.Scene
 ): BABYLON.Mesh {
 	const points: BABYLON.Vector3[] = []
-	const steps = Math.max(6, Math.ceil(((endAngle - startAngle) / (Math.PI * 2)) * 64))
+	let steps = Math.max(8, Math.ceil((endAngle - startAngle) * 6))
 	for (let i = 0; i <= steps; i++) {
 		const t = startAngle + (endAngle - startAngle) * (i / steps)
 		const x = centerX + radiusPx * Math.cos(t)
 		const y = centerY + radiusPx * Math.sin(t)
-		// map to world coords: X -> x-world, Z -> y-world (inverted so canvas up ~ -Z)
 		const vx = (x - arena.centerX) * this.worldScale
 		const vz = (y - arena.centerY) * this.worldScale * -1
-		points.push(new BABYLON.Vector3(vx, 0.5, vz))
+		points.push(new BABYLON.Vector3(vx, 0, vz))
 	}
 	// Create tube along arc and give it thickness
-	const radiusWorld = Math.max(0.01, thicknessPx * this.worldScale * 0.5)
-	const tube = BABYLON.MeshBuilder.CreateTube(id, { path: points, radius: radiusWorld, updatable: true }, scene)
-	return tube
+	return BABYLON.MeshBuilder.CreateTube(id, { path: points, radius: thickness * this.worldScale, updatable: true }, scene)
 } //createArcMesh
 
 private initBabylonVisuals(scene: BABYLON.Scene)
 {
 	const mesh3D = this.mesh3D
-	const angle = this.getAnglePlayer()
 	const state = this.getState()
 	if (!mesh3D.ballMesh) {
-		mesh3D.ballMesh = BABYLON.MeshBuilder.CreateSphere('ball3d', { diameter: Math.max(0.2, board.ballSize * this.worldScale * 1.5) }, scene)
+		mesh3D.ballMesh = BABYLON.MeshBuilder.CreateSphere('ball3d', { diameter: 2 * board.ballSize * this.worldScale}, scene)
 		const mat = new BABYLON.StandardMaterial('ballMat', scene)
 		// mat.diffuseColor = this.hexToColor3(this.color.colorBall)
 		mat.diffuseColor = BABYLON.Color3.FromHexString(this.color.colorBall)
@@ -171,7 +161,7 @@ private initBabylonVisuals(scene: BABYLON.Scene)
 	const centerX = arena.centerX
 	const centerY = arena.centerY
 	const radius = arena.radius
-	const paddleWidth = board.paddleWidth * 1.5
+	const paddleWidth = board.paddleWidth / 2
 
 	if (!state?.players) return
 
@@ -180,36 +170,18 @@ private initBabylonVisuals(scene: BABYLON.Scene)
 		const matPad = this.makePaddleMaterial(scene, base)
 		const matBG = this.makeBackgroundMaterial(scene, base)
 
-		const aStart = p.angle - p.paddleSize + angle
-		const aEnd = p.angle + p.paddleSize + angle
+		const aStart = p.angle - p.paddleSize
+		const aEnd = p.angle + p.paddleSize
 
 		// BACKGROUND — 2 zones
-		const bg1 = this.createArcMesh(
-			`bg1_${i}`,
-			centerX,
-			centerY,
-			radius + paddleWidth / 2,
-			p.minAngle + angle,
-			aStart,
-			paddleWidth,
-			scene
-		)
-		const bg2 = this.createArcMesh(
-			`bg2_${i}`,
-			centerX,
-			centerY,
-			radius + paddleWidth / 2,
-			aEnd,
-			p.maxAngle + angle,
-			paddleWidth,
-			scene
-		)
+		const bg1 = this.createArcMesh(`bg1_${i}`, centerX, centerY, radius + paddleWidth, p.minAngle, aStart, paddleWidth, scene)
+		const bg2 = this.createArcMesh(`bg2_${i}`, centerX, centerY, radius + paddleWidth, aEnd, p.maxAngle, paddleWidth, scene)
 		bg1.material = bg2.material = matBG
 
 		mesh3D.backgroundArcs.push(bg1, bg2)
 
 		// PADDLE glossy
-		const pad = this.createArcMesh(`pad_${i}`, centerX, centerY, radius + paddleWidth / 2, aStart, aEnd, paddleWidth, scene)
+		const pad = this.createArcMesh(`pad_${i}`, centerX, centerY, radius + paddleWidth, aStart, aEnd, paddleWidth, scene)
 		pad.material = matPad
 		mesh3D.paddleMeshes.push(pad)
 	})
@@ -218,22 +190,23 @@ private initBabylonVisuals(scene: BABYLON.Scene)
 private updateBabylonFromState(scene: BABYLON.Scene)
 {
 	const mesh3D = this.mesh3D
-	const angle = this.getAnglePlayer()
 	const state = this.getState()
 	if (!state || !state.ball) return
 	if (!mesh3D.ballMesh) this.initBabylonVisuals(scene)
 
 	// compute canvas coords of ball as in 2D draw
-	const ballX = arena.centerX + state.ball.dist * Math.cos(state.ball.theta + angle)
-	const ballY = arena.centerY + state.ball.dist * Math.sin(state.ball.theta + angle)
+	// const ballX = arena.centerX + state.ball.dist * Math.cos(state.ball.theta)
+	// const ballY = arena.centerY + state.ball.dist * Math.sin(state.ball.theta)
+	const ballX = state.ball.x
+	const ballY = state.ball.y
 
 	// map to world coordinates
 	const wx = (ballX - arena.centerX) * this.worldScale
 	const wz = (ballY - arena.centerY) * this.worldScale * -1
 	if (mesh3D.ballMesh) {
 		mesh3D.ballMesh.position.x = wx
+		mesh3D.ballMesh.position.y = 0 // hauteur fixe
 		mesh3D.ballMesh.position.z = wz
-		mesh3D.ballMesh.position.y = 0.5 // hauteur fixe
 	}
 	this.initBabylonVisuals(scene)
 } //updateBabylonFromState
@@ -252,5 +225,4 @@ private makeBackgroundMaterial(scene: BABYLON.Scene, paddleColor: BABYLON.Color3
 	return bg
 } //makeBackgroundMaterial
 
-
-}
+} //class Renderer3D

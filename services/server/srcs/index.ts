@@ -16,6 +16,7 @@ import { applyError } from './functions/applyError.fn.js'
 import fs from 'fs'
 import Lobby from './classes/Lobby.js'
 import { json_parse, json_stringify } from './public/functions/json_wrapper.js'
+import { MessageType } from './types/message.type.js'
 
 const MAX_MESSAGE_LENGTH = 150
 
@@ -129,7 +130,7 @@ fastify.get('/api/ws', { websocket: true }, (socket, req) => {
 			socket.send(json_stringify({ type: 'error', text: `message too long (${MAX_MESSAGE_LENGTH} bytes max for the json)` }))
 			return
 		}
-		const msg = json_parse(rawString)
+		const msg = json_parse(rawString) as MessageType
 		if (!msg) {
 			console.warn(`Json invalid from ${cleanId}, ignored`)
 			socket.send(json_stringify({ type: 'error', text: `Invalid json format`, timestramp: Date.now() }))

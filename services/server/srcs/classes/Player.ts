@@ -19,7 +19,6 @@ export class Player
 	pause: boolean
 	ai: boolean
 	pseudo: string
-	key: string
 	tangenteSpeed: number
 
 	constructor(index: number, nbPlayer: number, user: User)
@@ -28,11 +27,10 @@ export class Player
 		this.nbPlayer = nbPlayer
 		this.paddleSize = 0.25 * Math.PI / nbPlayer
 		this.user = user
-		this.key = "none"
 		this.tangenteSpeed = 0
 		this.pause = false
 		this.ai = true
-		this.score = Math.round(7 / nbPlayer)
+		this.score = Math.round(70 / nbPlayer)
 		this.pseudo = ""
 		const twoPiOverPlayers = (2 * Math.PI) / this.nbPlayer
 		this.minAngle = this.index * twoPiOverPlayers
@@ -61,8 +59,8 @@ export class Player
 
 	handleKey(predictionIA: Impact[])
 	{
-		const lastKey = this.key
-		this.key = "none"
+		const lastKey = this.user.key
+		this.user.key = "none"
 		if (lastKey === "space") return this.togglePause()
 		if (lastKey === "chatGPT") this.ai = !this.ai
 		if (this.ai)  return this.handleIA(predictionIA)
