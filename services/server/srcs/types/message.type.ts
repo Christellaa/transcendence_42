@@ -40,19 +40,19 @@ export type FrontChatType = {
 }
 
 export type FrontMpTypeFrom = {
-	type: 'mp',
+	type: 'mp-from',
 	from: string,
 	text: string
 }
 
 export type FrontMpTypeTo = {
-	type: 'mp',
+	type: 'mp-to',
 	to: string,
 	text: string
 }
 
 export type DuelResponse = {
 	type: 'duel',
-	action: 'propose' | 'decline'
+	action: 'propose' | 'decline' | 'accept'
 	from: string
 }

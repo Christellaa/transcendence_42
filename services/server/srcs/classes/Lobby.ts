@@ -74,9 +74,9 @@ export default class Lobby
 		const destinataire = this.getUserByPseudo(msg.to)
 		if (!destinataire)
 			return sender.send({type:"error", text: `${msg.to} can't be found`})
-		console.log(`${sender.pseudo} send a message to ${destinataire.pseudo}`)
-		destinataire.send({type:"mp", from: sender.pseudo, text: msg.text})
-		sender.send({type:"mp", to:msg.to, text: msg.text})
+		console.log(`${sender.pseudo} send a message to ${destinataire.pseudo}`, msg.text)
+		destinataire.send({type:"mp-from", from: sender.pseudo, text: msg.text})
+		sender.send({type:"mp-to", to:msg.to, text: msg.text})
 	}
 
 	handleDuel(sender: User, msg: DuelType)

@@ -1,6 +1,13 @@
 <head>
-	<title>Game</title>
+	<title>Chat</title>
 	<style module>
+		a {
+			color: navajowhite;
+		}
+		a:hover{
+			color: blueviolet;
+			cursor:pointer;
+		}
 		:root {
 			font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
 			line-height: 1.5;
@@ -277,23 +284,28 @@
 			background-color: #4cff00;
 			color: #222;
 		}
-		page
-		{
-			display: flex;
-			flex-direction: row;
-		}
 	</style>
 </head>
 
-<page type="game">
-	<div id="chat"></div>
-	<div id="game-container">
-		<div id="score"></div>
-		<div id="debug"></div>
+<page type="chat">
+	<nav>
+		<a data-route="index" class="text-xl">home</a>
+		<a data-route="game" class="text-xl border-l-pink-300">Game</a>
+	</nav>
+	<h2>Chat</h2>
+	<div id="chat">
+		<div id="lobby" class="lobby">lobby</div>
+		<div id="pseudo" class="pseudo">pseudo</div>
+		<div id="status" class="ws-status">status</div>
+		<div id="userList" class="user-list" style="display: none;">user list</div>
+		<div id="messages" class="messages">messages</div>
+		<input id="chatInput" class="chat-input hidden" placeholder="chat input">
+		<div id="containerLogin"></div>
 	</div>
+	<div id="score"></div>
+	<div id="debug"></div>
 	<canvas id="canvas2D"></canvas>
 	<canvas id="canvas3D"></canvas>
-	<!-- <span data-route="" tabindex="1" class="button text-4xl">Back</span> -->
 </page>
 
-<script type="module" src="modules/game.js"></script>
+<script type="module" src="modules/chat.js"></script>

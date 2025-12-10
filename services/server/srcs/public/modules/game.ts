@@ -1,3 +1,4 @@
+import { FrontType } from '../../types/message.type.ts'
 import { launchGame } from '../functions/GameClientBab'
 import { json_parse, json_stringify } from '../functions/json_wrapper'
 import { cleanHistory, handleIncomingMessage, loadChatHistory } from '../functions/messagesLocalStorage'
@@ -348,22 +349,40 @@ async function refreshWebSocket() {
 	})
 
 	ws.addEventListener('message', e => {
-		const message: any = json_parse(e.data)
-		// console.log(message)
+		const message: FrontType = json_parse(e.data) as FrontType
+		console.log(message)
 		if (!message) return
-		if (message?.type === 'error') console.log('received: ', message)
-		if (message?.type === 'duel' && message?.action === 'accept') return launchGame(user.websocket, user.pseudo)
-		if (message?.type === 'duel' && message?.action === 'propose') {
-			if (confirm(`${message?.from} send you a duel, do you accept?`)) {
-				launchGame(user.websocket, user.pseudo)
-				return user?.websocket?.send(json_stringify({ type: 'duel', to: message?.from, action: 'accept' }))
-			} else return user?.websocket?.send(json_stringify({ type: 'duel', to: message?.from, action: 'decline' }))
+		switch(message.type)
+		{
+			case('error'): return console.error("received:", message.text)
+			case('system'): return console.warn("received:", message.text)
+
+			case('duel'):
+			{
+				switch(message.action)
+				{
+					case("accept"): return launchGame(ws, user.pseudo)
+					case("decline"): return console.log(`duel has been declined from ${message.from}`)
+					case("propose"):
+					{
+						if (confirm(`${message?.from} send you a duel, do you accept?`))
+						{
+							launchGame(ws, user.pseudo)
+							return ws.send(json_stringify({ type: 'duel', to: message?.from, action: 'accept' }))
+						}
+						else
+							return ws.send(json_stringify({ type: 'duel', to: message?.from, action: 'decline' }))
+					}
+				}
+			}
+			case ('chat'): return handleIncomingMessage(message, displayMessage)
+			case ('mp-from'): return handleIncomingMessage(message, displayMessage)
+			case ('mp-to'): return handleIncomingMessage(message, displayMessage)
 		}
-		handleIncomingMessage(message, displayMessage)
 	})
 }
 
-function updateStatus(state: 'connected' | 'disconnected') {
+function updateStatus(state: 'logged' | 'connected' | 'disconnected') {
 	statusDiv.className = `ws-status ${state}`
 	statusDiv.textContent = state === 'connected' ? '🟢 Connected' : '🔴 Disconnected'
 }
