@@ -1,7 +1,7 @@
 import { watch } from 'chokidar'
 import { join as pathJoin, basename } from 'path'
 import fs from 'fs'
-import __dirname from '../functions/dirname.fn.js'
+import __dirname from '../../backend/functions/dirname.fn.js'
 
 function copyFileToFolder(srcFile: string, destFolder: string) {
 	const destFile = pathJoin(destFolder, basename(srcFile))
@@ -11,17 +11,16 @@ function copyFileToFolder(srcFile: string, destFolder: string) {
 }
 
 export function publicWatcher() {
-	const rootFolder = 'srcs/public'
+	const rootFolder = 'srcs/frontend'
 
 	const watcher = watch(rootFolder, {
-		ignored: [/(^|[\/\\])node_modules([\/\\]|$)/, /\.ts$/,/\.DS_Store$/],
+		ignored: [/(^|[\/\\])node_modules([\/\\]|$)/, /\.ts$/, /\.DS_Store$/],
 		persistent: true
 	})
 
 	watcher.on('add', path => {
-		console.log(path)
 		const originalFile = pathJoin(__dirname(), path)
-		const newFile = pathJoin(__dirname(), path.replace('srcs', 'dist'))
+		const newFile = pathJoin(__dirname(), path.replace('srcs/frontend', 'dist/public'))
 
 		if (fs.existsSync(originalFile)) {
 			copyFileToFolder(originalFile, newFile.replace(basename(newFile), ''))

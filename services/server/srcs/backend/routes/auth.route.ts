@@ -1,6 +1,6 @@
 import { FastifyReply, FastifyRequest } from 'fastify'
 import bcrypt from 'bcrypt'
-import { userRegisterType, userLoginType } from '../types/user.type.js'
+import { userRegisterType, userLoginType } from '../../types/user.type.js'
 import { checkIfAlreadyLoggedIn } from '../crud/auth.crud.js'
 import { dbPostQuery } from '../crud/dbQuery.crud.js'
 import { vaultPostQuery } from '../crud/vaultQuery.crud.js'

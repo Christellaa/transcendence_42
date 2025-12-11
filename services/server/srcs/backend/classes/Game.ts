@@ -1,9 +1,8 @@
 import { Player } from "./Player.js";
 import { Ball } from "./Ball.js";
 import User from "./User.js";
-import { arena, board } from "../public/functions/game.scale.js"
-import type { Impact, GameState, Countdown, GamePause } from "../types/game.type.js";
-import type { InputType } from "../types/message.type.js"
+import { arena, board } from "../../frontend/functions/game.scale.js"
+import type { Impact, GameState, Countdown, GamePause } from "../../types/game.type.js";
 
 const hertz = 60
 const tick_ms = 1000 / hertz

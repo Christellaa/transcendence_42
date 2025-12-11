@@ -3,7 +3,7 @@ import { randomUUID } from "crypto";
 
 import User from "./User.js"
 import { Game } from "./Game.js"
-import type { ChatType, DuelType, FrontType, InputType, MessageType, MpType } from "../types/message.type.js";
+import type { ChatType, DuelType, FrontType, InputType, MessageType, MpType } from "../../types/message.type.js";
 
 export default class Lobby
 {

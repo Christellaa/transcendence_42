@@ -4,7 +4,7 @@ import __dirname from './dirname.fn.js'
 import { parseHTML } from 'linkedom'
 import { statSync } from 'fs'
 
-const templatePath = pathJoin(__dirname(), './srcs/pages', 'template.html')
+const templatePath = pathJoin(__dirname(), './srcs/backend/pages', 'template.html')
 
 let templateCache: string
 let templateLastMTime = 0

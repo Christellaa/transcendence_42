@@ -103,7 +103,7 @@ document.querySelector('chat-input button')?.addEventListener('click', evt => {
 	*/
 
 	const foo = {
-		time: ,
+		time: '20:00',
 		user: 'Alice',
 		message: chatValue,
 		to: undefined,

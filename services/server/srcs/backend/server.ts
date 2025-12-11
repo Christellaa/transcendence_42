@@ -15,14 +15,14 @@ import { log } from './logs.js'
 import { applyError } from './functions/applyError.fn.js'
 import fs from 'fs'
 import Lobby from './classes/Lobby.js'
-import { json_parse, json_stringify } from './public/functions/json_wrapper.js'
-import { MessageType } from './types/message.type.js'
+import { json_parse, json_stringify } from '../frontend/functions/json_wrapper.js'
+import { MessageType } from '../types/message.type.js'
 
 import { v4 as uuidv4 } from 'uuid'
 
 const MAX_MESSAGE_LENGTH = 150
 
-const validRoutes = ['index', 'about', 'login', 'options', 'register', 'dashboard', 'users', 'game', 'lobby', 'chat']
+const validRoutes = ['home', 'about', 'login', 'options', 'register', 'dashboard', 'users', 'game', 'lobby', 'chat']
 
 const fastify: FastifyInstance = Fastify({
 	https: {
@@ -57,7 +57,8 @@ fastify.register(fastifyStatic, {
 
 async function getHTML(route: string, type?: string, error?: number): Promise<string> {
 	return new Promise(async (resolve, reject) => {
-		const filePath = path.join(__dirname(), 'srcs/pages', `${type !== 'error' ? route : 'error'}.html`)
+		console.log(route, type, error)
+		const filePath = path.join(__dirname(), 'srcs/backend/pages', `${type !== 'error' ? route : 'error'}.html`)
 
 		if (!existsSync(filePath)) return reject()
 
@@ -184,7 +185,7 @@ fastify.route({
 	handler: async (req: FastifyRequest, reply: FastifyReply) => {
 		let route = (req.params as { route: string | undefined })['route'] || ''
 		const type = req.headers.type as string
-		if (route === '') route = 'index'
+		if (route === '') route = 'home'
 		if (validRoutes.includes(route)) {
 			const html = await getHTML(route, type || 'render')
 			if (html) return reply.type('text/html').send(html)
@@ -193,7 +194,7 @@ fastify.route({
 				return reply.type('text/html').send(html)
 			}
 		} else {
-			const filePath = path.join(__dirname(), 'dist/public', route)
+			const filePath = path.join(__dirname(), 'dist/public/', route)
 			if (existsSync(filePath)) {
 				const fileData = readFileSync(filePath, { encoding: 'utf8' })
 				return reply.type('text/javascript').send(fileData)

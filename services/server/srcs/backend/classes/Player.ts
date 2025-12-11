@@ -1,7 +1,7 @@
 import { WebSocket } from "ws"
 
 import User from "./User.js"
-import type { Impact } from "../types/game.type.js"
+import type { Impact } from "../../types/game.type.js"
 
 const MaxTangenteSpeed = 0.2
 

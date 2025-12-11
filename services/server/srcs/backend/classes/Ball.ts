@@ -1,5 +1,5 @@
-import { arena } from "../public/functions/game.scale.js"
-import type { Impact } from "../types/game.type.js"
+import { arena } from "../../frontend/functions/game.scale.js"
+import type { Impact } from "../../types/game.type.js"
 
 export class Ball
 {

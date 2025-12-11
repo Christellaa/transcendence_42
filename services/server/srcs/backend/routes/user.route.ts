@@ -1,7 +1,7 @@
 import { FastifyReply, FastifyRequest } from 'fastify'
 import { dbPostQuery } from '../crud/dbQuery.crud.js'
 import { validateToken } from '../crud/auth.crud.js'
-import { userUpdateType } from '../types/user.type.js'
+import { userUpdateType } from '../../types/user.type.js'
 
 export async function userDashboard(req: FastifyRequest, reply: FastifyReply) {
 	const token = await validateToken(req)
