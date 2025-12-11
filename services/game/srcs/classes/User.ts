@@ -1,6 +1,6 @@
 import { WebSocket } from 'ws'
-import { json_stringify } from '../../frontend/functions/json_wrapper.js'
-import { KeyType, StatusType } from '../../types/message.type.js'
+import { json_stringify } from '../functions/json_wrapper.js'
+import { KeyType, StatusType } from '../types/message.type.js'
 
 export default class User {
 	public pseudo: string
