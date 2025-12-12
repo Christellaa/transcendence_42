@@ -96,7 +96,7 @@ function handleUserForm(self: HTMLElement) {
 	$el.innerText = 'User Form'
 	self.innerHTML = ''
 
-	$submitBtn.addEventListener('click', e => { {
+	$submitBtn.onclick = (e) => {
 		e.preventDefault()
 
 		const $username = ($form.querySelector('input[name="username"]') as HTMLInputElement).value
@@ -105,16 +105,24 @@ function handleUserForm(self: HTMLElement) {
 		const $password = ($form.querySelector('input[name="password"]') as HTMLInputElement).value
 		const $confirmPassword = ($form.querySelector('input[name="confirmPassword"]') as HTMLInputElement).value
 		const $avatarInput = $form.querySelector('input[name="avatar"]') as HTMLInputElement
-		// TODO: img format + size
+		// TODO: alerts for invalid inputs on focus out in fields
+		// TODO: dans l'hote, reduire size de baseAvatar a 100 Ko max
 		let avatarFile: File | null = null
 		if ($avatarInput && $avatarInput.files && $avatarInput.files.length > 0)
+		{
 			avatarFile = $avatarInput.files[$avatarInput.files.length - 1]
+			console.log(avatarFile)
+		}
 		if ($email !== $confirmEmail) {
 			alert('Emails do not match')
 			return
 		}
 		if ($password !== $confirmPassword) {
 			alert('Passwords do not match')
+			return
+		}
+		if ($password.length < 8 || !$password.match(/[a-z]/) || !$password.match(/[A-Z]/) || !$password.match(/[0-9]/) || !$password.match(/[\W_]/)) {
+			alert('Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number and one special character')
 			return
 		}
 
@@ -145,7 +153,7 @@ function handleUserForm(self: HTMLElement) {
 		}).then(json => {
 			console.log('json:', json)
 		})
-	} })
+	}
 
 	self.append($el)
 }
