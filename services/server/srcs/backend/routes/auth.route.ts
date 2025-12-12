@@ -5,6 +5,8 @@ import { checkIfAlreadyLoggedIn } from '../crud/auth.crud.js'
 import { dbPostQuery } from '../crud/dbQuery.crud.js'
 import { vaultPostQuery } from '../crud/vaultQuery.crud.js'
 import { createToken } from '../crud/jwt.crud.js'
+import { pipeline } from 'stream/promises'
+import fs from 'fs'
 
 /* body to send for updateUser:
 	PUT /user/1
@@ -31,9 +33,27 @@ import { createToken } from '../crud/jwt.crud.js'
 	}
 */
 
+async function getMultipartFormData(req: FastifyRequest) {
+	const parts = req.parts()
+	const data: any = {};
+	for await (const part of parts) {
+		if (part.type === 'file') {
+			const filePath = `/app/srcs/frontend/images/avatars/${part.filename}`
+			await pipeline(part.file, fs.createWriteStream(filePath))
+			data[part.fieldname] = filePath
+		} else
+			data[part.fieldname] = part.value
+	}
+	return data
+}
+
 export async function registerUser(req: FastifyRequest, reply: FastifyReply) {
-	const avatar = null
-	const { username, email, checkmail, pwd, checkpwd } = req.body as userRegisterType
+	const data = await getMultipartFormData(req)
+	let avatar = data['avatar']
+	if (avatar === '')
+		avatar = '/app/srcs/frontend/images/avatars/baseAvatar.jpg'
+	console.log('--BACK-- avatar:', avatar)
+	const { username, email, checkmail, pwd, checkpwd } = data as userRegisterType
 	console.log('--BACK-- Registering user with data:', {
 		username: username,
 		email: email,
@@ -42,6 +62,12 @@ export async function registerUser(req: FastifyRequest, reply: FastifyReply) {
 		checkpwd: checkpwd,
 		avatar: avatar
 	})
+	/**
+	 * TODO:
+	 * - email format
+	 * - pwd format
+	 * - img format + size
+	 */
 	if (email !== checkmail) return reply.status(400).send({ message: 'Emails do not match' })
 	if (pwd !== checkpwd) return reply.status(400).send({ message: 'Passwords do not match' })
 	let body = await vaultPostQuery('getSecret', { name: 'bcrypt_salt' })
@@ -56,10 +82,7 @@ export async function registerUser(req: FastifyRequest, reply: FastifyReply) {
 			data: [ avatar, hashedPwd, email, username]
 		}
 	})
-	if (body.status >= 400){
-		console.error('--BACK-- db error:', body.message)
-		return reply.status(body.status).send({ message: body.message })
-	}
+	if (body.status >= 400) return reply.status(body.status).send({ message: body.message })
 	return reply.status(201).send({ message: 'User registered', data: { id: body.id } })
 }
 

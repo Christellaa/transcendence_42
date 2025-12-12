@@ -3,6 +3,7 @@ import Fastify, { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify'
 import cookie from '@fastify/cookie'
 import fastifyStatic from '@fastify/static'
 import fastifyWebsocket from '@fastify/websocket'
+import multipart from '@fastify/multipart'
 
 /********************** Libs **********************/
 import fs from 'fs'
@@ -40,6 +41,14 @@ fastify.addHook('onResponse', (request: FastifyRequest, reply: FastifyReply) => 
 fastify.register(fastifyStatic, {
 	root: path.join(__dirname(), 'dist/public'),
 	prefix: '/'
+})
+
+fastify.register(multipart, {
+	limits: {
+		fileSize: 10 * 1024 * 1024, // 10 MB
+		files: 1,
+		parts: 6
+	}
 })
 
 fastify.register(cookie)

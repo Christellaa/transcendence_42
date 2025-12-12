@@ -105,11 +105,10 @@ function handleUserForm(self: HTMLElement) {
 		const $password = ($form.querySelector('input[name="password"]') as HTMLInputElement).value
 		const $confirmPassword = ($form.querySelector('input[name="confirmPassword"]') as HTMLInputElement).value
 		const $avatarInput = $form.querySelector('input[name="avatar"]') as HTMLInputElement
-
+		// TODO: img format + size
 		let avatarFile: File | null = null
-		if ($avatarInput && $avatarInput.files && $avatarInput.files.length > 0) {
+		if ($avatarInput && $avatarInput.files && $avatarInput.files.length > 0)
 			avatarFile = $avatarInput.files[$avatarInput.files.length - 1]
-		}
 		if ($email !== $confirmEmail) {
 			alert('Emails do not match')
 			return
@@ -118,19 +117,33 @@ function handleUserForm(self: HTMLElement) {
 			alert('Passwords do not match')
 			return
 		}
-		const formData = {username: $username, email: $email, checkmail: $confirmEmail, pwd: $password, checkpwd: $confirmPassword}
-		console.log("--FRONT-- formData:", formData)
+
+		const formData = new FormData()
+		formData.append('username', $username)
+		formData.append('email', $email)
+		formData.append('checkmail', $confirmEmail)
+		formData.append('pwd', $password)
+		formData.append('checkpwd', $confirmPassword)
+		if (avatarFile)
+			formData.append('avatar', avatarFile)
+		else
+			formData.append("avatar", "")
+		console.log('Submitting register form with data:', {
+			username: $username,
+			email: $email,
+			confirmEmail: $confirmEmail,
+			password: $password,
+			confirmPassword: $confirmPassword,
+			avatar: avatarFile
+		})
 		fetch('https://localhost:443/register', {
 			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify(formData)
+			body: formData
 		}).then(res => {
-			console.log("--FRONT-- res status:", res.status)
+			console.log("res status:", res.status)
 			return res.json()
 		}).then(json => {
-			console.log('--FRONT-- 2e rep:', json)
+			console.log('json:', json)
 		})
 	} })
 
