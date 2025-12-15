@@ -3,6 +3,7 @@ import { CurrentButtonStore } from '../stores/current_button.store'
 import { KeyboardStore } from '../stores/keyboard.store'
 import { v4 as uuidv4 } from 'uuid'
 import { UserStore } from '../stores/user.store'
+import { setupAvatarPreview, setupAllFieldValidation, createFormData} from '../functions/formValidation.js'
 
 /* 
 	1: Redirect user to OAuth page
@@ -27,7 +28,7 @@ const actions = {
 		max: 1,
 		steps: 1,
 		callback: selectRegisterType,
-		values: ['42', 'Email']
+		values: ['42', 'User Form']
 	}
 }
 
@@ -64,6 +65,8 @@ if (codeParam) {
 
 function start42OAuth(self: HTMLElement) {
 	const $el = document.createElement('a') as HTMLAnchorElement
+	const $form = document.querySelector('user-form form') as HTMLElement
+
 	const url =
 		'https://api.intra.42.fr/oauth/authorize?' +
 		new URLSearchParams({
@@ -74,10 +77,55 @@ function start42OAuth(self: HTMLElement) {
 		})
 
 	$el.setAttribute('href', url)
-
 	$el.innerText = '42'
 
+	$form.style.display = 'none'
+
 	self.innerHTML = ''
+	self.append($el)
+}
+
+function hasInvalidFields(form: HTMLElement): boolean {
+	return form.querySelectorAll('.invalid-field').length > 0
+}
+
+function handleUserForm(self: HTMLElement) {
+	const $el = document.createElement('span') as HTMLSpanElement
+	const $form = document.querySelector('user-form form') as HTMLElement
+	const $submitBtn = document.querySelector('user-form form button[type="submit"]') as HTMLElement
+	
+	$form.style.display = 'block'
+	$el.innerText = 'User Form'
+	self.innerHTML = ''
+	
+	const $avatarInput = $form.querySelector('input[name="avatar"]') as HTMLInputElement
+	const $avatarPreview = $form.querySelector('#avatarPreview') as HTMLImageElement
+	setupAvatarPreview($avatarInput, $avatarPreview)
+
+	setupAllFieldValidation($form)
+
+	$submitBtn.onclick = (e) => {
+		e.preventDefault()
+
+		if (hasInvalidFields($form)) {
+			alert('Form contains invalid fields.')
+			return
+		}
+
+		const formData = createFormData($form, $avatarInput)
+		console.log('Submitting register form with FormData:', formData)
+
+		fetch('https://localhost:443/register', {
+			method: 'POST',
+			body: formData
+		}).then(res => {
+			console.log("res status:", res.status)
+			return res.json()
+		}).then(json => {
+			console.log('json:', json)
+		})
+	}
+
 	self.append($el)
 }
 
@@ -85,7 +133,7 @@ function selectRegisterType(registerType: string, self: HTMLElement) {
 	if (registerType === '42') {
 		start42OAuth(self)
 	} else {
-		self.innerText = registerType
+		handleUserForm(self)
 	}
 }
 

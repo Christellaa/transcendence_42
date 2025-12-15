@@ -3,6 +3,7 @@ import Fastify, { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify'
 import cookie from '@fastify/cookie'
 import fastifyStatic from '@fastify/static'
 import fastifyWebsocket from '@fastify/websocket'
+import multipart from '@fastify/multipart'
 
 /********************** Libs **********************/
 import fs from 'fs'
@@ -18,7 +19,6 @@ import { totalHttpRequests } from './services/prometheus.service.js'
 
 /********************** Routes **********************/
 import { authRoutes, metricsRoutes, userRoutes } from './routes/handler.route.js'
-import { apiRoutes } from './routes/api.route.js'
 import { routerRoute } from './routes/router.route.js'
 
 setDirName(path.resolve())
@@ -41,6 +41,14 @@ fastify.addHook('onResponse', (request: FastifyRequest, reply: FastifyReply) => 
 fastify.register(fastifyStatic, {
 	root: path.join(__dirname(), 'dist/public'),
 	prefix: '/'
+})
+
+fastify.register(multipart, {
+	limits: {
+		fileSize: 100 * 1024, // 100 Ko
+		files: 1,
+		parts: 6
+	}
 })
 
 fastify.register(cookie)

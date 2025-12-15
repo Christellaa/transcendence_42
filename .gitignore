@@ -10,3 +10,5 @@ services/metrics/grafana/provisioning/datasources/datasources.yml
 services/metrics/prometheus/prometheus.yml
 services/vault/conf/config.hcl
 diff.txt
+services/server/srcs/frontend/images/avatars/*
+!services/server/srcs/frontend/images/avatars/baseAvatar.jpg
