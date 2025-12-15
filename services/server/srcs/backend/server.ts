@@ -49,7 +49,6 @@ metricsRoutes(fastify)
 authRoutes(fastify)
 userRoutes(fastify)
 apiRoutes(fastify)
-// gameRoutes(fastify)
 routerRoute(fastify)
 
 publicWatcher()
