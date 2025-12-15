@@ -51,6 +51,20 @@ function isEmailFormatInvalid(email: string): boolean {
 	return false
 }
 
+function isPwdFormatInvalid(pwd: string): boolean {
+	if (pwd.length < 8)
+		return true
+	if (!pwd.match(/[a-z]/))
+		return true
+	if (!pwd.match(/[A-Z]/))
+		return true
+	if (!pwd.match(/[0-9]/))
+		return true
+	if (!pwd.match(/[\W_]/))
+		return true
+	return false
+}
+
 async function getMultipartFormData(req: FastifyRequest) {
 	const parts = req.parts()
 	const data: any = {};
@@ -84,10 +98,11 @@ export async function registerUser(req: FastifyRequest, reply: FastifyReply) {
 		checkpwd: checkpwd,
 		avatar: avatar
 	})
+	// TODO: check username size (4 min) and format (filtre alphabet + chiffres)
 	if (isEmailFormatInvalid(email))
 		return reply.status(400).send({ message: 'Invalid email format' })
 	if (email !== checkmail) return reply.status(400).send({ message: 'Emails do not match' })
-	if (pwd.length < 8 || !pwd.match(/[a-z]/) || !pwd.match(/[A-Z]/) || !pwd.match(/[0-9]/) || !pwd.match(/[\W_]/))
+	if (isPwdFormatInvalid(pwd))
 		return reply.status(400).send({ message: 'Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number and one special character' })
 	if (pwd !== checkpwd) return reply.status(400).send({ message: 'Passwords do not match' })
 	let body = await vaultPostQuery('getSecret', { name: 'bcrypt_salt' })

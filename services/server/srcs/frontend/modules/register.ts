@@ -86,6 +86,38 @@ function start42OAuth(self: HTMLElement) {
 	self.append($el)
 }
 
+function isEmailFormatInvalid(email: string): boolean { // a bouger dans "/functions"
+	if (!email.includes('@'))
+		return true
+	if (!email.includes('.'))
+		return true
+	if (email.lastIndexOf('.') < email.indexOf('@'))
+		return true
+	if (email.indexOf('@') === 0)
+		return true
+	if (email.lastIndexOf('.') === email.length - 1)
+		return true
+	if (email.indexOf('.') - email.indexOf('@') === 1)
+		return true
+	if (email.length > 320)
+		return true
+	return false
+}
+
+function isPwdFormatInvalid(pwd: string): boolean { // a bouger dans "/functions"
+	if (pwd.length < 8)
+		return true
+	if (!pwd.match(/[a-z]/))
+		return true
+	if (!pwd.match(/[A-Z]/))
+		return true
+	if (!pwd.match(/[0-9]/))
+		return true
+	if (!pwd.match(/[\W_]/))
+		return true
+	return false
+}
+
 function handleUserForm(self: HTMLElement) {
 	const $el = document.createElement('span') as HTMLSpanElement
 	const $form = document.querySelector('user-form form') as HTMLElement
@@ -107,22 +139,28 @@ function handleUserForm(self: HTMLElement) {
 		const $avatarInput = $form.querySelector('input[name="avatar"]') as HTMLInputElement
 		// TODO: alerts for invalid inputs on focus out in fields
 		// TODO: dans l'hote, reduire size de baseAvatar a 100 Ko max
+		// TODO: validate email format like in backend
+		// TODO: check username size (4 min) and format (filtre alphabet + chiffres)
 		let avatarFile: File | null = null
 		if ($avatarInput && $avatarInput.files && $avatarInput.files.length > 0)
 		{
 			avatarFile = $avatarInput.files[$avatarInput.files.length - 1]
 			console.log(avatarFile)
 		}
+		if (isEmailFormatInvalid($email)) {
+			alert('Invalid email format')
+			return
+		}
 		if ($email !== $confirmEmail) {
 			alert('Emails do not match')
 			return
 		}
-		if ($password !== $confirmPassword) {
-			alert('Passwords do not match')
+		if (isPwdFormatInvalid($password)) {
+			alert('Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number and one special character')
 			return
 		}
-		if ($password.length < 8 || !$password.match(/[a-z]/) || !$password.match(/[A-Z]/) || !$password.match(/[0-9]/) || !$password.match(/[\W_]/)) {
-			alert('Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number and one special character')
+		if ($password !== $confirmPassword) {
+			alert('Passwords do not match')
 			return
 		}
 
