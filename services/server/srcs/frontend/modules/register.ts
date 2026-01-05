@@ -2,7 +2,13 @@ import { navigate } from '../js/routing'
 import { CurrentButtonStore } from '../stores/current_button.store'
 import { KeyboardStore } from '../stores/keyboard.store'
 import { UserStore } from '../stores/user.store'
-import { setupAvatarPreview, setupAllFieldValidation, createFormData, hasInvalidFields, resetAvatarButton } from '../functions/formValidation.js'
+import {
+	setupAvatarPreview,
+	setupAllFieldValidation,
+	createFormData,
+	hasInvalidFields,
+	resetAvatarButton
+} from '../functions/formValidation.js'
 import { start42OAuth } from '../functions/start42OAuth.js'
 
 /* 
@@ -49,6 +55,7 @@ if (codeParam) {
 		body: JSON.stringify({ code: codeParam })
 	})
 		.then(res => {
+			console.log(res)
 			if (res.status === 200) return res.json()
 			$spinner.style.display = 'none'
 			$menuButtons.style.display = 'flex'
@@ -100,15 +107,14 @@ function handleUserForm(self: HTMLElement) {
 			method: 'POST',
 			body: formData
 		})
-		.then(res => {
-			console.log('res status:', res.status)
-			return res.json()
-		})
-		.then(json => {
-			console.log('json:', json)
-			if (!json?.message?.errno)
-				navigate('')
-		})
+			.then(res => {
+				console.log('res status:', res.status)
+				return res.json()
+			})
+			.then(json => {
+				console.log('json:', json)
+				if (!json?.message?.errno) navigate('')
+			})
 	}
 
 	self.append($el)
