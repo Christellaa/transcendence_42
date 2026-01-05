@@ -2,7 +2,7 @@ import { navigate } from '../js/routing'
 import { CurrentButtonStore } from '../stores/current_button.store'
 import { KeyboardStore } from '../stores/keyboard.store'
 import { UserStore } from '../stores/user.store'
-import { setupAvatarPreview, setupAllFieldValidation, createFormData, hasInvalidFields} from '../functions/formValidation.js'
+import { setupAvatarPreview, setupAllFieldValidation, createFormData, hasInvalidFields } from '../functions/formValidation.js'
 import { start42OAuth } from '../functions/start42OAuth.js'
 
 /* 
@@ -62,37 +62,6 @@ if (codeParam) {
 	$spinner.style.display = 'none'
 	$menuButtons.style.display = 'flex'
 	$registerForm.style.display = 'block'
-}
-
-function start42OAuth(self: HTMLElement) {
-	const $el = document.createElement('a') as HTMLAnchorElement
-	const $form = document.querySelector('user-form form') as HTMLElement
-
-	const url =
-		'https://api.intra.42.fr/oauth/authorize?' +
-		new URLSearchParams({
-			client_id: 'u-s4t2ud-9f30b2430e51c381ae5e38158295eef89230a74b070231a798bd1bcb7a01709c',
-			redirect_uri: 'https://localhost/register',
-			response_type: 'code',
-			state: uuidv4()
-		})
-
-	const $navLeft = document.createElement('nav-left')
-	const $navRight = document.createElement('nav-right')
-
-	$navLeft.innerText = ' < '
-	$navRight.innerText = ' > '
-
-	$el.setAttribute('href', url)
-	$el.innerText = '42'
-
-	$form.style.display = 'none'
-
-	self.innerHTML = ''
-
-	self.appendChild($navLeft)
-	self.appendChild($el)
-	self.appendChild($navRight)
 }
 
 function hasInvalidFields(form: HTMLElement): boolean {

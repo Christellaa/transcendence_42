@@ -13,11 +13,20 @@ export function start42OAuth(self: HTMLElement, uri: string) {
 			state: uuidv4()
 		})
 
+	const $navLeft = document.createElement('nav-left')
+	const $navRight = document.createElement('nav-right')
+
+	$navLeft.innerText = ' < '
+	$navRight.innerText = ' > '
+
 	$el.setAttribute('href', url)
 	$el.innerText = '42'
 
 	$form.style.display = 'none'
 
 	self.innerHTML = ''
-	self.append($el)
+
+	self.appendChild($navLeft)
+	self.appendChild($el)
+	self.appendChild($navRight)
 }
