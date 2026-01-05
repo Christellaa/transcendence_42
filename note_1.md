@@ -1,11 +1,15 @@
 Obligatoire:
+- Microservices (jeu et chat dans leurs propres conteneurs)
 - Tournoi
 - Forms
+    + login: pwd obligatoire coté front
+    + register: css, reset avatar, renvoi vers page principal + remplace login/register par deconnection
+- clé API 42 à mettre dans Vault
 - Local
 
 Grands:
 - Live chat
-- User Management (login, inscription, match history)
+- User Management (match history, changer son username, avatar, friends)
 
 Petits:
 - 2FA
@@ -15,12 +19,10 @@ Petits:
 
 A la fin:
 - Vault - WAF
+- Normes de securité Docker et conteneurs
 
 Peut etre:
 - Support pc + tel - GDPR
-
-
-
 
 
 
