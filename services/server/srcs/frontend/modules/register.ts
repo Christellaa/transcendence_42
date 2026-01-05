@@ -55,13 +55,19 @@ if (codeParam) {
 		body: JSON.stringify({ code: codeParam })
 	})
 		.then(res => {
-			console.log(res)
 			if (res.status === 200) return res.json()
 			$spinner.style.display = 'none'
 			$menuButtons.style.display = 'flex'
 			$registerForm.style.display = 'block'
 		})
 		.then(res => {
+			if (res.status >= 400)
+			{
+				$spinner.style.display = 'none'
+				$menuButtons.style.display = 'flex'
+				$registerForm.style.display = 'block'
+				console.log('Error:', res.status, res.message)
+			}
 			UserStore.emit(res)
 			navigate('')
 		})
