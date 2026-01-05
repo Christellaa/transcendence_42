@@ -109,7 +109,6 @@ export function setupAvatarPreview(avatarInput: HTMLInputElement, avatarPreview:
 }
 
 export function isUsernameFormatInvalid(username: string): boolean {
-	// a bouger dans "/functions"
 	if (username.length < 4) return true
 	if (username.length > 20) return true
 	if (!/^[a-zA-Z0-9_]+$/.test(username)) return true
@@ -117,7 +116,6 @@ export function isUsernameFormatInvalid(username: string): boolean {
 }
 
 export function isEmailFormatInvalid(email: string): boolean {
-	// a bouger dans "/functions"
 	if (!email.includes('@')) return true
 	if (!email.includes('.')) return true
 	if (email.lastIndexOf('.') < email.indexOf('@')) return true
@@ -129,7 +127,6 @@ export function isEmailFormatInvalid(email: string): boolean {
 }
 
 export function isPwdFormatInvalid(pwd: string): boolean {
-	// a bouger dans "/functions"
 	if (pwd.length < 8) return true
 	if (!pwd.match(/[a-z]/)) return true
 	if (!pwd.match(/[A-Z]/)) return true
