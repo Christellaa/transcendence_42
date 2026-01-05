@@ -32,7 +32,19 @@ const unsubKeyStore = KeyboardStore.subscribe(key => {
 	if (['ArrowLeft', 'ArrowRight'].includes(key.value)) {
 		const nextValue = loginButtonValues[currentButton.id]
 		if (nextValue) {
-			currentButton.innerText = nextValue.inner
+			const $navLeft = document.createElement('nav-left')
+			const $navRight = document.createElement('nav-right')
+			const $span = document.createElement('span')
+
+			$navLeft.innerText = ' < '
+			$navRight.innerText = ' > '
+			$span.innerText = nextValue.inner
+			currentButton.innerText = ''
+
+			currentButton.appendChild($navLeft)
+			currentButton.appendChild($span)
+			currentButton.appendChild($navRight)
+
 			currentButton.id = nextValue.id
 			currentButton.dataset.route = nextValue.route
 		}

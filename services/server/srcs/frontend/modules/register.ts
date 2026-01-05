@@ -3,7 +3,7 @@ import { CurrentButtonStore } from '../stores/current_button.store'
 import { KeyboardStore } from '../stores/keyboard.store'
 import { v4 as uuidv4 } from 'uuid'
 import { UserStore } from '../stores/user.store'
-import { setupAvatarPreview, setupAllFieldValidation, createFormData} from '../functions/formValidation.js'
+import { setupAvatarPreview, setupAllFieldValidation, createFormData } from '../functions/formValidation.js'
 
 /* 
 	1: Redirect user to OAuth page
@@ -76,13 +76,22 @@ function start42OAuth(self: HTMLElement) {
 			state: uuidv4()
 		})
 
+	const $navLeft = document.createElement('nav-left')
+	const $navRight = document.createElement('nav-right')
+
+	$navLeft.innerText = ' < '
+	$navRight.innerText = ' > '
+
 	$el.setAttribute('href', url)
 	$el.innerText = '42'
 
 	$form.style.display = 'none'
 
 	self.innerHTML = ''
-	self.append($el)
+
+	self.appendChild($navLeft)
+	self.appendChild($el)
+	self.appendChild($navRight)
 }
 
 function hasInvalidFields(form: HTMLElement): boolean {
@@ -93,18 +102,18 @@ function handleUserForm(self: HTMLElement) {
 	const $el = document.createElement('span') as HTMLSpanElement
 	const $form = document.querySelector('user-form form') as HTMLElement
 	const $submitBtn = document.querySelector('user-form form button[type="submit"]') as HTMLElement
-	
+
 	$form.style.display = 'block'
 	$el.innerText = 'User Form'
 	self.innerHTML = ''
-	
+
 	const $avatarInput = $form.querySelector('input[name="avatar"]') as HTMLInputElement
 	const $avatarPreview = $form.querySelector('#avatarPreview') as HTMLImageElement
 	setupAvatarPreview($avatarInput, $avatarPreview)
 
 	setupAllFieldValidation($form)
 
-	$submitBtn.onclick = (e) => {
+	$submitBtn.onclick = e => {
 		e.preventDefault()
 
 		if (hasInvalidFields($form)) {
@@ -118,12 +127,14 @@ function handleUserForm(self: HTMLElement) {
 		fetch('https://localhost:443/register', {
 			method: 'POST',
 			body: formData
-		}).then(res => {
-			console.log("res status:", res.status)
-			return res.json()
-		}).then(json => {
-			console.log('json:', json)
 		})
+			.then(res => {
+				console.log('res status:', res.status)
+				return res.json()
+			})
+			.then(json => {
+				console.log('json:', json)
+			})
 	}
 
 	self.append($el)
@@ -147,7 +158,7 @@ const unsubKeyStore = KeyboardStore.subscribe(key => {
 			const min = action.min
 			const max = action.max
 			const steps = action.steps
-			let newValue
+			let newValue: number
 			if (key.value === 'ArrowLeft') {
 				newValue = current - steps
 				if (newValue < min) newValue = max

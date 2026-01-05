@@ -1,42 +1,40 @@
 export function fieldInvalid(el: HTMLElement, message?: string) {
-    el.classList.add('invalid-field')
-    let errorSpan = el.nextElementSibling as HTMLElement | null
-    if (!errorSpan) {
-        errorSpan = document.createElement('span')
-        errorSpan.classList.add('field-error-message')
-        el.parentNode?.insertBefore(errorSpan, el.nextSibling)
-    }
-    if (message)
-        errorSpan.textContent = message
+	el.classList.add('invalid-field')
+	let errorSpan = el.nextElementSibling as HTMLElement | null
+	if (!errorSpan) {
+		errorSpan = document.createElement('span')
+		errorSpan.classList.add('field-error-message')
+		el.parentNode?.insertBefore(errorSpan, el.nextSibling)
+	}
+	if (message) errorSpan.textContent = message
 }
 
 export function fieldValid(el: HTMLElement) {
-    el.classList.remove('invalid-field')
-    const errorSpan = el.nextElementSibling as HTMLElement | null
-    if (errorSpan)
-        errorSpan.remove()
+	el.classList.remove('invalid-field')
+	const errorSpan = el.nextElementSibling as HTMLElement | null
+	if (errorSpan) errorSpan.remove()
 }
 
 export function setupFieldValidation(input: HTMLInputElement, validator: (value: string) => boolean, errorMessage: string) {
-    input.addEventListener('input', () => {
-        if (validator(input.value))
-            fieldInvalid(input, errorMessage)
-        else
-            fieldValid(input)
-    })
+	input.addEventListener('input', () => {
+		if (validator(input.value)) fieldInvalid(input, errorMessage)
+		else fieldValid(input)
+	})
 }
 
-export function setupConfirmFieldValidation(originalInput: HTMLInputElement, confirmInput: HTMLInputElement, errorMessage: string) {
-    confirmInput.addEventListener('input', () => {
-        if (confirmInput.value !== originalInput.value)
-            fieldInvalid(confirmInput, errorMessage)
-        else
-            fieldValid(confirmInput)
-    })
+export function setupConfirmFieldValidation(
+	originalInput: HTMLInputElement,
+	confirmInput: HTMLInputElement,
+	errorMessage: string
+) {
+	confirmInput.addEventListener('input', () => {
+		if (confirmInput.value !== originalInput.value) fieldInvalid(confirmInput, errorMessage)
+		else fieldValid(confirmInput)
+	})
 }
 
 export function setupAllFieldValidation($form: HTMLElement) {
-    setupFieldValidation(
+	setupFieldValidation(
 		$form.querySelector('input[name="username"]') as HTMLInputElement,
 		isUsernameFormatInvalid,
 		'Username must be between 4 and 20 characters long and contain only letters, numbers and underscores'
@@ -48,11 +46,7 @@ export function setupAllFieldValidation($form: HTMLElement) {
 	)
 	const $emailField = $form.querySelector('input[name="email"]') as HTMLInputElement
 	const $confirmEmailField = $form.querySelector('input[name="checkmail"]') as HTMLInputElement
-	setupFieldValidation(
-		$confirmEmailField,
-		(value: string) => value !== $emailField.value,
-		'Emails do not match'
-	)
+	setupFieldValidation($confirmEmailField, (value: string) => value !== $emailField.value, 'Emails do not match')
 	setupFieldValidation(
 		$form.querySelector('input[name="pwd"]') as HTMLInputElement,
 		isPwdFormatInvalid,
@@ -60,26 +54,21 @@ export function setupAllFieldValidation($form: HTMLElement) {
 	)
 	const $passwordField = $form.querySelector('input[name="pwd"]') as HTMLInputElement
 	const $confirmPasswordField = $form.querySelector('input[name="checkpwd"]') as HTMLInputElement
-	setupFieldValidation(
-		$confirmPasswordField,
-		(value: string) => value !== $passwordField.value,
-		'Passwords do not match'
-	)
+	setupFieldValidation($confirmPasswordField, (value: string) => value !== $passwordField.value, 'Passwords do not match')
 }
 
 export function setupAvatarPreview(avatarInput: HTMLInputElement, avatarPreview: HTMLImageElement) {
-    avatarInput.value = ""
-    avatarPreview.src = "/images/avatars/baseAvatar.jpg"
+	avatarInput.value = ''
+	avatarPreview.src = '/images/avatars/baseAvatar.jpg'
 
-    let avatarObjectURL: string | null = null
-    	avatarInput.addEventListener("change", () => {
+	let avatarObjectURL: string | null = null
+	avatarInput.addEventListener('change', () => {
 		const file = avatarInput.files?.[0] || null
 		if (isAvatarFileFormatInvalid(file)) {
 			fieldInvalid(avatarInput, 'Avatar file must be an image and less than 100 KB')
-			avatarInput.value = ""
+			avatarInput.value = ''
 			return
-		} else
-			fieldValid(avatarInput)
+		} else fieldValid(avatarInput)
 		if (avatarObjectURL) {
 			URL.revokeObjectURL(avatarObjectURL)
 			avatarObjectURL = null
@@ -91,45 +80,33 @@ export function setupAvatarPreview(avatarInput: HTMLInputElement, avatarPreview:
 	})
 }
 
-export function isUsernameFormatInvalid(username: string): boolean { // a bouger dans "/functions"
-	if (username.length < 4)
-		return true
-	if (username.length > 20)
-		return true
-	if (!/^[a-zA-Z0-9_]+$/.test(username))
-		return true
+export function isUsernameFormatInvalid(username: string): boolean {
+	// a bouger dans "/functions"
+	if (username.length < 4) return true
+	if (username.length > 20) return true
+	if (!/^[a-zA-Z0-9_]+$/.test(username)) return true
 	return false
 }
 
-export function isEmailFormatInvalid(email: string): boolean { // a bouger dans "/functions"
-	if (!email.includes('@'))
-		return true
-	if (!email.includes('.'))
-		return true
-	if (email.lastIndexOf('.') < email.indexOf('@'))
-		return true
-	if (email.indexOf('@') === 0)
-		return true
-	if (email.lastIndexOf('.') === email.length - 1)
-		return true
-	if (email.indexOf('.') - email.indexOf('@') === 1)
-		return true
-	if (email.length > 320)
-		return true
+export function isEmailFormatInvalid(email: string): boolean {
+	// a bouger dans "/functions"
+	if (!email.includes('@')) return true
+	if (!email.includes('.')) return true
+	if (email.lastIndexOf('.') < email.indexOf('@')) return true
+	if (email.indexOf('@') === 0) return true
+	if (email.lastIndexOf('.') === email.length - 1) return true
+	if (email.indexOf('.') - email.indexOf('@') === 1) return true
+	if (email.length > 320) return true
 	return false
 }
 
-export function isPwdFormatInvalid(pwd: string): boolean { // a bouger dans "/functions"
-	if (pwd.length < 8)
-		return true
-	if (!pwd.match(/[a-z]/))
-		return true
-	if (!pwd.match(/[A-Z]/))
-		return true
-	if (!pwd.match(/[0-9]/))
-		return true
-	if (!pwd.match(/[\W_]/))
-		return true
+export function isPwdFormatInvalid(pwd: string): boolean {
+	// a bouger dans "/functions"
+	if (pwd.length < 8) return true
+	if (!pwd.match(/[a-z]/)) return true
+	if (!pwd.match(/[A-Z]/)) return true
+	if (!pwd.match(/[0-9]/)) return true
+	if (!pwd.match(/[\W_]/)) return true
 	return false
 }
 
@@ -144,16 +121,16 @@ export function isAvatarFileFormatInvalid(avatarFile: File | null): boolean {
 }
 
 export function createFormData(form: HTMLElement, avatarInput: HTMLInputElement): FormData {
-    const formData = new FormData()
-    formData.append('username', (form.querySelector('input[name="username"]') as HTMLInputElement).value)
-    formData.append('email', (form.querySelector('input[name="email"]') as HTMLInputElement).value)
-    formData.append('checkmail', (form.querySelector('input[name="checkmail"]') as HTMLInputElement).value)
-    formData.append('pwd', (form.querySelector('input[name="pwd"]') as HTMLInputElement).value)
-    formData.append('checkpwd', (form.querySelector('input[name="checkpwd"]') as HTMLInputElement).value)
+	const formData = new FormData()
+	formData.append('username', (form.querySelector('input[name="username"]') as HTMLInputElement).value)
+	formData.append('email', (form.querySelector('input[name="email"]') as HTMLInputElement).value)
+	formData.append('checkmail', (form.querySelector('input[name="checkmail"]') as HTMLInputElement).value)
+	formData.append('pwd', (form.querySelector('input[name="pwd"]') as HTMLInputElement).value)
+	formData.append('checkpwd', (form.querySelector('input[name="checkpwd"]') as HTMLInputElement).value)
 
-    const avatarFile: File | null = avatarInput.files?.[0] || null
-    if (avatarFile) formData.append('avatar', avatarFile)
-    else formData.append("avatar", "")
+	const avatarFile: File | null = avatarInput.files?.[0] || null
+	if (avatarFile) formData.append('avatar', avatarFile)
+	else formData.append('avatar', '')
 
-    return formData
+	return formData
 }
