@@ -1,6 +1,7 @@
 import { FastifyRequest, FastifyReply } from 'fastify'
 import { v4 as uuidv4 } from 'uuid'
 import { json_parse } from '../../frontend/functions/json_wrapper.js'
+import { fetch42User } from '../crud/auth.crud.js'
 
 export async function handlePOSTApiAuthRegister(req: FastifyRequest, reply: FastifyReply) {
 	const { code } = json_parse(req.body)
@@ -16,30 +17,9 @@ export async function handlePOSTApiAuthRegister(req: FastifyRequest, reply: Fast
 			state: uuidv4()
 		})
 
-	console.log('URL: ', url)
-	
-	const token = await fetch(url, { method: 'POST' })
-		.then(res => res.json())
-		.then(res => res?.access_token)
-
-	console.log(token)
-
-	if (token) {
-		const infoFetch = await fetch('https://api.intra.42.fr/v2/me', {
-			headers: {
-				Authorization: `Bearer ${token}`
-			}
-		})
-			.then(res => res.json())
-			.then(res => {
-				// TODO: mettre dans db
-				const { email, login, first_name, last_name } = res
-				return { email, login, firstName: first_name, lastName: last_name }
-			})
-		return reply.send(infoFetch)
-	} else {
-		return reply.send({ status: 413 }).status(413)
-	}
+	const infoFetch = await fetch42User(url, true)
+	if (!infoFetch) return reply.status(403).send({ error: 'Invalid credentials' })
+	return reply.send(infoFetch)
 }
 
 export async function handlePOSTApiAuthLogin(req: FastifyRequest, reply: FastifyReply) {
@@ -50,29 +30,13 @@ export async function handlePOSTApiAuthLogin(req: FastifyRequest, reply: Fastify
 		new URLSearchParams({
 			client_id: 'u-s4t2ud-9f30b2430e51c381ae5e38158295eef89230a74b070231a798bd1bcb7a01709c',
 			grant_type: 'authorization_code',
-			client_secret: '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',
+			client_secret: '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',
 			code,
-			redirect_uri: 'https://localhost/register',
+			redirect_uri: 'https://localhost/login',
 			state: uuidv4()
 		})
 
-	const token = await fetch(url, { method: 'POST' })
-		.then(res => res.json())
-		.then(res => res?.access_token)
-
-	if (token) {
-		const infoFetch = await fetch('https://api.intra.42.fr/v2/me', {
-			headers: {
-				Authorization: `Bearer ${token}`
-			}
-		})
-			.then(res => res.json())
-			.then(res => {
-				const { email, login, first_name, last_name } = res
-				return { email, login, firstName: first_name, lastName: last_name }
-			})
-		return reply.send(infoFetch)
-	} else {
-		return reply.send({ status: 413 }).status(413)
-	}
+	const infoFetch = await fetch42User(url, false)
+	if (!infoFetch) return reply.status(403).send({ error: 'Invalid credentials' })
+	return reply.send(infoFetch)
 }
