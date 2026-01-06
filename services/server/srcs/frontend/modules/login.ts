@@ -5,7 +5,8 @@ import { UserStore } from '../stores/user.store'
 import {
 	setupAllFieldValidation,
 	hasInvalidFields,
-	createLoginFormData
+	createLoginFormData,
+	setupUsernameAndPwdFieldsValidation
 } from '../functions/formValidation.js'
 import { start42OAuth } from '../functions/start42OAuth.js'
 
@@ -73,13 +74,13 @@ function handleUserForm(self: HTMLElement) {
 
 		$submitBtn.onclick = e => {
 			e.preventDefault()
-			const formData = createLoginFormData($loginForm)
-			for (const [key, value] of formData.entries()) {
-				console.log(key, value)
-			}
 			if (hasInvalidFields($loginForm)) {
 				alert('Form contains invalid fields.')
 				return
+			}
+			const formData = createLoginFormData($loginForm)
+			for (const [key, value] of formData.entries()) {
+				console.log(key, value)
 			}
 
 			fetch('https://localhost:443/login', {
@@ -117,7 +118,7 @@ function handleUserForm(self: HTMLElement) {
 
 	$loginForm.style.display = 'block'
 
-	setupAllFieldValidation($loginForm)
+	setupUsernameAndPwdFieldsValidation($loginForm)
 }
 
 function selectloginType(loginType: string, self: HTMLElement) {
