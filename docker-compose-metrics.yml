@@ -1,5 +1,5 @@
 services:
-  grafana:
+  grafana: # visualize metrics from thanos query
     build:
       context: ./services/metrics/grafana
       dockerfile: Dockerfile
@@ -33,13 +33,13 @@ services:
     labels:
     - "projectLabel=transcendence"
 
-  minio: # long term storage for prometheus metrics
+  minio: # long term storage for prometheus metrics (using thanos sidecar & thanos store)
     image: minio/minio:RELEASE.2025-09-07T16-13-09Z
     container_name: minio
     restart: unless-stopped
-    ports:
-      - "9000:9000" # API S3
-      - "9001:9001" # UI
+    expose:
+      - "9000" # API S3
+      - "9001" # UI
     volumes:
       - minio-data:/data
     environment:
@@ -56,7 +56,7 @@ services:
     labels:
       - "projectLabel=transcendence"
 
-  minio_bucket_init: # create the thanos sidecar and store bucket on minio before launching thanos sidecar & store
+  minio_bucket_init: # create the thanos sidecar and store bucket on minio before launching thanos sidecar & thanos store
     image: minio/minio:RELEASE.2025-09-07T16-13-09Z
     container_name: minio_bucket_init
     restart: "no"
@@ -74,7 +74,7 @@ services:
     networks:
       - metrics_storage
 
-  thanosSidecar: # upload prometheus metrics to minio (s3) & expose prometheus data for thanos query
+  thanosSidecar: # upload prometheus metrics to minio + expose them to thanos query
     image: thanosio/thanos:v0.40.1
     container_name: thanosSidecar
     restart: unless-stopped
@@ -96,12 +96,12 @@ services:
     labels:
       - "projectLabel=transcendence"
 
-  thanosQuery: # mesh data from thanos sidecar (recent data) & thanos store (old data) to provide to grafana
+  thanosQuery: # send data from thanos sidecar (recent data) & thanos store (old data) to grafana
     image: thanosio/thanos:v0.40.1
     container_name: thanosQuery
     restart: unless-stopped
-    ports:
-      - "${THANOS_QUERY_PORT}:${THANOS_QUERY_PORT}"
+    expose:
+      - ${THANOS_QUERY_PORT}
     command:
       - query
       - "--http-address=0.0.0.0:${THANOS_QUERY_PORT}"
@@ -115,8 +115,8 @@ services:
       - metrics_storage
     labels:
       - "projectLabel=transcendence"
-    
-  thanosStore: # read data from minio (s3) to provide to thanos query
+
+  thanosStore: # read data from minio + provide them to thanos query with thanos sidecar
     image: thanosio/thanos:v0.40.1
     container_name: thanosStore
     restart: unless-stopped
@@ -135,12 +135,12 @@ services:
     labels:
       - "projectLabel=transcendence"
 
-  prometheus:
+  prometheus: # scrape metrics and store them for short-term storage + provide them to thanos sidecar
     image: prom/prometheus:v3.7.3
     container_name: prometheus
     restart: unless-stopped
-    ports:
-      - "${PROMETHEUS_PORT}:${PROMETHEUS_PORT}"
+    expose:
+      - ${PROMETHEUS_PORT}
     user: "65534"
     volumes:
       - ./services/metrics/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
@@ -151,9 +151,10 @@ services:
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
       - "--storage.tsdb.path=/prometheus"
-      - "--storage.tsdb.min-block-duration=2m"
-      - "--storage.tsdb.max-block-duration=2m"
-      - "--storage.tsdb.retention.time=2m"
+      - "--storage.tsdb.min-block-duration=2m" # for testing purpose, default is 2h
+      - "--storage.tsdb.max-block-duration=2m" # for testing purpose, default is 24h
+      - "--storage.tsdb.retention.time=2m" # for testing purpose, default is 15d
+      # prometheus will receive cadvisor metrics that are too old because of these
     networks:
       - transcendence
       - metrics
