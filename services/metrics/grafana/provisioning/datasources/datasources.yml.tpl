@@ -1,10 +1,10 @@
 apiVersion: 1
 
 datasources:
-  - name: prometheus
+  - name: thanosQuery
     type: prometheus
     access: proxy
-    url: http://prometheus:${PROMETHEUS_PORT}
+    url: http://thanosQuery:${THANOS_QUERY_PORT}
     isDefault: true
     version: 1
     editable: false

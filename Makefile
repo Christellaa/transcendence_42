@@ -3,7 +3,9 @@ FILEPATH_ELK = docker-compose-elk.yml
 FILEPATH_METRICS = docker-compose-metrics.yml
 
 up:
+	chmod +x ./services/metrics/thanosStore/init_volume.sh
 	./generate_yml_conf_files.sh
+	./services/metrics/thanosStore/init_volume.sh
 	docker compose -f $(FILEPATH) build
 	docker compose -f $(FILEPATH) up -d
 	docker compose -f $(FILEPATH) logs -f
@@ -40,6 +42,7 @@ down:
 nuke:
 	docker ps -q | xargs -r docker stop
 	docker system prune -fa --volumes
+	docker volume rm $$(docker volume ls -q) || true
 
 fclean:
 	find . -type d -name node_modules -prune -exec rm -rf '{}' +
