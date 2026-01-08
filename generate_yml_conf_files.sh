@@ -13,6 +13,7 @@ FILES="
 ./services/metrics/grafana/provisioning/dashboards/dashboards.yml.tpl:./services/metrics/grafana/provisioning/dashboards/dashboards.yml
 ./services/metrics/grafana/provisioning/datasources/datasources.yml.tpl:./services/metrics/grafana/provisioning/datasources/datasources.yml
 ./services/metrics/prometheus/prometheus.yml.tpl:./services/metrics/prometheus/prometheus.yml
+./services/metrics/thanosSidecar/thanos-storage.yml.tpl:./services/metrics/thanosSidecar/thanos-storage.yml
 ./services/vault/conf/config.hcl.tpl:./services/vault/conf/config.hcl
 "
 

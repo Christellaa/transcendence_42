@@ -24,7 +24,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "P1809F7CD0C75ACF3"
+        "uid": "P31F6A179D9F63D32"
       },
       "fieldConfig": {
         "defaults": {
@@ -77,7 +77,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P1809F7CD0C75ACF3"
+            "uid": "P31F6A179D9F63D32"
           },
           "editorMode": "builder",
           "expr": "total_db_queries_executed",
@@ -92,7 +92,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "P1809F7CD0C75ACF3"
+        "uid": "P31F6A179D9F63D32"
       },
       "fieldConfig": {
         "defaults": {
@@ -156,7 +156,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "P1809F7CD0C75ACF3"
+        "uid": "P31F6A179D9F63D32"
       },
       "fieldConfig": {
         "defaults": {
@@ -220,7 +220,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "P1809F7CD0C75ACF3"
+        "uid": "P31F6A179D9F63D32"
       },
       "fieldConfig": {
         "defaults": {
@@ -304,7 +304,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P1809F7CD0C75ACF3"
+            "uid": "P31F6A179D9F63D32"
           },
           "editorMode": "code",
           "expr": "histogram_quantile(\n  0.99,\n  rate(db_query_latency_seconds_bucket[5m])\n)",

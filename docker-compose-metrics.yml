@@ -1,5 +1,5 @@
 services:
-  grafana:
+  grafana: # visualize metrics from thanos query
     build:
       context: ./services/metrics/grafana
       dockerfile: Dockerfile
@@ -33,18 +33,128 @@ services:
     labels:
     - "projectLabel=transcendence"
 
-  prometheus:
+  minio: # long term storage for prometheus metrics (using thanos sidecar & thanos store)
+    image: minio/minio:RELEASE.2025-09-07T16-13-09Z
+    container_name: minio
+    restart: unless-stopped
+    expose:
+      - "9000" # API S3
+      - "9001" # UI
+    volumes:
+      - minio-data:/data
+    environment:
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "${MINIO_HEALTH_URL}"]
+      interval: 2s
+      timeout: 1s
+      retries: 5
+    command: server /data --console-address ":9001"
+    networks:
+      - metrics_storage
+    labels:
+      - "projectLabel=transcendence"
+
+  minio_bucket_init: # create the thanos sidecar and store bucket on minio before launching thanos sidecar & thanos store
+    image: minio/minio:RELEASE.2025-09-07T16-13-09Z
+    container_name: minio_bucket_init
+    restart: "no"
+    environment:
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+    entrypoint: /bin/sh -c
+    command:
+      - |
+        mc alias set localminio http://minio:9000 ${MINIO_ROOT_USER} ${MINIO_ROOT_PASSWORD} && \
+        mc mb --ignore-existing localminio/thanos
+    depends_on:
+      minio:
+        condition: service_healthy
+    networks:
+      - metrics_storage
+
+  thanosSidecar: # upload prometheus metrics to minio + expose them to thanos query
+    image: thanosio/thanos:v0.40.1
+    container_name: thanosSidecar
+    restart: unless-stopped
+    user: "65534"
+    volumes:
+      - prometheus-data:/prometheus
+      - ./services/metrics/thanosSidecar/thanos-storage.yml:/etc/thanos/storage.yml:ro
+    command:
+      - sidecar
+      - --prometheus.url=http://prometheus:9090
+      - --tsdb.path=/prometheus
+      - --objstore.config-file=/etc/thanos/storage.yml
+    depends_on:
+      - prometheus
+      - minio_bucket_init
+    networks:
+      - metrics
+      - metrics_storage
+    labels:
+      - "projectLabel=transcendence"
+
+  thanosQuery: # send data from thanos sidecar (recent data) & thanos store (old data) to grafana
+    image: thanosio/thanos:v0.40.1
+    container_name: thanosQuery
+    restart: unless-stopped
+    expose:
+      - ${THANOS_QUERY_PORT}
+    command:
+      - query
+      - "--http-address=0.0.0.0:${THANOS_QUERY_PORT}"
+      - "--endpoint=thanosSidecar:${THANOS_PORT}"
+      - "--endpoint=thanosStore:${THANOS_PORT}"
+    depends_on:
+      - thanosSidecar
+      - thanosStore
+    networks:
+      - metrics
+      - metrics_storage
+    labels:
+      - "projectLabel=transcendence"
+
+  thanosStore: # read data from minio + provide them to thanos query with thanos sidecar
+    image: thanosio/thanos:v0.40.1
+    container_name: thanosStore
+    restart: unless-stopped
+    volumes:
+      - thanos-store-data:/data
+      - ./services/metrics/thanosSidecar/thanos-storage.yml:/etc/thanos/storage.yml:ro
+    user: "1001:1001"
+    command:
+      - store
+      - "--data-dir=/data"
+      - "--objstore.config-file=/etc/thanos/storage.yml"
+    depends_on:
+      - minio_bucket_init
+    networks:
+      - metrics_storage
+    labels:
+      - "projectLabel=transcendence"
+
+  prometheus: # scrape metrics and store them for short-term storage + provide them to thanos sidecar
     image: prom/prometheus:v3.7.3
     container_name: prometheus
     restart: unless-stopped
     expose:
       - ${PROMETHEUS_PORT}
+    user: "65534"
     volumes:
       - ./services/metrics/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
       - ./services/metrics/prometheus/rules:/etc/prometheus/rules
       - prometheus-data:/prometheus
     environment:
       - PROMETHEUS_PORT=${PROMETHEUS_PORT}
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--storage.tsdb.min-block-duration=2m" # for testing purpose, default is 2h
+      - "--storage.tsdb.max-block-duration=2m" # for testing purpose, default is 24h
+      - "--storage.tsdb.retention.time=2m" # for testing purpose, default is 15d
+      # prometheus will receive cadvisor metrics that are too old because of these
     networks:
       - transcendence
       - metrics
@@ -121,6 +231,8 @@ services:
       - "projectLabel=transcendence"
 
 volumes:
+  minio-data:
+  thanos-store-data:
   prometheus-data:
 
 networks:
@@ -129,4 +241,7 @@ networks:
     driver: bridge
   metrics:
     name: metrics_network
+    driver: bridge
+  metrics_storage:
+    name: metrics_storage_network
     driver: bridge
