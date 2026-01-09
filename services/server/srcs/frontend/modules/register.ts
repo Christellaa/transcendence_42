@@ -58,7 +58,7 @@ if (codeParam) {
 			if (res.status === 200) return res.json()
 			$spinner.style.display = 'none'
 			$menuButtons.style.display = 'flex'
-			$registerForm.style.display = 'block'
+			$registerForm.style.display = 'flex'
 		})
 		.then(res => {
 			UserStore.emit(res)
@@ -107,7 +107,7 @@ function handleUserForm(self: HTMLElement) {
 	self.appendChild($span)
 	self.appendChild($navRight)
 
-	$registerForm.style.display = 'block'
+	$registerForm.style.display = 'flex'
 
 	setupAvatarPreview($avatarInput, $avatarPreview)
 	setupAllFieldValidation($registerForm)
