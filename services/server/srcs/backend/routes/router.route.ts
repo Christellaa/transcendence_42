@@ -16,8 +16,9 @@ const validRoutes = [
 	'lobby',
 	'chat',
 	'new_lobby',
-	'local-game',
-	'update_profile'
+	'local_game',
+	'update_profile',
+	'create_game'
 ]
 
 export function routerRoute(fastify: FastifyInstance) {
