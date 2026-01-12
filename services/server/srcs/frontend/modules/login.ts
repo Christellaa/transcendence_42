@@ -58,6 +58,8 @@ if (codeParam) {
 		})
 		.then(res => {
 			console.log("Backend response: ", res)
+			if (res.status >= 400)
+				return
 			UserStore.emit(res)
 			navigate('')
 		})

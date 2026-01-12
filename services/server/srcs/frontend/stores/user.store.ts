@@ -4,19 +4,15 @@ type Subscriber = (user: UserType) => void
 
 export type UserType = {
 	email: string
-	firstName: string
-	lastName: string
-	login: string
+	username: string
 	isValid: boolean
 }
 
 let user: any = {
 	email: '',
-	firstName: '',
-	lastName: '',
-	login: '',
+	username: '',
 	get isValid() {
-		return Boolean(this.email && this.login)
+		return Boolean(this.email && this.username)
 	}
 }
 
@@ -32,11 +28,9 @@ function createUserStore() {
 	function emit(newUser: UserType) {
 		if (!newUser) return
 		user.email = newUser.email
-		user.firstName = newUser.firstName
-		user.lastName = newUser.lastName
-		user.login = newUser.login
+		user.username = newUser.username
 
-		StateStore.update({ username: user.login })
+		StateStore.update({ username: user.username })
 
 		for (const fn of subscribers) fn(user)
 	}
