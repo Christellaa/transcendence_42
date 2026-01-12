@@ -45,6 +45,27 @@ services:
     labels:
       - "projectLabel=transcendence"
 
+  chat:
+    build:
+      context: ./services/chat
+      dockerfile: Dockerfile
+    container_name: chat
+    restart: unless-stopped
+    ports:
+      - 4444:4444
+    depends_on:
+      database:
+        condition: service_healthy
+      vault:
+        condition: service_healthy
+    volumes:
+      - "./services/chat/srcs:/app/srcs"
+      - ${LOGS_PATH}:${LOGS_DIR}
+    networks:
+      - transcendence
+    labels:
+      - "projectLabel=transcendence"
+
   waf:
     build:
       context: ./services/waf
