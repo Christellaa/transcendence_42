@@ -6,7 +6,8 @@ Obligatoire:
 - Microservices (chat dans son propre conteneur)
 - Tournoi
 - Forms
-    + login: login avec form -> login/register pas caché par logout
+    + login:
+        - affichage immediat au refresh apres login
     + coté front: bloquer /login et /register si deja log || bloquer /logout si pas log
 	+ Identifier d'où viens l'erreur de SQL constraint (email?, username?)
     + css messages d'erreur bouge tout
