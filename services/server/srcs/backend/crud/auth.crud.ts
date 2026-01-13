@@ -3,7 +3,7 @@ import { createToken, verifyToken } from './jwt.crud.js'
 import { JWTPayload } from 'jose'
 import { dbPostQuery } from './dbQuery.crud.js'
 
-export async function validateToken(request: FastifyRequest): Promise<any | null | undefined> {
+export async function getPayload(request: FastifyRequest): Promise<any | null | undefined> {
 	const loggedInToken = getToken(request)
 	if (!loggedInToken) return null
 	const decodedToken = decodeURIComponent(loggedInToken)
@@ -17,7 +17,7 @@ export function getToken(request: FastifyRequest): string | null | undefined {
 }
 
 export async function checkIfAlreadyLoggedIn(request: FastifyRequest): Promise<boolean> {
-	const validatedToken = await validateToken(request)
+	const validatedToken = await getPayload(request)
 	if (!validatedToken) return false
 	return true
 }
