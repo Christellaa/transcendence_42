@@ -1,9 +1,9 @@
 import { FastifyRequest } from 'fastify'
-import { verifyToken } from './jwt.crud.js'
+import { createToken, verifyToken } from './jwt.crud.js'
 import { JWTPayload } from 'jose'
 import { dbPostQuery } from './dbQuery.crud.js'
 
-export async function validateToken(request: FastifyRequest): Promise<any | null | undefined> {
+export async function getPayload(request: FastifyRequest): Promise<any | null | undefined> {
 	const loggedInToken = getToken(request)
 	if (!loggedInToken) return null
 	const decodedToken = decodeURIComponent(loggedInToken)
@@ -17,7 +17,7 @@ export function getToken(request: FastifyRequest): string | null | undefined {
 }
 
 export async function checkIfAlreadyLoggedIn(request: FastifyRequest): Promise<boolean> {
-	const validatedToken = await validateToken(request)
+	const validatedToken = await getPayload(request)
 	if (!validatedToken) return false
 	return true
 }
@@ -27,6 +27,8 @@ export async function fetch42User(url: string, { saveToDb }: { saveToDb: boolean
 		.then(res => res.json())
 		.then(res => res?.access_token)
 
+	let userId: number | null = null
+
 	if (token) {
 		const infoFetch = await fetch('https://api.intra.42.fr/v2/me', {
 			headers: {
@@ -35,21 +37,57 @@ export async function fetch42User(url: string, { saveToDb }: { saveToDb: boolean
 		})
 			.then(res => res.json())
 			.then(async res => {
-				const { email, login, first_name, last_name } = res
+				const { email, login } = res
 				if (saveToDb) {
+					const is_oauth = 1
 					const body = await dbPostQuery({
 						endpoint: 'dbRun',
 						query: {
 							verb: 'create',
-							sql: 'INSERT INTO users (email, username) VALUES (?, ?)',
-							data: [email, login]
+							sql: 'INSERT INTO users (email, username, is_oauth) VALUES (?, ?, ?)',
+							data: [email, login, is_oauth]
 						}
 					})
 					if (body.status >= 400) return { status: body.status, message: body.message }
 				}
-				return { email, login, firstName: first_name, lastName: last_name }
+				else {
+					const body = await dbPostQuery({
+						endpoint: 'dbGet',
+						query: {
+							verb: 'read',
+							sql: 'SELECT * FROM users WHERE username = ?',
+							data: [login]
+						}
+					})
+					if (body.status >= 400)
+						return { status: body.status, message: body.message }
+
+					const is_oauth = body.data.is_oauth
+					if (is_oauth !== 1)
+						return { status: 403, message: 'User registered with form' }
+					userId = body.data.id
+				}
+				return { email, username: login, id: userId }
 			})
 		return infoFetch
 	}
 	return null
+}
+
+export async function generateAndSendToken(infoFetch: any, reply: any) {
+	if (!infoFetch.id) return reply.status(404).send({ message: 'User ID not found' })
+	const userInfo = { email: infoFetch.email, username: infoFetch.username, id: infoFetch.id }
+	const token = await createToken(userInfo)
+	return reply
+		.status(200)
+		.setCookie('token', token, {
+			// sameSite: 'strict',
+			// signed: true
+			path: '/',
+			httpOnly: true,
+			secure: true,
+			sameSite: 'lax',
+			signed: false
+			})
+			.send({ infoFetch })
 }

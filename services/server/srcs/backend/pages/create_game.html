@@ -1,0 +1,79 @@
+<head>
+	<title>Create Game</title>
+	<style module>
+		create-game-container {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			width: 250px;
+		}
+		.option-pick {
+			display: flex;
+			width: 100%;
+			justify-content: space-between;
+			margin-top: 1rem;
+		}
+
+		.option-pick input {
+			color: black;
+		}
+
+		label {
+			user-select: none;
+		}
+
+		input[type='number'] {
+			width: 3rem;
+			padding: 0.25rem 0.5rem;
+		}
+
+		error-message {
+			display: block;
+			padding: 0.5rem 1rem;
+			margin: 1rem 0;
+			color: #fff;
+			background-color: crimson;
+			border: 2px solid #fff;
+			opacity: 0;
+			transition-property: opacity;
+			transition-duration: 300ms;
+			transition-timing-function: ease-in-out;
+		}
+	</style>
+</head>
+
+<page type="create-game">
+	<page-title>Create Game</page-title>
+	<create-game-container>
+		<enable-remote>
+			<input type="checkbox" id="isRemote" />
+			<label for="isRemote">Enable Remote Play</label>
+		</enable-remote>
+		<player-count class="option-pick">
+			<span>Player Count</span>
+			<input type="number" id="playerCount" min="1" max="2" value="1" />
+			<max-value>
+				<span>Max:&nbsp;</span>
+				<value>2</value>
+			</max-value>
+		</player-count>
+		<com-count class="option-pick">
+			<span>Com&nbsp;&nbsp;&nbsp;&nbsp;Count</span>
+			<input type="number" id="comCount" min="0" max="1" value="0" />
+			<max-value>
+				<span>Max:&nbsp;</span>
+				<value>1</value>
+			</max-value>
+		</com-count>
+	</create-game-container>
+
+	<error-message>This is an error message</error-message>
+
+	<create-game class="gameCreate" tabindex="1">Create Game</create-game>
+
+	<menu-buttons>
+		<nav-button data-route="lobby" tabindex="3" class="button text-3xl">Back</nav-button>
+	</menu-buttons>
+</page>
+
+<script type="module" src="modules/create_game.js"></script>

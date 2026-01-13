@@ -3,6 +3,7 @@ import { logUser, registerUser } from './auth.route.js'
 import { deleteUser, getUsers, updateUser, userDashboard } from './user.route.js'
 import { getMetrics } from './metrics.route.js'
 import { handlePOSTApiAuthRegister, handlePOSTApiAuthLogin, getClientID } from './api.route.js'
+import { getPayload } from '../crud/auth.crud.js'
 
 export async function authRoutes(fastify: FastifyInstance) {
 	fastify.route({
@@ -29,6 +30,11 @@ export async function authRoutes(fastify: FastifyInstance) {
 		method: 'GET',
 		url: '/api/auth/client_id',
 		handler: getClientID
+	}),
+	fastify.route({
+		method: 'GET',
+		url: '/get_payload',
+		handler: getPayload
 	})
 }
 
@@ -45,7 +51,7 @@ export async function userRoutes(fastify: FastifyInstance) {
 		}),
 		fastify.route({
 			method: 'PUT',
-			url: '/users/:id',
+			url: '/update_user',
 			handler: updateUser
 		}),
 		fastify.route({

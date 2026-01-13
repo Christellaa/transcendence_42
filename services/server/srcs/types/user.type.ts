@@ -14,7 +14,11 @@ export type userLoginType = {
 
 export type userUpdateType = {
     username?: string,
-    email?: string,
-    pwd?: string
+    avatar?: string
 }
 
+export type userInfoType = {
+    email: string
+    username: string
+    id: number
+}
