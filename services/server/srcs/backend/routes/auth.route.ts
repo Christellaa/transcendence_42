@@ -2,7 +2,7 @@ import fastify, { FastifyReply, FastifyRequest } from 'fastify'
 import httpErrors from 'http-errors'
 import bcrypt from 'bcrypt'
 import { userRegisterType, userLoginType } from '../../types/user.type.js'
-import { checkIfAlreadyLoggedIn, generateAndSendToken } from '../crud/auth.crud.js'
+import { checkIfAlreadyLoggedIn, generateAndSendToken, userTokenCookieOptions } from '../crud/auth.crud.js'
 import { dbPostQuery } from '../crud/dbQuery.crud.js'
 import { vaultPostQuery } from '../crud/vaultQuery.crud.js'
 import {
@@ -130,12 +130,6 @@ export async function logUser(req: FastifyRequest, reply: FastifyReply) {
 export async function logoutUser(req: FastifyRequest, reply: FastifyReply) {
 	return reply
 		.status(200)
-		.clearCookie('token', {
-			path: '/',
-			httpOnly: true,
-			secure: true,
-			sameSite: 'strict',
-			signed: false
-		})
+		.clearCookie('token', userTokenCookieOptions())
 		.send({ message: 'User logged out' })
 }

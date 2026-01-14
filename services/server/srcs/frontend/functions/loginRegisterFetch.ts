@@ -1,4 +1,3 @@
-import { createLoginFormData } from './formValidation'
 import { navigate } from '../js/routing'
 import { UserStore } from '../stores/user.store'
 
@@ -45,20 +44,7 @@ export function fetchRegister(formData: FormData, registerForm: HTMLElement) {
 				return
 			}
 			console.log("RESPONSE")
-			// console.log(res.data)
-			// console.log({
-			// 	email:res.data.email,
-			// 	username:res.data.username,
-			// 	username:res.data.username,
-			// })
 			UserStore.emit(res.data)
 			navigate('')
-			/* 
-				email: '',
-				firstName: '',
-				lastName: '',
-				login: '',
-			*/
-			// fetchLogin(createLoginFormData(registerForm))
 		})
 }

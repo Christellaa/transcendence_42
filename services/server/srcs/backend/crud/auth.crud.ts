@@ -2,6 +2,7 @@ import { FastifyRequest } from 'fastify'
 import { createToken, verifyToken } from './jwt.crud.js'
 import { JWTPayload } from 'jose'
 import { dbPostQuery } from './dbQuery.crud.js'
+import type { CookieSerializeOptions } from '@fastify/cookie'
 
 export async function getPayload(request: FastifyRequest): Promise<any | null | undefined> {
 	const loggedInToken = getToken(request)
@@ -80,14 +81,15 @@ export async function generateAndSendToken(infoFetch: any, reply: any) {
 	const token = await createToken(userInfo)
 	return reply
 		.status(200)
-		.setCookie('token', token, {
-			// sameSite: 'strict',
-			// signed: true
-			path: '/',
-			httpOnly: true,
-			secure: true,
-			sameSite: 'strict',
-			signed: false
-			})
-			.send({ infoFetch })
+		.setCookie('token', token, userTokenCookieOptions())
+		.send({ infoFetch })
 }
+export function userTokenCookieOptions(): CookieSerializeOptions {
+	return {
+		path: '/',
+		httpOnly: true,
+		secure: true,
+		sameSite: 'strict',
+		signed: false
+	}
+} // TODO: signed = true or false?
