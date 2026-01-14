@@ -11,6 +11,7 @@ import {
 } from '../functions/formValidation.js'
 import { start42OAuth } from '../functions/start42OAuth.js'
 import { fetchRegister } from '../functions/loginRegisterFetch.js'
+import { redirectIfAuthenticated } from '../functions/authGuard.js'
 
 /* 
 	1: Redirect user to OAuth page
@@ -41,6 +42,8 @@ const actions = {
 }
 
 const $page: HTMLElement = document.querySelector('page[type=register]')!
+
+redirectIfAuthenticated()
 
 let currentButton: HTMLElement
 let keyboardKey: KeyboardKeyEvent
