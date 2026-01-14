@@ -49,21 +49,21 @@ export async function userRoutes(fastify: FastifyInstance) {
 		url: '/dashboard',
 		handler: userDashboard
 	}),
-		fastify.route({
-			method: 'GET',
-			url: '/users',
-			handler: getUsers
-		}),
-		fastify.route({
-			method: 'PUT',
-			url: '/update_user',
-			handler: updateUser
-		}),
-		fastify.route({
-			method: 'DELETE',
-			url: '/users',
-			handler: deleteUser
-		})
+	fastify.route({
+		method: 'GET',
+		url: '/users',
+		handler: getUsers
+	}),
+	fastify.route({
+		method: 'PUT',
+		url: '/update_user',
+		handler: updateUser
+	}),
+	fastify.route({
+		method: 'DELETE',
+		url: '/users',
+		handler: deleteUser
+	})
 }
 
 export async function metricsRoutes(fastify: FastifyInstance) {
