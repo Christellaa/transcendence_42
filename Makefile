@@ -3,7 +3,10 @@ FILEPATH_ELK = docker-compose-elk.yml
 FILEPATH_METRICS = docker-compose-metrics.yml
 
 up:
+	chmod +x ./generate_env_example.sh
+	chmod +x ./setup_ethereal.sh
 	chmod +x ./services/metrics/thanosStore/init_volume.sh
+	./generate_env_example.sh
 	./generate_yml_conf_files.sh
 	./services/metrics/thanosStore/init_volume.sh
 	docker compose -f $(FILEPATH) build
