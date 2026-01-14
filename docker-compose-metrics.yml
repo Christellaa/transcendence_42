@@ -219,12 +219,6 @@ services:
       - ${ALERTMANAGER_PORT}
     volumes:
       - ./services/metrics/alertManager/alertmanager.yml:/etc/alertmanager/alertmanager.yml
-    environment:
-      - ALERT_HOST=${ALERT_HOST}
-      - ALERT_FROM=${ALERT_FROM}
-      - ALERT_AUTH_USER=${ALERT_AUTH_USER}
-      - ALERT_AUTH_PWD=${ALERT_AUTH_PWD}
-      - ALERT_TO=${ALERT_TO}
     networks:
       - metrics
     labels:
