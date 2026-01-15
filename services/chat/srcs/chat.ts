@@ -1,7 +1,7 @@
 const clients = new Set<WebSocket>()
 
 type MessageType = {
-	type: 'global' | 'mp' | 'auth' | 'info' | 'error'
+	type: 'global' | 'mp' | 'auth' | 'info' | 'error' | 'users'
 	to?: string
 	msg: string
 }
@@ -9,6 +9,22 @@ type MessageType = {
 type ClientType = { username: string; socket: WebSocket }
 
 let clientsList: Set<ClientType> = new Set<ClientType>()
+
+function sendUserList() {
+	const clients = []
+	clientsList.forEach(client => {
+		clients.push(client.username)
+	})
+
+	const message: MessageType = {
+		msg: JSON.stringify(clients),
+		type: 'users'
+	}
+
+	clientsList.forEach(client => {
+		client.socket.send(JSON.stringify(message))
+	})
+}
 
 const server = Bun.serve({
 	port: 4444,
@@ -33,7 +49,7 @@ const server = Bun.serve({
 		message(ws, message) {
 			const data = JSON.parse(message)
 
-			console.log('New Message: ', data)
+			// console.log('New Message: ', data)
 			if (data.type === 'auth') {
 				ws.username = data.username
 				for (let client of clientsList) {
@@ -41,11 +57,11 @@ const server = Bun.serve({
 					data.type = 'info'
 					client.socket.send(JSON.stringify(data))
 				}
-
 				clientsList.add({
 					socket: ws,
 					username: data.username
 				})
+				sendUserList()
 			} else if (data.type === 'global') {
 				for (const client of clients) {
 					if (client.readyState === WebSocket.OPEN) {
@@ -83,6 +99,7 @@ const server = Bun.serve({
 				}
 			}
 			clients.delete(ws)
+			sendUserList()
 		}
 	}
 })
