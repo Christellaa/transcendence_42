@@ -6,7 +6,6 @@ const $page: HTMLElement = document.querySelector('page[type=chat]')!
 const $chatInput: HTMLInputElement = document.getElementById('chatInput') as HTMLInputElement
 const $chatWindow = document.querySelector('chat-window') as HTMLElement
 const $chatUsers = document.querySelector('chat-users') as HTMLElement
-// let usersList = []
 
 function sendMessage() {
 	const chatValue = $chatInput?.value
@@ -51,6 +50,11 @@ function mpUser(username: string) {
 	$chatInput.focus()
 }
 
+function addUserAsFriend(username: string)
+{
+	
+}
+
 function updateUserList(users: string[]) {
 	$chatUsers.querySelectorAll('user-line').forEach(el => {
 		console.log(el.remove())
@@ -58,39 +62,39 @@ function updateUserList(users: string[]) {
 	users.forEach(user => {
 		const $userLine = document.createElement('user-line')
 		const $userName = document.createElement('user-name')
-		const $userDuel = document.createElement('user-duel')
-		const $userDuelImg = document.createElement('img')
-		const $userMp = document.createElement('user-mp')
-		const $userMpImg = document.createElement('img')
-		const $userBlock = document.createElement('user-block')
-		const $userBlockImg = document.createElement('img')
-		const $userAddFriend = document.createElement('user-add-friend')
-		const $userAddFriendImg = document.createElement('img')
-
-		$userName.innerText = user
-		$userDuel.classList.add('user-icon')
-		$userDuelImg.setAttribute('src', '/images/duel.svg')
-		$userDuelImg.setAttribute('alt', '')
-		$userDuel.appendChild($userDuelImg)
-
-		$userMp.classList.add('user-icon')
-		$userMpImg.setAttribute('src', '/images/mp.svg')
-		$userMpImg.setAttribute('alt', '')
-		$userMp.appendChild($userMpImg)
-
-		$userBlock.classList.add('user-icon')
-		$userBlockImg.setAttribute('src', '/images/block.svg')
-		$userBlockImg.setAttribute('alt', '')
-		$userBlock.appendChild($userBlockImg)
-
-		$userAddFriend.classList.add('user-icon')
-		$userAddFriendImg.setAttribute('src', '/images/add_friend.svg')
-		$userAddFriendImg.setAttribute('alt', '')
-		$userAddFriend.appendChild($userAddFriendImg)
 
 		$userLine.appendChild($userName)
-
+		$userName.innerText = user
 		if (user !== UserStore.getUserName()) {
+			const $userDuel = document.createElement('user-duel')
+			const $userDuelImg = document.createElement('img')
+			const $userMp = document.createElement('user-mp')
+			const $userMpImg = document.createElement('img')
+			const $userBlock = document.createElement('user-block')
+			const $userBlockImg = document.createElement('img')
+			const $userAddFriend = document.createElement('user-add-friend')
+			const $userAddFriendImg = document.createElement('img')
+
+			$userDuel.classList.add('user-icon')
+			$userDuelImg.setAttribute('src', '/images/duel.svg')
+			$userDuelImg.setAttribute('alt', '')
+			$userDuel.appendChild($userDuelImg)
+
+			$userMp.classList.add('user-icon')
+			$userMpImg.setAttribute('src', '/images/mp.svg')
+			$userMpImg.setAttribute('alt', '')
+			$userMp.appendChild($userMpImg)
+
+			$userBlock.classList.add('user-icon')
+			$userBlockImg.setAttribute('src', '/images/block.svg')
+			$userBlockImg.setAttribute('alt', '')
+			$userBlock.appendChild($userBlockImg)
+
+			$userAddFriend.classList.add('user-icon')
+			$userAddFriendImg.setAttribute('src', '/images/add_friend.svg')
+			$userAddFriendImg.setAttribute('alt', '')
+			$userAddFriend.appendChild($userAddFriendImg)
+
 			$userLine.appendChild($userDuel)
 			$userLine.appendChild($userMp)
 			$userLine.appendChild($userBlock)
@@ -99,8 +103,11 @@ function updateUserList(users: string[]) {
 			$userMp.addEventListener('click', _ => {
 				mpUser(user)
 			})
-		}
 
+			$userAddFriend.addEventListener('click', _ => {
+				addUserAsFriend(user)
+			})
+		}
 		$chatUsers.appendChild($userLine)
 	})
 }
