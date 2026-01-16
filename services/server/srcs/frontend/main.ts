@@ -1,8 +1,10 @@
 import { ChatStore } from './stores/chat.store'
 import { CurrentButtonStore } from './stores/current_button.store'
+import { NotificationStore } from './stores/notification.store'
 import { PageUpdateStore } from './stores/page_state'
 import { UserStore } from './stores/user.store'
 
+NotificationStore.init()
 const $bgContainer = document.querySelector('background-container')
 let $bgVideo
 let $bgImg
@@ -38,8 +40,8 @@ fetch('/get_payload', {
 }).then(async res => {
 	const payload = await res.json()
 	if (!payload) return
-	console.log('refresh PAYLOAD:', payload)
-	console.log('refresh PAYLOAD info:', payload.userInfo)
+	// console.log('refresh PAYLOAD:', payload)
+	// console.log('refresh PAYLOAD info:', payload.userInfo)
 	UserStore.emit({
 		email: payload.userInfo.email,
 		username: payload.userInfo.username,
