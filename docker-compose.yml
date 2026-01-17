@@ -79,8 +79,6 @@ services:
       - ${LOGS_PATH}:${LOGS_DIR}
     ports:
       - "${WAF_PORT}:${WAF_PORT}"
-    depends_on:
-      - server
     networks:
       - transcendence
     labels:
