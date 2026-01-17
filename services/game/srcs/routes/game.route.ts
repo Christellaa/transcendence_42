@@ -111,4 +111,12 @@ export async function gameRoutes(fastify: FastifyInstance) {
 			})
 		}
 	})
+
+	fastify.route({
+		method: 'GET',
+		url: '/api/health',
+		handler: (req, reply) => {
+			reply.send({ status: 'ok' })
+		}
+	})
 }

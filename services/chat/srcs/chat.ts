@@ -29,6 +29,8 @@ function sendUserList() {
 const server = Bun.serve({
 	port: 4444,
 	fetch(req, server) {
+		if (req.url === '/health')
+			return new Response('OK', { status: 200 })
 		if (server.upgrade(req)) {
 			return
 		}

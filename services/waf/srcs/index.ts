@@ -188,6 +188,9 @@ Bun.serve({
 		const url = new URL(req.url)
 		let isAuthenticated = false
 
+		if (url.pathname === '/health')
+			return new Response('OK', { status: 200 })
+
 		await fetch(`https://server:3000/get_payload`, {
 			method: req.method,
 			headers: req.headers

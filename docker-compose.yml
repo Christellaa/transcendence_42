@@ -12,13 +12,16 @@ services:
         condition: service_healthy
       vault:
         condition: service_healthy
+      game:
+        condition: service_healthy
+      chat:
+        condition: service_healthy
+      waf:
+        condition: service_healthy
     volumes:
       - "./services/server/srcs:/app/srcs"
       - "./services/server/build.ts:/app/build.ts"
       - ${LOGS_PATH}:${LOGS_DIR}
-    environment:
-      CLIENT_ID: ${CLIENT_ID}
-      CLIENT_SECRET: ${CLIENT_SECRET}
     networks:
       - transcendence
     labels:
@@ -31,7 +34,7 @@ services:
     container_name: game
     restart: unless-stopped
     ports:
-      - 3333:3333
+      - "${GAME_PORT}:${GAME_PORT}"
     depends_on:
       database:
         condition: service_healthy
@@ -40,6 +43,11 @@ services:
     volumes:
       - "./services/game/srcs:/app/srcs"
       - ${LOGS_PATH}:${LOGS_DIR}
+    healthcheck:
+      test: ["CMD", "curl", "-kf", "${GAME_HEALTH_URL}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
     networks:
       - transcendence
     labels:
@@ -52,7 +60,7 @@ services:
     container_name: chat
     restart: unless-stopped
     ports:
-      - 4444:4444
+      - "${CHAT_PORT}:${CHAT_PORT}"
     depends_on:
       database:
         condition: service_healthy
@@ -61,6 +69,11 @@ services:
     volumes:
       - "./services/chat/srcs:/app/srcs"
       - ${LOGS_PATH}:${LOGS_DIR}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "${CHAT_HEALTH_URL}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
     networks:
       - transcendence
     labels:
@@ -79,6 +92,11 @@ services:
       - ${LOGS_PATH}:${LOGS_DIR}
     ports:
       - "${WAF_PORT}:${WAF_PORT}"
+    healthcheck:
+      test: ["CMD", "curl", "-kf", "${WAF_HEALTH_URL}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
     networks:
       - transcendence
     labels:

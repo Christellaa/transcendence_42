@@ -4,8 +4,17 @@ SERVER_PORT=3000
 CLIENT_ID=<CHANGE-ME>
 CLIENT_SECRET=<CHANGE-ME>
 
+# GAME #
+GAME_PORT=3333
+GAME_HEALTH_URL=https://localhost:${GAME_PORT}/api/health
+
+# CHAT #
+CHAT_PORT=4444
+CHAT_HEALTH_URL=http://localhost:${CHAT_PORT}/health
+
 # WAF #
 WAF_PORT=443
+WAF_HEALTH_URL=https://localhost:${WAF_PORT}/health
 
 # VAULT #
 VAULT_API_PORT=6988
