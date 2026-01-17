@@ -6,5 +6,14 @@ export async function vaultPostQuery(endpoint: string, body: object) {
         },
         body: JSON.stringify(body)
     })
-    return res.json();
+    return res.json()
+}
+
+export async function getVaultSecret<T>(name: string, parser: (value:string) => T): Promise<T | null> {
+    const res = await vaultPostQuery('getSecret', { name })
+    try {
+        return parser(res.message.value)
+    } catch (error) {
+        return null
+    }
 }

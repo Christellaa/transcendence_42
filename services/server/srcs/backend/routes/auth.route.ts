@@ -4,7 +4,7 @@ import bcrypt from 'bcrypt'
 import { userRegisterType, userLoginType } from '../../types/user.type.js'
 import { checkIfAlreadyLoggedIn, generateAndSendToken, userTokenCookieOptions } from '../crud/auth.crud.js'
 import { dbPostQuery } from '../crud/dbQuery.crud.js'
-import { vaultPostQuery } from '../services/vault.service.js'
+import { getVaultSecret } from '../services/vault.service.js'
 import {
 	isUsernameFormatInvalid,
 	isEmailFormatInvalid,
@@ -70,13 +70,11 @@ export async function registerUser(req: FastifyRequest, reply: FastifyReply) {
 
 	if (pwd !== checkpwd) return reply.status(400).send({ message: 'Passwords do not match' })
 
-	let body = await vaultPostQuery('getSecret', { name: 'bcrypt_salt' })
+	const salt = await getVaultSecret<string>('bcrypt_salt', (value) => value)
+	if (!salt) return reply.status(500).send({ message: 'Failed to retrieve bcrypt_salt from Vault' })
 
-	if (body.status >= 400) return reply.status(body.status).send({ message: body.message })
-
-	const salt = body.message.value
 	const hashedPwd = await bcrypt.hash(pwd, salt)
-	body = await dbPostQuery({
+	const body = await dbPostQuery({
 		endpoint: 'dbRun',
 		query: {
 			verb: 'create',

@@ -79,6 +79,7 @@ export async function generateAndSendToken(infoFetch: any, reply: any) {
 	if (!infoFetch.id) return reply.status(404).send({ message: 'User ID not found' })
 	const userInfo = { email: infoFetch.email, username: infoFetch.username, id: infoFetch.id }
 	const token = await createToken(userInfo)
+	if (!token) return reply.status(500).send({ message: 'Token generation failed' })
 	return reply
 		.status(200)
 		.setCookie('token', token, userTokenCookieOptions())

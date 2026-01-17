@@ -12,7 +12,6 @@ import path from 'path'
 /********************** Functions **********************/
 import __dirname, { setDirName } from './functions/dirname.fn.js'
 import { publicWatcher } from './services/publicWatcher.service.js'
-import { getCertValue } from './crud/certs.crud.js'
 
 /********************** Services **********************/
 import { log } from './logs.js'
@@ -21,16 +20,23 @@ import { totalHttpRequests } from './services/prometheus.service.js'
 /********************** Routes **********************/
 import { authRoutes, metricsRoutes, userRoutes } from './routes/handler.route.js'
 import { routerRoute } from './routes/router.route.js'
+import { getVaultSecret } from './services/vault.service.js'
 
 setDirName(path.resolve())
 
-const cert_crt = await getCertValue('services_crt')
-const cert_key = await getCertValue('services_key')
+const cert_crt = await getVaultSecret<string>('services_crt', (value) =>
+	value.replace(/\\n/g, '\n').trim()
+)
+const cert_key = await getVaultSecret<string>('services_key', (value) =>
+	value.replace(/\\n/g, '\n').trim()
+)
+if (!cert_crt || !cert_key)
+	console.error('Failed to load TLS certificates from Vault service.')
 
 const fastify: FastifyInstance = Fastify({
 	https: {
-		key: cert_key,
-		cert: cert_crt
+		key: cert_key as string,
+		cert: cert_crt as string
 	}
 })
 
