@@ -5,6 +5,7 @@ import { type RuleType, type TargetType } from '../types/rules.type'
 import { sanitizeURL } from 'url-sanitizer'
 import os from 'os'
 import { log } from './logs'
+import { getVaultSecret } from './services/vault.service'
 
 const rulesFile = path.join(__dirname, '../rules/protocol_attack.json')
 let rulesMap: Map<TargetType, RuleType[]> = new Map()
@@ -150,10 +151,19 @@ interface WAFWebSocketData {
 
 const authOnly = ['/chat', '/update_profile', '/users']
 
+const cert_crt = await getVaultSecret<string>('services_crt', (value) =>
+	value.replace(/\\n/g, '\n').trim()
+)
+const cert_key = await getVaultSecret<string>('services_key', (value) =>
+	value.replace(/\\n/g, '\n').trim()
+)
+if (!cert_crt || !cert_key)
+	console.error('Failed to load TLS certificates from Vault service.')
+
 Bun.serve({
 	port: 443,
-	key: fs.readFileSync('./certs/key.pem'),
-	cert: fs.readFileSync('./certs/cert.pem'),
+	key: cert_key,
+	cert: cert_crt,
 	websocket: {
 		open(ws_frontend: Bun.ServerWebSocket<WAFWebSocketData>) {
 			console.log('WAF: Frontend WSS connected')

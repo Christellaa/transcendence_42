@@ -14,16 +14,26 @@ import __dirname, { setDirName } from './functions/dirname.fn.js'
 
 /********************** Services **********************/
 import { log } from './logs.js'
+import { getVaultSecret } from './services/vault.service.js'
 
 /********************** Routes **********************/
 import { gameRoutes } from './routes/game.route.js'
 
 setDirName(path.resolve())
 
+const cert_crt = await getVaultSecret<string>('services_crt', (value) =>
+	value.replace(/\\n/g, '\n').trim()
+)
+const cert_key = await getVaultSecret<string>('services_key', (value) =>
+	value.replace(/\\n/g, '\n').trim()
+)
+if (!cert_crt || !cert_key)
+	console.error('Failed to load TLS certificates from Vault service.')
+
 const fastify: FastifyInstance = Fastify({
 	https: {
-		key: fs.readFileSync(path.join(__dirname(), 'certs/key.pem')),
-		cert: fs.readFileSync(path.join(__dirname(), 'certs/cert.pem'))
+		key: cert_key,
+		cert: cert_crt
 	}
 })
 

@@ -18,7 +18,6 @@ ENV PATH="$PATH:/root/.bun/bin"
 COPY package.json ./
 COPY srcs ./srcs
 COPY bun.lock ./
-COPY certs ./certs
 
 RUN bun install
 
