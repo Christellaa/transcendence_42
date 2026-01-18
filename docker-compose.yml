@@ -143,6 +143,7 @@ services:
       - IPC_LOCK
     networks:
       - transcendence
+      - vault
     labels:
       - "projectLabel=transcendence"
 
@@ -179,4 +180,7 @@ volumes:
 networks:
   transcendence:
     name: transcendence_network
+    driver: bridge
+  vault:
+    name: vault_network
     driver: bridge

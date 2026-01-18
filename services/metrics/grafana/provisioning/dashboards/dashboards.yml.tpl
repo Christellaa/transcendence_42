@@ -8,5 +8,5 @@ providers:
     updateIntervalSeconds: 10
     allowUiUpdates: false
     options:
-      path: ${GRAFANA_DASHBOARDS_PATH}
+      path: ${GF_DASHBOARDS_PATH}
       foldersFromFilesStructure: true

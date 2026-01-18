@@ -6,8 +6,6 @@ KEYS=(CLIENT_ID
 CLIENT_SECRET
 GF_ADMIN_USER
 GF_ADMIN_PWD
-GF_CERT_PATH
-GF_KEY_PATH
 GF_USER_NAME
 GF_USER_MAIL
 GF_USER_PWD
@@ -27,8 +25,6 @@ KVPATHS=(secret/client_id
 secret/client_secret
 secret/gf_admin_user
 secret/gf_admin_pwd
-secret/gf_cert_path
-secret/gf_key_path
 secret/gf_user_name
 secret/gf_user_mail
 secret/gf_user_pwd
