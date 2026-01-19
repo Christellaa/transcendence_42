@@ -7,8 +7,9 @@ vault server -config=./conf/config.hcl &
 VAULT_PID=$!
 
 echo "Waiting for Vault to be ready..."
-until curl -ks ${VAULT_HEALTH_URL} >/dev/null; do
-  sleep 1
+
+until curl -s --cacert ${VAULT_CACERT} ${VAULT_HEALTH_URL} >/dev/null; do
+  sleep 2
 done
 echo "Vault is ready."
 
@@ -58,8 +59,8 @@ if [ "$FIRST_INIT" = true ]; then
     -out ./certs/services.crt \
     -keyout ./certs/services.key \
     -days 365 \
-    -subj "/C=FR/ST=IDF/L=Paris/O=42/OU=42/CN=localhost" \
-    -addext "subjectAltName=DNS:localhost,IP:127.0.0.1"
+    -subj "/C=FR/ST=IDF/L=Paris/O=42/OU=42/CN=services" \
+    -addext "subjectAltName=DNS:localhost,DNS:waf,IP:127.0.0.1"
   echo "Certificates created."
 
   export SERVICES_CRT=$(awk 'NF {sub(/\r/, ""); printf "%s\\n", $0;}' ./certs/services.crt)
