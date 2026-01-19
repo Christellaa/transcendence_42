@@ -17,6 +17,6 @@ output {
     hosts => ["http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}"]
     index => "my-logs-%{+YYYY.MM.dd}"
     user => "${ELASTICSEARCH_USER}"
-    password => "${ELASTICSEARCH_PWD}"
+    password => "_ELASTIC_PASSWORD_"
   }
 }

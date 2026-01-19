@@ -24,6 +24,7 @@ services:
       - ${LOGS_PATH}:${LOGS_DIR}
     networks:
       - transcendence
+      - vault
     labels:
       - "projectLabel=transcendence"
 
@@ -50,6 +51,7 @@ services:
       retries: 10
     networks:
       - transcendence
+      - vault
     labels:
       - "projectLabel=transcendence"
 
@@ -102,6 +104,7 @@ services:
         condition: service_healthy
     networks:
       - transcendence
+      - vault
     labels:
       - "projectLabel=transcendence"
 

@@ -44,7 +44,7 @@ minio server /data --console-address ":9001" &
 MINIO_PID=$!
 
 echo "Waiting for MinIO..."
-until curl -s $MINIO_HEALTH_URL; do
+until curl -s $MINIO_HEALTH_URL > /dev/null; do
     sleep 2
 done
 
