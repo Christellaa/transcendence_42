@@ -89,8 +89,6 @@ KIBANA_HOST=localhost
 KIBANA_PORT=5601
 KIBANA_OBJECTS_URL=https://kibana:${KIBANA_PORT}/api/saved_objects/_import?overwrite=true
 KIBANA_STATUS_URL=https://${KIBANA_HOST}:${KIBANA_PORT}/api/status
-KIBANA_CERT_PATH=/app/services/kibana/certs/kibana.crt
-KIBANA_KEY_PATH=/app/services/kibana/certs/kibana.key
 
 # ELASTICSEARCH #
 ELASTICSEARCH_HOST=elasticsearch

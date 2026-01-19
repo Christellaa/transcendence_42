@@ -15,8 +15,6 @@ ETHEREAL_TO
 ETHEREAL_FROM
 ETHEREAL_AUTH_USER
 ETHEREAL_AUTH_PWD
-KIBANA_CERT_PATH
-KIBANA_KEY_PATH
 ELASTICSEARCH_PWD
 SERVICES_CRT
 SERVICES_KEY)
@@ -34,8 +32,6 @@ secret/ethereal_to
 secret/ethereal_from
 secret/ethereal_auth_user
 secret/ethereal_auth_pwd
-secret/kibana_cert_path
-secret/kibana_key_path
 secret/elasticsearch_pwd
 secret/services_crt
 secret/services_key)

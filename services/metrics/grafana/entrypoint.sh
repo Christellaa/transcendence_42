@@ -9,7 +9,7 @@ exec grafana-server --homepath=/usr/share/grafana --config=/etc/grafana/grafana.
 GF_PID=$!
 
 echo "Waiting for Grafana..."
-until curl -ks $GF_URL_HEALTH; do
+until curl -ks $GF_URL_HEALTH > /dev/null; do
     sleep 2
 done
 
