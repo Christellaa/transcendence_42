@@ -1,6 +1,9 @@
 Chat Click Block User:
+	User B bloque user A, donc user A ne peut pas friend_requests user B, par contre il peut encore le bloquer de son coté
+
 	User blocking is notified if user properly blocked or error
 	Add row in blocks DB
+	
 	
 	If a blocked user is in User Blocking blocked list, prevent message to User Blocking socket altogether
 	If the Blocked user send an mp to User Blocking, send a notification that the user has blocked him/her
