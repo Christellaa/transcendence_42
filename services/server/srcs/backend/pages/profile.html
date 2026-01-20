@@ -1,38 +1,116 @@
 <head>
 	<title></title>
 	<style module>
-	
+		profile-stats {
+			width: 500px;
+			display: flex;
+			flex-direction: row;
+			justify-content: space-evenly;
+			margin: 1rem 0;
+		}
+
+		.stat-container {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			background-color: rgba(255, 255, 255, 0.2);
+			border: 2px solid #fff;
+			padding: 0.5rem 1rem;
+			border-radius: 10px;
+		}
+
+		.stat-container img {
+			height: 64px;
+			display: block;
+		}
+
+		table {
+			width: 500px;
+			text-align: center;
+			border: 2px solid #fff;
+			background-color: rgba(255, 255, 255, 0.1);
+		}
+
+		table thead tr,
+		table tbody tr {
+			border-bottom: 2px solid #fff;
+		}
+
+		table tbody tr:last-of-type {
+			border-bottom: 0px solid #fff;
+		}
 	</style>
 </head>
 
 <page type="profile">
 	<page-title></page-title>
-	
+
 	<profile-stats>
-		<user-wins>
-			
+		<user-wins class="stat-container">
+			<stat-icon>
+				<img src="/images/crown.svg" alt="" />
+			</stat-icon>
+			<stat-name>Wins</stat-name>
+			<stat-value>10</stat-value>
 		</user-wins>
-		<user-ratio>
-			
+		<user-ratio class="stat-container">
+			<stat-icon>
+				<img src="/images/ratio.svg" alt="" />
+			</stat-icon>
+			<stat-name>Ratio</stat-name>
+			<stat-value>75%</stat-value>
 		</user-ratio>
-		<user-loses>
-			
+		<user-loses class="stat-container">
+			<stat-icon>
+				<img src="/images/sad.svg" alt="" />
+			</stat-icon>
+			<stat-name>Loses</stat-name>
+			<stat-value>5</stat-value>
 		</user-loses>
 	</profile-stats>
-	
+
 	<profile-history>
-		<header>
-			<data-value>Date</data-value>
-			<data-value>Type</data-value>
-			<data-value>Players</data-value>
-			<data-value>Winner</data-value>
-		</header>
-		
+		<table>
+			<thead>
+				<tr>
+					<th>Date</th>
+					<th>Type</th>
+					<th>Players</th>
+					<th>Winner</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>01/19/2026</td>
+					<td>Classic 2/2</td>
+					<td>[...]</td>
+					<td>John</td>
+				</tr>
+				<tr>
+					<td>01/19/2026</td>
+					<td>Classic 2/2</td>
+					<td>[...]</td>
+					<td>John</td>
+				</tr>
+				<tr>
+					<td>01/19/2026</td>
+					<td>Classic 2/2</td>
+					<td>[...]</td>
+					<td>John</td>
+				</tr>
+				<tr>
+					<td>01/19/2026</td>
+					<td>Classic 2/2</td>
+					<td>[...]</td>
+					<td>John</td>
+				</tr>
+			</tbody>
+		</table>
 	</profile-history>
-	
+
 	<button id="profileNavWithMockUser">Mock redirect with user profile</button>
 	<button id="profileNavWithoutMockUser">Mock redirect without user profile</button>
-	
+
 	<menu-buttons>
 		<nav-button data-route="" tabindex="2" class="button text-3xl">Back</nav-button>
 	</menu-buttons>
