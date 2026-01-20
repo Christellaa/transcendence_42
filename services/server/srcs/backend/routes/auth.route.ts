@@ -116,7 +116,8 @@ export async function logUser(req: FastifyRequest, reply: FastifyReply) {
 	if (!matchPwd) return reply.status(401).send({ message: 'Invalid password' })
 
 	const infoFetch = { email: body.data.email, username: body.data.username, id: body.data.id }
-	return generateAndSendToken(infoFetch, reply)
+	console.log('LOGIN FORM --- infoFetch:', infoFetch)
+	await generateAndSendToken(infoFetch, reply)
 }
 
 export async function logoutUser(req: FastifyRequest, reply: FastifyReply) {
