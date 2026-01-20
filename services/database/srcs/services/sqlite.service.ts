@@ -65,6 +65,6 @@ export default function initDb() {
 			CREATE INDEX IF NOT EXISTS idx_blocks_blocked ON blocks(blocked_username);
 			CREATE INDEX IF NOT EXISTS idx_friend_requests_to ON friend_requests(to_username);
 		`)
-	console.log('\x1b[32m%s\x1b[0m', 'Users and queries_log tables created if not already exists')
+	console.log('\x1b[32m%s\x1b[0m', 'Tables created if not already exists')
 	return db
 }
