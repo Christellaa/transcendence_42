@@ -49,6 +49,7 @@ export async function fetch42User(url: string, { saveToDb }: { saveToDb: boolean
 							data: [email, login, is_oauth]
 						}
 					})
+					userId = body.data?.lastID
 					if (body.status >= 400) return { status: body.status, message: body.message }
 				}
 				else {

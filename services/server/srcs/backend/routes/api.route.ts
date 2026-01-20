@@ -29,7 +29,8 @@ export async function handlePOSTApiAuthRegister(req: FastifyRequest, reply: Fast
 
 	const infoFetch = await fetch42User(url, { saveToDb: true })
 	if (!infoFetch) return reply.status(403).send({ error: 'Invalid credentials' })
-	return reply.send(infoFetch)
+	console.log('REGISTER 42 OAUTH --- infoFetch: ', infoFetch)
+	await generateAndSendToken(infoFetch, reply)
 }
 
 export async function handlePOSTApiAuthLogin(req: FastifyRequest, reply: FastifyReply) {
