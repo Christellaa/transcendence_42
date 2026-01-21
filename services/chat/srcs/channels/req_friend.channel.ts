@@ -3,7 +3,7 @@ import { BunSocketType } from '../types/bunSocket.type'
 import { ClientType } from '../types/client.type'
 import { SocketDataType } from '../types/socketData.type'
 import { isAtLeastOneBlocked } from '../crud/block.crud'
-import { isFriend, insertFriendship } from '../crud/friend.crud'
+import { isFriend, insertFriendship, removeFromFriendships } from '../crud/friend.crud'
 import { insertFriendRequest, isDoubleFriendRequest, isInFriendRequests, removeFromFriendRequests } from '../crud/request.crud'
 
 export async function reqFriendChannel(ws: BunSocketType, data: SocketDataType) {
@@ -19,7 +19,19 @@ export async function reqFriendChannel(ws: BunSocketType, data: SocketDataType) 
 		if (await isAtLeastOneBlocked(ws, clientFound.username, data)) return
 		console.log('User not blocked, check if friends')
 
-		if (await isFriend(ws, clientFound.username, data)) return
+		const friendStatus = await isFriend(ws, clientFound.username, data)
+		if (friendStatus == 'error') return
+		else if (friendStatus == 'true')
+		{
+			console.log('Users are already friends. Removing them from friendships.')
+			if (!await removeFromFriendships(ws, clientFound.username, data)) return
+			console.log('Users removed from friendships.')
+			data.msg = `You have removed ${clientFound.username} from your friends list.`
+			data.type = 'notification'
+			data.notificationLevel = 'info'
+			ws.send(JSON.stringify(data))
+			return
+		}
 		console.log('Users are not friends, check if double friend request')
 
 		const doubleFriendRequest = await isDoubleFriendRequest(ws, clientFound.username, data)

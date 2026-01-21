@@ -3,7 +3,7 @@ import { BunSocketType } from '../types/bunSocket.type'
 import { SocketDataType } from '../types/socketData.type'
 import { ClientType } from '../types/client.type'
 
-export async function isFriend(ws: BunSocketType, friend: string, data: SocketDataType): Promise<boolean> {
+export async function isFriend(ws: BunSocketType, friend: string, data: SocketDataType): Promise<string> {
 	const res = await dbPostQuery({
 		endpoint: 'dbGet',
 		query: {
@@ -18,15 +18,15 @@ export async function isFriend(ws: BunSocketType, friend: string, data: SocketDa
 		data.msg = res.message
 		data.type = 'error'
 		ws.send(JSON.stringify(data))
-		return true
+		return 'error'
 	}
 	else if (res.data) {
 		data.msg = 'Cannot send friend request. Users are already friends.'
 		data.type = 'error'
 		ws.send(JSON.stringify(data))
-		return true
+		return 'true'
 	}
-	return false
+	return 'false'
 }
 
 export async function insertFriendship(ws: BunSocketType, new_friend: ClientType, data: SocketDataType): Promise<boolean> {
