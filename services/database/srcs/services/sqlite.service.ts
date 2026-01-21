@@ -63,7 +63,8 @@ export default function initDb() {
 				email TEXT NOT NULL UNIQUE,
 				pwd TEXT,
 				avatar TEXT,
-				is_oauth INTEGER NOT NULL DEFAULT 0
+				is_oauth INTEGER NOT NULL DEFAULT 0,
+				has_2fa INTEGER NOT NULL DEFAULT 0
 			);
 
 			CREATE TABLE IF NOT EXISTS queries_log (
