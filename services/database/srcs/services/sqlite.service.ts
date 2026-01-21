@@ -22,8 +22,6 @@ async function getVaultSecret<T>(name: string, parser: (value: string) => T): Pr
 	}
 }
 
-// const hashedPwd = await bcrypt.hash(pwd, salt)
-
 export default function initDb() {
 	getVaultSecret<string>('bcrypt_salt', value => value).then(salt => {
 		if (!salt) process.exit(1)
@@ -111,12 +109,12 @@ export default function initDb() {
 				CHECK (blocker_username != blocked_username)
 			);
 			
-			CREATE TABLE matches (
+			CREATE TABLE IF NOT EXISTS matches (
 				id INTEGER PRIMARY KEY NOT NULL,
 				created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 			);
 
-			CREATE TABLE match_players (
+			CREATE TABLE IF NOT EXISTS match_players (
 				match_id INTEGER NOT NULL,
 				username TEXT NOT NULL,
 				result TEXT NOT NULL CHECK (result IN ('win', 'lose')),
