@@ -42,3 +42,7 @@ BLOQUER ACCES USER (a faire):
 	+ friends
 	+ others' match history
 + dans le waf
+
+login -> make -> refresh -> username not shown in home -> move to another page -> come back to home -> user shown
+
+close socket when same user is chatting (double private window same user connected)
