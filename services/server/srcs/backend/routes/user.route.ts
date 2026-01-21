@@ -24,7 +24,6 @@ export async function getUsers(req: FastifyRequest, reply: FastifyReply) {
 
 export async function getUserProfile(req: FastifyRequest, reply: FastifyReply) {
 	const { name } = req.body as { name: string }
-	// console.log('\n\n\n\n\n\nName: ', name, '\n\n\n\n\n\n')
 	const res = await dbPostQuery({
 		endpoint: 'dbAll',
 		query: {
@@ -60,7 +59,6 @@ ORDER BY m.created_at DESC;
 			data: [name]
 		}
 	})
-	console.log(res)
 	if (res.status >= 400) return reply.status(res.status).send({ message: res.message })
 	return reply.status(200).send(res.data)
 }
