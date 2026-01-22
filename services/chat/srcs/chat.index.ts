@@ -3,21 +3,27 @@ import { globalChannel } from './channels/global.channel'
 import { mpChannel } from './channels/mp.channel'
 import { reqFriendChannel } from './channels/req_friend.channel'
 import JSONParser from './functions/json_parser.fn'
-import { clientsList, clientsSocket } from './state/clients.state'
+import { clientsSocket } from './state/clients.state'
 import { SocketDataType } from './types/socketData.type'
 import { BunSocketType } from './types/bunSocket.type'
 import { sendUserList } from './functions/sendUserList.fn'
 import { blockUserChannel } from './channels/block_user.channel'
 import { getVaultSecret } from './services/vault.service.js'
 
-const cert_crt = await getVaultSecret<string>('services_crt', (value) =>
-	value.replace(/\\n/g, '\n').trim()
-)
-const cert_key = await getVaultSecret<string>('services_key', (value) =>
-	value.replace(/\\n/g, '\n').trim()
-)
-if (!cert_crt || !cert_key)
-	console.error('Failed to load TLS certificates from Vault service.')
+const cert_crt = await getVaultSecret<string>('services_crt', value => value.replace(/\\n/g, '\n').trim())
+const cert_key = await getVaultSecret<string>('services_key', value => value.replace(/\\n/g, '\n').trim())
+if (!cert_crt || !cert_key) console.error('Failed to load TLS certificates from Vault service.')
+
+function updateUsername(ws: BunSocketType, data: SocketDataType) {
+	console.log('Update username data: ', data, '\n\n\n\n\n\n')
+	console.log('Websocket name: ', ws.data.username, data.msg)
+	ws.data.username = data.msg
+	console.log('Websocket name: ', ws.data.username)
+
+	clientsSocket.forEach(client => {
+		console.log('Client: ', client.data.username)
+	})
+}
 
 const server = Bun.serve({
 	port: 4444,
@@ -60,6 +66,8 @@ const server = Bun.serve({
 				reqFriendChannel(ws, data)
 			} else if (data.type === 'block-user') {
 				blockUserChannel(ws, data)
+			} else if (data.type === 'update-username') {
+				updateUsername(ws, data)
 			}
 		},
 		close(ws: BunSocketType) {
@@ -67,12 +75,9 @@ const server = Bun.serve({
 				type: 'info',
 				msg: `Player ${ws.data.username} has disconnected`
 			}
-			for (const client of clientsList) {
-				if (client.socket !== ws && client.socket.readyState === WebSocket.OPEN) {
-					client.socket.send(JSON.stringify(message))
-				}
-				if (client.socket === ws) {
-					clientsList.delete(client)
+			for (const socket of clientsSocket) {
+				if (socket !== ws && socket.readyState === WebSocket.OPEN) {
+					socket.send(JSON.stringify(message))
 				}
 			}
 			clientsSocket.delete(ws)

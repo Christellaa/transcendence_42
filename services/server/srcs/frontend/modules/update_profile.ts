@@ -1,5 +1,8 @@
 import { resetAvatarButton, setupAvatarPreview } from '../functions/formValidation'
 import { UserStore } from '../stores/user.store'
+import { NotificationStore } from '../stores/notification.store'
+import { StateStore } from '../stores/state.store'
+import { ChatStore } from '../stores/chat.store'
 
 let trackEvent = false
 
@@ -18,34 +21,54 @@ function close2FAModal(modal: HTMLDivElement, overlay: HTMLDivElement) {
 	overlay.classList.add('hidden')
 }
 
-function send2FACode(): boolean {
-	// fake for testing purposes
-	const success = Math.random() > 0.2
-	if (success) {
-		console.log('2FA code sent successfully')
-		return true
+async function send2FACode(): Promise<boolean> {
+	const code = '123456';
+	const res = await fetch('https://localhost:443/2fa/send_code', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify({ code })
+	})
+	if (res.status >= 400) {
+		console.log('Failed to send 2FA code', res.status)
+		return false
 	}
-	console.log('Failed to send 2FA code')
-	return false
+	console.log('2FA code sent successfully')
+	return true
+}
+
+async function check2FACodeWithServer(code: string): Promise<boolean> {
+	const res = await fetch('https://localhost:443/2fa/validate_code', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify({ code })
+	})
+	if (res.status >= 400) {
+		console.log('2FA code validation failed', res.status)
+		return false
+	}
+	console.log('2FA code validated successfully with server')
+	return true
 }
 
 function validate2FACode(codeInput: HTMLInputElement) {
-	// fake for testing purposes
 	const validate2FABtn = $page.querySelector('#twofa-validate-btn') as HTMLButtonElement
 	const modalError = $page.querySelector('#twofa-error') as HTMLDivElement
 	const $toggle2FABtn = $page.querySelector('#twofa') as HTMLInputElement
 	const modal = $page.querySelector('#twofa-modal') as HTMLDivElement
 	const overlay = $page.querySelector('#twofa-modal-overlay') as HTMLDivElement
 
-	validate2FABtn.addEventListener('click', (e) => {
+	validate2FABtn.addEventListener('click', async (e) => {
 		const code = codeInput.value.trim()
 		if (!/^\d{6}$/.test(code)) {
 			console.log('Invalid 2FA code format')
 			displayModalError(modalError, 'Invalid code format. Please enter a 6-digit code.')
 			return
 		}
-		// fake validation
-		const isValid = Math.random() > 0.2
+		const isValid = await check2FACodeWithServer(code)
 		if (!isValid) {
 			console.log('Incorrect 2FA code')
 			displayModalError(modalError, 'Incorrect code. Please try again.')
@@ -73,28 +96,34 @@ function toggle2FAState(toggle2FABtn: HTMLInputElement) {
 	console.log('toggle2FABtn checked AFTER CODE VALIDATED (from x2):', toggle2FABtn.checked)
 }
 
-function toggle2FA(toggle2FABtn: HTMLInputElement, closeModalBtn: HTMLButtonElement, modal: HTMLDivElement, overlay: HTMLDivElement, codeInput: HTMLInputElement, modalError: HTMLDivElement) {
-	toggle2FABtn.addEventListener('change', (e) => {
+function toggle2FA(
+	toggle2FABtn: HTMLInputElement,
+	closeModalBtn: HTMLButtonElement,
+	modal: HTMLDivElement,
+	overlay: HTMLDivElement,
+	codeInput: HTMLInputElement,
+	modalError: HTMLDivElement
+) {
+	toggle2FABtn.addEventListener('change', async e => {
 		e.preventDefault()
 		toggle2FABtn.checked = !toggle2FABtn.checked
 		console.log('toggle2FABtn checked AT START:', toggle2FABtn.checked)
 
 		open2FAModal(modal, overlay, codeInput, modalError)
-		const success = send2FACode()
+		const success = await send2FACode()
 		if (!success) {
 			displayModalError(modalError, 'Error sending 2FA code. Please try again.')
+			setTimeout(() => {
+				close2FAModal(modal, overlay)
+			}, 2000)
 			// what should happen when failing to send code?
 			return
 		}
 		// on validate, check code server-side, if ok -> enable/disable 2fa for user in db
 		validate2FACode(codeInput)
 	})
-	closeModalBtn.addEventListener('click', () =>
-		close2FAModal(modal, overlay)
-	)
-	overlay.addEventListener('click', () =>
-		close2FAModal(modal, overlay)
-	)
+	closeModalBtn.addEventListener('click', () => close2FAModal(modal, overlay))
+	overlay.addEventListener('click', () => close2FAModal(modal, overlay))
 }
 
 function handleUpdateProfile() {
@@ -102,7 +131,7 @@ function handleUpdateProfile() {
 	const $avatarInput = $page.querySelector('input[name="avatar"]') as HTMLInputElement
 	const $avatarPreview = $page.querySelector('#avatarPreview') as HTMLImageElement
 	const $resetAvatarBtn = $page.querySelector('#resetAvatarButton') as HTMLButtonElement
-	
+
 	resetAvatarButton($resetAvatarBtn, $avatarInput, $avatarPreview)
 
 	const $toggle2FABtn = $page.querySelector('#twofa') as HTMLInputElement
@@ -136,16 +165,34 @@ function handleUpdateProfile() {
 			if (avatarFile) formData.append('avatar', avatarFile)
 			fetch('https://localhost:443/update_user', {
 				method: 'PUT',
-				body: formData,
+				body: formData
 			})
 				.then(res => {
-					if (res.status >= 400)
-						return console.log('ERROR updating profile', res.status)
-					console.log('RESPONSE', res)
+					if (res.status >= 400) {
+						return {
+							error: true
+						}
+					}
 					return res.json()
 				})
-				.then (res => {
-					console.log('RESRESRES', res)
+				.then(res => {
+					if (res?.error) {
+						NotificationStore.notify('ERROR updating profile', 'ERROR')
+						return
+					}
+					if (res?.message === 'No changes made') {
+						NotificationStore.notify('No info changed', 'INFO')
+					} else {
+						NotificationStore.notify('User data updated', 'SUCCESS')
+						ChatStore.send({
+							msg: res.infoFetch.username,
+							type: 'update-username',
+							timestamp: 0,
+							user: UserStore.getUserName()
+						})
+						StateStore.update({ username: res.infoFetch.username })
+						UserStore.emit(res.infoFetch)
+					}
 				})
 		}
 	}
