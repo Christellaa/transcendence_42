@@ -89,14 +89,10 @@ function handleUserForm(self: HTMLElement) {
 		$submitBtn.onclick = e => {
 			e.preventDefault()
 			const formData = createFormData($registerForm, $avatarInput)
-			for (const [key, value] of formData.entries()) {
-				console.log(key, value)
-			}
 			if (hasInvalidFields($registerForm)) {
 				alert('Form contains invalid fields.')
 				return
 			}
-
 			fetchRegister(formData, $registerForm)
 		}
 	}
