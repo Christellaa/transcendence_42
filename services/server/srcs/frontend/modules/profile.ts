@@ -63,8 +63,6 @@ function setMatches(matches: MatchType[]) {
 		const $tdType = document.createElement('td')
 		const $tdPlayers = document.createElement('td')
 		const $tdWinner = document.createElement('td')
-		
-		console.log(match)
 
 		$tdDate.innerText = match.created_at
 		$tdType.innerText = match.type
