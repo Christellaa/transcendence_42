@@ -10,7 +10,7 @@ const chats: MessageType[] = []
 
 if (ws === null) {
 	UserStore.subscribe(userStore => {
-		if (userStore.isValid) {
+		if (userStore.isValid && ws === null) {
 			ws = new WebSocket('ws://localhost:4444')
 			if (ws === null) return
 			ws.addEventListener('open', () => {

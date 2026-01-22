@@ -2,6 +2,7 @@ import { resetAvatarButton, setupAvatarPreview } from '../functions/formValidati
 import { UserStore } from '../stores/user.store'
 import { NotificationStore } from '../stores/notification.store'
 import { StateStore } from '../stores/state.store'
+import { ChatStore } from '../stores/chat.store'
 
 let trackEvent = false
 
@@ -145,16 +146,27 @@ function handleUpdateProfile() {
 			})
 				.then(res => {
 					if (res.status >= 400) {
-						NotificationStore.notify('ERROR updating profile', 'ERROR')
-						return
+						return {
+							error: true
+						}
 					}
 					return res.json()
 				})
 				.then(res => {
+					if (res?.error) {
+						NotificationStore.notify('ERROR updating profile', 'ERROR')
+						return
+					}
 					if (res?.message === 'No changes made') {
 						NotificationStore.notify('No info changed', 'INFO')
 					} else {
 						NotificationStore.notify('User data updated', 'SUCCESS')
+						ChatStore.send({
+							msg: res.infoFetch.username,
+							type: 'update-username',
+							timestamp: 0,
+							user: UserStore.getUserName()
+						})
 						StateStore.update({ username: res.infoFetch.username })
 						UserStore.emit(res.infoFetch)
 					}
