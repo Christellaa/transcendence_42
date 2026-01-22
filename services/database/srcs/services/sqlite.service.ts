@@ -67,8 +67,19 @@ export default function initDb() {
 				has_2fa INTEGER NOT NULL DEFAULT 0
 			);
 
+			CREATE TABLE IF NOT EXISTS two_fa_challenges (
+				id INTEGER PRIMARY KEY,
+				code_hash TEXT NOT NULL,
+				purpose TEXT NOT NULL,
+				expires_at DATETIME NOT NULL,
+				used_at DATETIME,
+				attempts INTEGER NOT NULL DEFAULT 0,
+
+				FOREIGN KEY (id) REFERENCES users(id) ON DELETE CASCADE
+			);
+
 			CREATE TABLE IF NOT EXISTS queries_log (
-				id INTEGER PRIMARY KEY AUTOINCREMENT,
+				id INTEGER PRIMARY KEY,
 				query_type TEXT,
 				query TEXT NOT NULL,
 				status TEXT CHECK( status IN ('success','failure') ) NOT NULL,
