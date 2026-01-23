@@ -2,6 +2,7 @@ import { resetAvatarButton, setupAvatarPreview } from '../functions/formValidati
 import { UserStore } from '../stores/user.store'
 import { NotificationStore } from '../stores/notification.store'
 import { StateStore } from '../stores/state.store'
+import { ChatStore } from '../stores/chat.store'
 
 let trackEvent = false
 
@@ -63,7 +64,7 @@ async function check2FACodeWithServer(code: string): Promise<boolean> {
 function validate2FACode(toggle2FABtn: HTMLInputElement, modal: HTMLDivElement, overlay: HTMLDivElement, codeInput: HTMLInputElement, modalError: HTMLDivElement) {
 	const validate2FABtn = $page.querySelector('#twofa-validate-btn') as HTMLButtonElement
 
-	validate2FABtn.addEventListener('click', async (e) => {
+	validate2FABtn.addEventListener('click', async e => {
 		const code = codeInput.value.trim()
 		if (!/^\d{6}$/.test(code)) {
 			console.log('Invalid 2FA code format')
@@ -173,18 +174,30 @@ function handleUpdateProfile() {
 			})
 				.then(res => {
 					if (res.status >= 400) {
-						NotificationStore.notify('ERROR updating profile', 'ERROR')
-						return
+						console.log('Error: ', res)
+						return {
+							error: true
+						}
 					}
 					return res.json()
 				})
 				.then(res => {
+					if (res?.error == true) {
+						NotificationStore.notify('ERROR updating profile', 'ERROR')
+						return
+					}
 					if (res?.message === 'No changes made') {
 						NotificationStore.notify('No info changed', 'INFO')
 					} else {
 						NotificationStore.notify('User data updated', 'SUCCESS')
-						StateStore.update({ username: res.infoFetch.username })
-						UserStore.emit(res.infoFetch)
+						ChatStore.send({
+							msg: res.username,
+							type: 'update-username',
+							timestamp: 0,
+							user: UserStore.getUserName()
+						})
+						StateStore.update({ username: res.username })
+						UserStore.emit(res)
 					}
 				})
 		}

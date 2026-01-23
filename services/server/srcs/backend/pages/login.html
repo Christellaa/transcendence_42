@@ -8,6 +8,7 @@
 		form {
 			margin: 1rem 0;
 			display: none;
+			flex-direction: column;
 		}
 
 		form-section {
@@ -26,13 +27,11 @@
 			padding: 0.25rem 0.5rem;
 			background-color: rgba(0, 0, 0, 0.75);
 			border-bottom: 2px transparent dashed;
-			/* box-shadow: inset 0px -2px 0px rgba(0, 0, 0, 0.75); */
 		}
 
 		input:focus {
 			outline: none;
 			border-bottom: 2px white dashed;
-			/* box-shadow: inset 0px -2px 0px yellow; */
 		}
 
 		oauth-container {
@@ -56,11 +55,11 @@
 	<form>
 		<form-section>
 			<span>Username:</span>
-			<input type="text" name="username" value="username" required tabindex="2" />
+			<input type="text" name="username" value="bob" required tabindex="2" />
 		</form-section>
 		<form-section>
 			<span>Password:</span>
-			<input type="password" name="pwd" autocomplete="new-password" value="Password1!@" tabindex="5" />
+			<input type="password" name="pwd" autocomplete="new-password" value="pwd" tabindex="5" />
 		</form-section>
 		<button class="button text-3xl" type="submit" tabindex="8">Login</button>
 	</form>

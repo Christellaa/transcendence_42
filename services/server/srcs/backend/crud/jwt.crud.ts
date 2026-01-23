@@ -61,7 +61,7 @@ export async function verifyJWS(token: string, secretKey: CryptoKey) {
 export async function encryptJWE(payload: string, secretKey: CryptoKey) {
     const jwe = await new EncryptJWT({ jws: payload })
         .setProtectedHeader({ alg: 'dir', enc: 'A256GCM' }) // enc = encryption
-        .setExpirationTime('1h')
+        .setExpirationTime('12h')
         .encrypt(secretKey)
     return jwe
 }

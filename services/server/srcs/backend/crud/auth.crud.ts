@@ -3,6 +3,8 @@ import { createToken, verifyToken } from './jwt.crud.js'
 import { JWTPayload } from 'jose'
 import { dbPostQuery } from '../services/db.service.js'
 import type { CookieSerializeOptions } from '@fastify/cookie'
+import { type InfoFetchType } from '../../types/infofetch.type.js'
+import { type User42InfoType } from '../../types/user42Info.type.js'
 
 export async function getPayload(request: FastifyRequest): Promise<any | null | undefined> {
 	const loggedInToken = getToken(request)
@@ -23,68 +25,93 @@ export async function checkIfAlreadyLoggedIn(request: FastifyRequest): Promise<b
 	return true
 }
 
-export async function fetch42User(url: string, { saveToDb }: { saveToDb: boolean }) {
+export async function fetch42User(url: string, { saveToDb }: { saveToDb: boolean }): Promise<InfoFetchType> {
 	const token = await fetch(url, { method: 'POST' })
 		.then(res => res.json())
 		.then(res => res?.access_token)
 
-	let userId: number | null = null
+	let userId: number
+	let body
 
-	if (token) {
-		const infoFetch = await fetch('https://api.intra.42.fr/v2/me', {
-			headers: {
-				Authorization: `Bearer ${token}`
+	if (!token)
+		return {
+			info: {
+				status: 403,
+				message: 'Invalid credentials'
+			}
+		}
+
+	const user42Info: User42InfoType = await fetch('https://api.intra.42.fr/v2/me', {
+		headers: {
+			Authorization: `Bearer ${token}`
+		}
+	}).then(res => res.json())
+
+	if (!user42Info)
+		return {
+			info: {
+				status: 403,
+				message: 'Invalid credentials'
+			}
+		}
+
+	if (saveToDb) {
+		body = await dbPostQuery({
+			endpoint: 'dbRun',
+			query: {
+				verb: 'create',
+				sql: 'INSERT INTO users (email, username, is_oauth) VALUES (?, ?, ?)',
+				data: [user42Info.email, user42Info.login, 1]
 			}
 		})
-			.then(res => res.json())
-			.then(async res => {
-				const { email, login } = res
-				if (saveToDb) {
-					const is_oauth = 1
-					const body = await dbPostQuery({
-						endpoint: 'dbRun',
-						query: {
-							verb: 'create',
-							sql: 'INSERT INTO users (email, username, is_oauth) VALUES (?, ?, ?)',
-							data: [email, login, is_oauth]
-						}
-					})
-					userId = body.data?.lastID
-					if (body.status >= 400) return { status: body.status, message: body.message }
+		userId = body.data?.lastID
+	} else {
+		body = await dbPostQuery({
+			endpoint: 'dbGet',
+			query: {
+				verb: 'read',
+				sql: 'SELECT * FROM users WHERE username = ?',
+				data: [user42Info.login]
+			}
+		})
+		userId = body.data.id
+		if (body.data.is_oauth !== 1) {
+			return {
+				info: {
+					status: 403,
+					message: 'User already registered with form'
 				}
-				else {
-					const body = await dbPostQuery({
-						endpoint: 'dbGet',
-						query: {
-							verb: 'read',
-							sql: 'SELECT * FROM users WHERE username = ?',
-							data: [login]
-						}
-					})
-					if (body.status >= 400)
-						return { status: body.status, message: body.message }
-
-					const is_oauth = body.data.is_oauth
-					if (is_oauth !== 1)
-						return { status: 403, message: 'User registered with form' }
-					userId = body.data.id
-				}
-				return { status: 200, info: { email, username: login, id: userId } }
-			})
-		return infoFetch
+			}
+		}
 	}
-	return { status: 403, message: 'Invalid credentials' }
+	if (body.status >= 400) {
+		return {
+			info: {
+				status: body.status,
+				message: body.message
+			}
+		}
+	}
+	return {
+		email: user42Info.email,
+		username: user42Info.login,
+		id: userId,
+		info: {
+			status: 200
+		}
+	}
 }
 
-export async function generateAndSendToken(infoFetch: any, reply: any) {
-	if (!infoFetch.info.id) return reply.status(404).send({ message: 'User ID not found' })
-	const userInfo = { email: infoFetch.info.email, username: infoFetch.info.username, id: infoFetch.info.id }
+export async function generateAndSendToken(infoFetch: InfoFetchType, reply: any) {
+	if (!infoFetch.id) return reply.status(404).send({ message: 'User ID not found' })
+
+	const userInfo = { email: infoFetch.email, username: infoFetch.username, id: infoFetch.id }
 	const token = await createToken(userInfo)
 	if (!token) return reply.status(500).send({ message: 'Token generation failed' })
 	return reply
 		.status(200)
 		.setCookie('token', token, userTokenCookieOptions())
-		.send({ ...infoFetch.info })
+		.send({ ...infoFetch })
 }
 export function userTokenCookieOptions(): CookieSerializeOptions {
 	return {

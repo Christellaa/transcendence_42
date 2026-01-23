@@ -1,10 +1,11 @@
-import { clientsList } from '../state/clients.state'
+import { clientsSocket } from '../state/clients.state'
 import { MessageType } from '../types/message.type'
 
 export function sendUserList() {
 	const clients: string[] = []
-	clientsList.forEach(client => {
-		clients.push(client.username)
+
+	clientsSocket.forEach(ws => {
+		clients.push(ws.data.username)
 	})
 
 	const message: MessageType = {
@@ -12,7 +13,8 @@ export function sendUserList() {
 		type: 'users'
 	}
 
-	clientsList.forEach(client => {
-		client.socket.send(JSON.stringify(message))
+	clientsSocket.forEach(ws => {
+		ws.send(JSON.stringify(message))
+		console.log('Client name: ', ws.data.username)
 	})
 }

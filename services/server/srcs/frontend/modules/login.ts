@@ -52,7 +52,7 @@ if (codeParam) {
 		.then(res => {
 			if (res.status === 200) return res.json()
 			$menuButtons.style.display = 'flex'
-			$loginForm.style.display = 'block'
+			$loginForm.style.display = 'flex'
 			return
 		})
 		.then(res => {
@@ -80,9 +80,6 @@ function handleUserForm(self: HTMLElement) {
 				return
 			}
 			const formData = createLoginFormData($loginForm)
-			for (const [key, value] of formData.entries()) {
-				console.log(key, value)
-			}
 			fetchLogin(formData)
 		}
 	}
@@ -98,7 +95,7 @@ function handleUserForm(self: HTMLElement) {
 	self.appendChild($span)
 	self.appendChild($navRight)
 
-	$loginForm.style.display = 'block'
+	$loginForm.style.display = 'flex'
 
 	setupUsernameAndPwdFieldsValidation($loginForm)
 }

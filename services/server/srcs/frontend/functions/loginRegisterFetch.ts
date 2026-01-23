@@ -1,5 +1,6 @@
 import { navigate } from '../js/routing'
 import { UserStore } from '../stores/user.store'
+import { NotificationStore } from '../stores/notification.store'
 
 export function fetchLogin(formData: FormData) {
 	fetch('https://localhost:443/login', {
@@ -7,15 +8,15 @@ export function fetchLogin(formData: FormData) {
 		body: formData
 	})
 		.then(res => {
-			if (res.status >= 400) {
-				console.log(res)
-				return { status: res.status }
-			}
+			if (res.status >= 400) return { status: res.status }
+
 			return res.json()
 		})
 		.then(res => {
-			if (res?.status >= 400) return
-			console.log('FRONTEND --- login form response: ', res)
+			if (res?.status >= 400) {
+				NotificationStore.notify('User not found', 'ERROR')
+				return
+			}
 			UserStore.emit(res)
 			navigate('')
 		})
@@ -42,7 +43,7 @@ export function fetchRegister(formData: FormData, registerForm: HTMLElement) {
 				alert('Email already taken')
 				return
 			}
-			console.log("FRONTEND --- registering form response: ", res)
+			console.log('FRONTEND --- registering form response: ', res)
 			UserStore.emit(res)
 			navigate('')
 		})
