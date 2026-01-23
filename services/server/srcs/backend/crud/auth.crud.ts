@@ -76,8 +76,8 @@ export async function fetch42User(url: string, { saveToDb }: { saveToDb: boolean
 			endpoint: 'dbGet',
 			query: {
 				verb: 'read',
-				sql: 'SELECT * FROM users WHERE username = ?',
-				data: [user42Info.login]
+				sql: 'SELECT * FROM users WHERE email = ?',
+				data: [user42Info.email]
 			}
 		})
 		if (body.status >= 400) {
