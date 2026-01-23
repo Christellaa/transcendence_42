@@ -3,11 +3,11 @@ import { v4 as uuidv4 } from 'uuid'
 import { json_parse } from '../../frontend/functions/json_wrapper.js'
 import { fetch42User, generateAndSendToken } from '../crud/auth.crud.js'
 import { getVaultSecret } from '../services/vault.service.js'
+import { InfoFetchType } from '../../types/infofetch.type.js'
 
-const CLIENT_ID = await getVaultSecret<string>('client_id', (value) => value)
-const CLIENT_SECRET = await getVaultSecret<string>('client_secret', (value) => value)
-if (!CLIENT_ID || !CLIENT_SECRET)
-	console.error('Failed to load 42OAuth client credentials from Vault service.')
+const CLIENT_ID = await getVaultSecret<string>('client_id', value => value)
+const CLIENT_SECRET = await getVaultSecret<string>('client_secret', value => value)
+if (!CLIENT_ID || !CLIENT_SECRET) console.error('Failed to load 42OAuth client credentials from Vault service.')
 
 export async function getClientID(req: FastifyRequest, reply: FastifyReply) {
 	return reply.send({ client_id: CLIENT_ID })
@@ -28,7 +28,8 @@ export async function handlePOSTApiAuthRegister(req: FastifyRequest, reply: Fast
 		})
 
 	const infoFetch = await fetch42User(url, { saveToDb: true })
-	if (!infoFetch || infoFetch.status >= 400) return reply.status(403).send({ error: infoFetch?.message || 'Something went wrong' })
+	if (!infoFetch || infoFetch.info.status >= 400)
+		return reply.status(403).send({ error: infoFetch?.info.message || 'Something went wrong' })
 	console.log('REGISTER 42 OAUTH --- infoFetch: ', infoFetch)
 	await generateAndSendToken(infoFetch, reply)
 }
@@ -47,8 +48,9 @@ export async function handlePOSTApiAuthLogin(req: FastifyRequest, reply: Fastify
 			state: uuidv4()
 		})
 
-	const infoFetch = await fetch42User(url, { saveToDb: false })
-	if (!infoFetch || infoFetch.status >= 400) return reply.status(403).send({ error: infoFetch?.message || 'Something went wrong' })
+	const infoFetch: InfoFetchType = await fetch42User(url, { saveToDb: false })
+	if (!infoFetch || infoFetch.info.status >= 400)
+		return reply.status(403).send({ error: infoFetch?.info.message || 'Something went wrong' })
 	console.log('LOGIN 42 OAUTH --- infoFetch: ', infoFetch)
 	await generateAndSendToken(infoFetch, reply)
 }

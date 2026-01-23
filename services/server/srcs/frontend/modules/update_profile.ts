@@ -22,7 +22,7 @@ function close2FAModal(modal: HTMLDivElement, overlay: HTMLDivElement) {
 }
 
 async function send2FACode(): Promise<boolean> {
-	const code = '123456';
+	const code = '123456'
 	const res = await fetch('https://localhost:443/2fa/send_code', {
 		method: 'POST',
 		headers: {
@@ -61,7 +61,7 @@ function validate2FACode(codeInput: HTMLInputElement) {
 	const modal = $page.querySelector('#twofa-modal') as HTMLDivElement
 	const overlay = $page.querySelector('#twofa-modal-overlay') as HTMLDivElement
 
-	validate2FABtn.addEventListener('click', async (e) => {
+	validate2FABtn.addEventListener('click', async e => {
 		const code = codeInput.value.trim()
 		if (!/^\d{6}$/.test(code)) {
 			console.log('Invalid 2FA code format')
@@ -169,6 +169,7 @@ function handleUpdateProfile() {
 			})
 				.then(res => {
 					if (res.status >= 400) {
+						console.log('Error: ', res)
 						return {
 							error: true
 						}
@@ -176,7 +177,7 @@ function handleUpdateProfile() {
 					return res.json()
 				})
 				.then(res => {
-					if (res?.error) {
+					if (res?.error == true) {
 						NotificationStore.notify('ERROR updating profile', 'ERROR')
 						return
 					}
@@ -185,13 +186,13 @@ function handleUpdateProfile() {
 					} else {
 						NotificationStore.notify('User data updated', 'SUCCESS')
 						ChatStore.send({
-							msg: res.infoFetch.username,
+							msg: res.username,
 							type: 'update-username',
 							timestamp: 0,
 							user: UserStore.getUserName()
 						})
-						StateStore.update({ username: res.infoFetch.username })
-						UserStore.emit(res.infoFetch)
+						StateStore.update({ username: res.username })
+						UserStore.emit(res)
 					}
 				})
 		}
