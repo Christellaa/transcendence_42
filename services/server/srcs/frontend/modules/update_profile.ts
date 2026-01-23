@@ -59,7 +59,13 @@ async function check2FACodeWithServer(code: string): Promise<boolean> {
 	return true
 }
 
-function validate2FACode(toggle2FABtn: HTMLButtonElement, modal: HTMLDivElement, overlay: HTMLDivElement, codeInput: HTMLInputElement, modalError: HTMLDivElement) {
+function validate2FACode(
+	toggle2FABtn: HTMLButtonElement,
+	modal: HTMLDivElement,
+	overlay: HTMLDivElement,
+	codeInput: HTMLInputElement,
+	modalError: HTMLDivElement
+) {
 	const validate2FABtn = $page.querySelector('#twofa-validate-btn') as HTMLButtonElement
 
 	validate2FABtn.addEventListener('click', async e => {
@@ -75,9 +81,6 @@ function validate2FACode(toggle2FABtn: HTMLButtonElement, modal: HTMLDivElement,
 			displayModalError(modalError, 'Incorrect code. Please try again.')
 			return
 		}
-
-		console.log('2FA code validated successfully')
-
 		UserStore.setUser2FAStatus(!UserStore.getUser2FAStatus())
 		render2FAState(toggle2FABtn, UserStore.getUser2FAStatus())
 		close2FAModal(modal, overlay)
@@ -90,7 +93,9 @@ function displayModalError(modalError: HTMLDivElement, message: string) {
 }
 
 function render2FAState($toggle2FABtn: HTMLButtonElement, enabled: boolean) {
-	$toggle2FABtn.textContent = enabled ? '2FA Enabled' : '2FA Disabled'
+	console.log('2FA Value: ', enabled)
+	document.querySelector('button#twofa').innerText = enabled ? '2FA Enabled' : '2FA Disabled'
+	// $toggle2FABtn.textContent = enabled ? '2FA Enabled' : '2FA Disabled'
 }
 
 function toggle2FA($toggle2FABtn: HTMLButtonElement) {
@@ -200,7 +205,7 @@ function handleUpdateProfile() {
 handleUpdateProfile()
 
 const unsubUserStore = UserStore.subscribe(value => {
-	console.log(value)
+	console.log('User Store Value: ', value)
 	console.log(($usernameInput.placeholder = value.username))
 })
 

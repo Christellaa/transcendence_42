@@ -60,7 +60,8 @@ function createUserStore() {
 
 	function setUser2FAStatus(status: boolean) {
 		user.has_2fa = status
-		StateStore.update({ has_2fa: user.has_2fa })
+		StateStore.update({ has_2fa: status })
+		emit(user)
 	}
 
 	return { subscribe, emit, getUserName, getUser2FAStatus, setUser2FAStatus, clear }
