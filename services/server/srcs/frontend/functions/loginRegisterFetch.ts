@@ -5,7 +5,7 @@ import { start2FAFlow } from './twofa_auth'
 
 
 export function fetchLogin(formData: FormData) {
-	fetch('https://localhost:443/login', {
+	fetch('/login', {
 		method: 'POST',
 		body: formData
 	})
@@ -35,7 +35,7 @@ export function fetchLogin(formData: FormData) {
 }
 
 export function fetchRegister(formData: FormData, registerForm: HTMLElement) {
-	fetch('https://localhost:443/register', {
+	fetch('/register', {
 		method: 'POST',
 		body: formData
 	})

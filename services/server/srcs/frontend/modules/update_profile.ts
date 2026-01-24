@@ -83,6 +83,7 @@ handleUpdateProfile()
 const unsubUserStore = UserStore.subscribe(value => {
 	console.log('User Store Value: ', value)
 	console.log(($usernameInput.placeholder = value.username))
+	render2FAState(undefined, value.has_2fa)
 })
 
 const cleanPage = () => {

@@ -44,10 +44,10 @@ let currentButton: HTMLElement
 
 const unsubCurrentButtonStore = CurrentButtonStore.subscribe(el => (currentButton = el))
 
-start42OAuth(document.querySelector('nav-button'), 'https://localhost/login')
+start42OAuth(document.querySelector('nav-button'), `https://localhost/login`)
 
 if (codeParam) {
-	fetch('https://localhost:443/api/auth/login', {
+	fetch('/api/auth/login', {
 		method: 'POST',
 		body: JSON.stringify({ code: codeParam })
 	})
@@ -59,7 +59,7 @@ if (codeParam) {
 		})
 		.then(res => {
 			if (res.info.status >= 400) {
-				NotificationStore.notify(res.info.message, "ERROR")
+				NotificationStore.notify(res.info.message, 'ERROR')
 				return
 			}
 			if (res.info.message === '2FA_REQUIRED') {
@@ -117,7 +117,7 @@ function handleUserForm(self: HTMLElement) {
 
 function selectloginType(loginType: string, self: HTMLElement) {
 	if (loginType === '42') {
-		start42OAuth(self, 'https://localhost/login')
+		start42OAuth(self, `https://localhost/login`)
 	} else {
 		handleUserForm(self)
 	}
