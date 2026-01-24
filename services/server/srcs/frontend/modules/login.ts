@@ -63,7 +63,6 @@ if (codeParam) {
 				return
 			}
 			if (res.info.message === '2FA_REQUIRED') {
-				console.log(res)
 				NotificationStore.notify('Two-Factor Authentication required. Please enter your 2FA code.', "INFO")
 				start2FAFlow($page, 'login', () => {
 					NotificationStore.notify('Login successful', "SUCCESS")
@@ -94,6 +93,7 @@ function handleUserForm(self: HTMLElement) {
 				alert('Form contains invalid fields.')
 				return
 			}
+
 			const formData = createLoginFormData($loginForm)
 			fetchLogin(formData)
 		}

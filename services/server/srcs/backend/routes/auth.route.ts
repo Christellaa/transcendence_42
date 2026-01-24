@@ -13,6 +13,7 @@ import {
 } from '../../frontend/functions/formValidation.js'
 import { getMultipartFormData } from '../crud/multipartForm.js'
 import { InfoFetchType } from '../../types/infofetch.type.js'
+import { create2FAChallenge } from './2fa.route.js'
 
 /* body to send for updateUser:
 	PUT /user/1
@@ -132,6 +133,13 @@ export async function logUser(req: FastifyRequest, reply: FastifyReply) {
 		info: {
 			status: 200
 		}
+	}
+	if (infoFetch.has_2fa === true) {
+		infoFetch.info.message = '2FA_REQUIRED'
+		const userData = { userId: infoFetch.id, purpose: 'login' }
+		const res = await create2FAChallenge(userData)
+		if (res.status >= 400) return reply.status(res.status).send({ info: res.message })
+		return reply.status(200).send({ ...infoFetch })
 	}
 	console.log('LOGIN FORM --- infoFetch:', infoFetch)
 	await generateAndSendToken(infoFetch, reply)
