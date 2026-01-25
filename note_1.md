@@ -1,4 +1,4 @@
-Christella: 2fa, Kibana
+Christella: Kibana
 Paco: Register, Login, Lobby, user management (visu)
 Jacques: Tournament
 
@@ -19,7 +19,6 @@ Grands:
 - User Management (match history, friends)
 
 Petits:
-- 2FA
 - Screen reader - SEO SSR
 - Kibana (archiving policies)
 - Languages
