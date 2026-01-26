@@ -11,17 +11,7 @@ When updating profile name, chat gets messed up
 	Fix, close previous socket, and refresh front edn socket
 
 Chat Click Block User:
-	User blocking is notified if user properly blocked or error
-	
-	If the Blocked user send an mp to User Blocking, send a notification that the user has blocked him/her
-
 	When Loading chat room, show the blocked user as blocked in user list
-
-Chat Click Unblock User:
-	User unblocking is notified if user properly unblocked or error
-
-Chat click remove friend:
-	Notify user requesting that friendship is now removed
 
 Login:
 	Still a bunch of visual issues showing the wrong elements
