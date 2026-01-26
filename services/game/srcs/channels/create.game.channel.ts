@@ -18,16 +18,25 @@ export function createGameChannel(ws: BunSocketType, data: CreateGameType, lobby
 				text: `Too many or too few players`
 		}))
 		currentUser.navigate = "remote_game"
-		let users : User[] = []
-		users.push(currentUser)
-		for (let i=0; i < comCount; i++)
-		{
-			users.push(new User("", `bot_${i}`));
-		}
-		new RemoteGame(users);
-		return ws.send(json_stringify({
-			type: 'start-game',
-			text: ""
-		}))
+
+		const session = lobby.gameManager.createSession({
+			minPlayers: playersCount,
+			maxPlayers: playersCount,
+			bots: comCount
+		})
+
+		session.addHuman(currentUser)
+
+		// let users : User[] = []
+		// users.push(currentUser)
+		// for (let i=0; i < comCount; i++)
+		// {
+		// 	users.push(new User("", `bot_${i}`));
+		// }
+		// new RemoteGame(users);
+		// return ws.send(json_stringify({
+		// 	type: 'start-game',
+		// 	text: ""
+		// }))
 	}
 }

@@ -130,7 +130,8 @@ private drawPlayers(ctx: CanvasRenderingContext2D, state: GameState)
     });
 }
 
-private rotatePoint(p: Point, cx: number, cy: number, angle: number): Point {
+private rotatePoint(p: Point, cx: number, cy: number, angle: number): Point
+{
 	const dx = p.x - cx
 	const dy = p.y - cy
 	const cosA = Math.cos(angle)
@@ -141,7 +142,8 @@ private rotatePoint(p: Point, cx: number, cy: number, angle: number): Point {
 	}
 }
 
-private drawLine(ctx: CanvasRenderingContext2D, p1: Point, p2: Point, colorStrike: string = 'black', width: number = 1) {
+private drawLine(ctx: CanvasRenderingContext2D, p1: Point, p2: Point, colorStrike: string = 'black', width: number = 1)
+{
 	ctx.beginPath()
 	ctx.moveTo(p1.x, p1.y)
 	ctx.lineTo(p2.x, p2.y)
@@ -150,7 +152,8 @@ private drawLine(ctx: CanvasRenderingContext2D, p1: Point, p2: Point, colorStrik
 	ctx.stroke()
 }
 
-private drawPredictionsRotated(ctx: CanvasRenderingContext2D, ball: Point, impacts: Impact[], center: Point, angle: number) {
+private drawPredictionsRotated(ctx: CanvasRenderingContext2D, ball: Point, impacts: Impact[], center: Point, angle: number)
+{
 	if (!impacts || impacts.length === 0) return
 	let prev = this.rotatePoint(ball, center.x, center.y, angle)
 	for (let i = 0; i < impacts.length; i++) {

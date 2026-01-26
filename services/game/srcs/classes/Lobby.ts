@@ -3,15 +3,19 @@ import { randomUUID } from 'crypto'
 import User from './User.js'
 import { RemoteGame } from './RemoteGame.js'
 import type { DuelType, FrontType, InputType, MessageType } from '../types/message.type.js'
+import { GameManager } from './GameManager.js'
 
-export default class Lobby {
+export default class Lobby
+{
 	private users = new Map<string, User>()
 
-	constructor() {
+	constructor(public gameManager: GameManager)
+	{
 		console.log(`🆕 Lobby created`)
 	}
 
-	toJSON(): Object {
+	toJSON(): Object
+	{
 		return {
 			size: this.size,
 			nb_active: this.nb_active(),
@@ -19,7 +23,8 @@ export default class Lobby {
 		}
 	}
 
-	nb_active(): number {
+	nb_active(): number
+	{
 		let nb = 0
 		for (const user of this.users.values())
 		{
@@ -38,7 +43,8 @@ export default class Lobby {
 		return user;
 	}
 
-	addUser(pseudo: string) {
+	addUser(pseudo: string)
+	{
 		if (this.isPseudoTaken(pseudo)) return { id: '0', pseudo: '' }
 		const newUser = new User(randomUUID(), pseudo)
 		this.users.set(newUser.id, newUser)
@@ -50,18 +56,13 @@ export default class Lobby {
 		return { userId: newUser.id, pseudo: newUser.pseudo }
 	}
 
-	// refreshWebsocket(userId: string, websocket: WebSocket) {
-	// 	const user = this.getUser(userId)
-	// 	if (!user || user.socket?.readyState === WebSocket.OPEN) return
-	// 	user.socket = websocket
-	// 	console.log(`🆕 ${user.pseudo} refresh his websocket`)
-	// }
-
-	getUser(userId: string): User | undefined {
+	getUser(userId: string): User | undefined
+	{
 		return this.users.get(userId)
 	}
 
-	removeUser(user: User) {
+	removeUser(user: User)
+	{
 		if (!user) return
 		console.log(`❌ ${user.pseudo} left the lobby`)
 		this.broadcast({
@@ -70,15 +71,16 @@ export default class Lobby {
 		})
 	}
 
-	handleDuel(sender: User, msg: DuelType) {
+	handleDuel(sender: User, msg: DuelType)
+	{
 		const destinataire = this.getUserByPseudo(msg.to)
 		if (!destinataire) return sender.send({ type: 'error', text: `${msg.to} can't be found` })
 		switch (msg.action)
 		{
 			case 'propose':
 			{
-				if (sender.status !== 'chat') return sender.send({ type: 'error', text: `You're already in game` })
-				if (destinataire.status !== 'chat') return sender.send({ type: 'error', text: `${msg.to} isn't available` })
+				if (sender.status === 'game') return sender.send({ type: 'error', text: `You're already in game` })
+				if (destinataire.status === 'game') return sender.send({ type: 'error', text: `${msg.to} is already in game` })
 				destinataire.send({ type: 'duel', from: sender.pseudo, action: 'propose' })
 				console.log(`${sender.pseudo} send a duel to ${destinataire.pseudo}`)
 				break
@@ -86,7 +88,8 @@ export default class Lobby {
 			case 'accept':
 			{
 				console.log(`${sender.pseudo} create game`)
-				new RemoteGame([destinataire, sender])
+				this.gameManager.createGame([destinataire, sender])
+				// new RemoteGame([destinataire, sender])
 				destinataire.send({ type: 'duel', from: sender.pseudo, action: 'accept' })
 				console.log(`${sender.pseudo} accept a duel from ${destinataire.pseudo}`)
 				break
@@ -99,22 +102,26 @@ export default class Lobby {
 		}
 	}
 
-	handleInputKey(sender: User, msg: InputType) {
+	handleInputKey(sender: User, msg: InputType)
+	{
 		sender.key = msg.key
 	}
 
-	broadcast(payload: FrontType, exceptId?: string) {
+	broadcast(payload: FrontType, exceptId?: string)
+	{
 		const now = Date.now()
 		for (const [id, user] of this.users.entries()) {
 			if (id !== exceptId) user.send({ ...payload, timestamp: now, lobby: { size: this.size, nb_active: this.nb_active() } })
 		}
 	}
 
-	get size() {
+	get size()
+	{
 		return this.users.size
 	}
 
-	close() {
+	close()
+	{
 		this.broadcast({
 			type: 'error',
 			text: `server close inappropriately`
@@ -124,14 +131,16 @@ export default class Lobby {
 		console.log(`❌ Lobby deleted`)
 	}
 
-	isPseudoTaken(pseudo: string): boolean {
+	isPseudoTaken(pseudo: string): boolean
+	{
 		for (const user of this.users.values()) {
 			if (user.pseudo === pseudo) return true
 		}
 		return false
 	}
 
-	getUserByPseudo(pseudo: string): User | undefined {
+	getUserByPseudo(pseudo: string): User | undefined
+	{
 		for (const user of this.users.values()) {
 			if (user.pseudo === pseudo) return user
 		}

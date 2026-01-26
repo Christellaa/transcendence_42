@@ -10,6 +10,7 @@ import { getVaultSecret } from './services/vault.service.js'
 import Lobby from './classes/Lobby.js'
 import { MessageType } from './types/message.type.js'
 import { createGameChannel } from './channels/create.game.channel.js'
+import { GameManager } from './classes/GameManager.js'
 
 const cert_crt = await getVaultSecret<string>('services_crt', (value) =>
 	value.replace(/\\n/g, '\n').trim()
@@ -20,7 +21,8 @@ const cert_key = await getVaultSecret<string>('services_key', (value) =>
 if (!cert_crt || !cert_key)
 	console.error('Failed to load TLS certificates from Vault service.')
 
-const lobby = new Lobby()
+const gameManager = new GameManager()
+const lobby = new Lobby(gameManager)
 
 const server = Bun.serve({
 	port: 3333,

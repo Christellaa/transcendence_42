@@ -1,88 +1,47 @@
-import User from "./User.js"
-import type { Impact } from "../types/game.type.js"
+import type { PlayerController, PlayerAction } from "../controllers/PlayerController.js"
+import { Impact } from "../types/game.type.js"
 
 const MaxTangenteSpeed = 0.2
 
 export class Player
 {
 	readonly index: number
-	readonly nbPlayer : number
-	readonly defaultAngle: number
+	readonly nbPlayer: number
 	readonly minAngle: number
 	readonly maxAngle: number
-	readonly user: User
-	paddleSize: number
-	angle: number
-	score: number
-	// pause: boolean
-	ai: boolean
-	pseudo: string
-	tangenteSpeed: number
+	readonly defaultAngle: number
 
-	constructor(index: number, nbPlayer: number, user: User)
+	angle: number
+	paddleSize: number
+	score: number
+	tangenteSpeed = 0
+
+	constructor(
+		index: number,
+		nbPlayer: number,
+		public readonly controller: PlayerController
+	)
 	{
 		this.index = index
 		this.nbPlayer = nbPlayer
 		this.paddleSize = 0.25 * Math.PI / nbPlayer
-		this.user = user
-		this.tangenteSpeed = 0
-		// this.pause = false
-		if (user.id === "")
-		{
-			this.pseudo = "🤖" + this.user.pseudo
-			this.ai = true;
-		}
-		else
-		{
-			this.pseudo = this.user.pseudo
-			this.ai = false;
-		}
 		this.score = Math.round(10 / nbPlayer)
-		const twoPiOverPlayers = (2 * Math.PI) / this.nbPlayer
-		this.minAngle = this.index * twoPiOverPlayers
-		this.maxAngle = (this.index + 1) * twoPiOverPlayers
-		this.defaultAngle = this.minAngle + (twoPiOverPlayers / 2)
+
+		const twoPi = (2 * Math.PI) / nbPlayer
+		this.minAngle = index * twoPi
+		this.maxAngle = (index + 1) * twoPi
+		this.defaultAngle = this.minAngle + twoPi / 2
 		this.angle = this.defaultAngle
-		user.status = "game"
 	}
 
-	handleIA(predictionIA:Impact[])
+	update(predictions: Impact[])
 	{
-		this.pseudo = "🤖" + this.user.pseudo
-		let theta = this.defaultAngle
-		for (const pr of predictionIA)
-		{
-			if (pr.theta > this.minAngle && pr.theta < this.maxAngle)
-			{
-				theta = pr.theta
-				break   // <--- sort de la boucle dès qu'on trouve le premier
-			}
-		}
-		if (this.angle > theta + this.paddleSize / 2) this.decrementAngle()
-		else if (this.angle < theta - this.paddleSize / 2) this.incrementAngle()
-	}
+		const action : PlayerAction = this.controller.getInput(predictions)
 
-	handleKey(predictionIA: Impact[])
-	{
-		const lastKey = this.user.key
-		this.user.key = "none"
-		// if (lastKey === "space") return this.togglePause()
-		// if (lastKey === "chatGPT") this.ai = !this.ai
-		if (this.ai)
-		{
-			return this.handleIA(predictionIA)
-		}
-		// if (this.user.socket && this.user.socket.readyState !== WebSocket.OPEN) return this.togglePause()
-		if (lastKey === "none") this.decreaseTangenteSpeed()
-		else if (lastKey === "-") this.incrementAngle()
-		else if (lastKey === "+") this.decrementAngle()
+		if (action === "idle") this.decreaseTangenteSpeed()
+		else if (action === "left") this.incrementAngle()
+		else if (action === "right") this.decrementAngle()
 	}
-
-	// togglePause()
-	// {
-	// 	this.pause = !this.pause
-	// 	if (this.pause) console.log(`⏸️ Joueur ${this.pseudo} toggle pause`)
-	// }
 
 	resetAngle()
 	{
@@ -101,8 +60,7 @@ export class Player
 		this.angle -= 0.05
 		if (this.angle - this.paddleSize < this.minAngle)
 			this.angle = this.minAngle + this.paddleSize
-		this.tangenteSpeed += 0.02
-		if (this.tangenteSpeed > MaxTangenteSpeed) this.tangenteSpeed = MaxTangenteSpeed
+		this.tangenteSpeed = Math.min(this.tangenteSpeed + 0.02, MaxTangenteSpeed)
 	}
 
 	private incrementAngle()
@@ -110,7 +68,6 @@ export class Player
 		this.angle += 0.05
 		if (this.angle + this.paddleSize > this.maxAngle)
 			this.angle = this.maxAngle - this.paddleSize
-		this.tangenteSpeed -= 0.02
-		if (this.tangenteSpeed < -MaxTangenteSpeed) this.tangenteSpeed = -MaxTangenteSpeed
+		this.tangenteSpeed = Math.max(this.tangenteSpeed - 0.02, -MaxTangenteSpeed)
 	}
 }

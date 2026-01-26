@@ -1,9 +1,22 @@
 import { randomUUID, UUID } from 'crypto'
-import { Player } from "./Player.js";
+import { Player } from "./Player_old.js";
+// import { Player } from './Player.js'
 import { Ball } from "./Ball.js";
 import User from "./User.js";
 import { arena, board } from "../functions/game.scale.js"
 import type { Impact, GameState, Countdown, GamePause, GameDisconnect } from "../types/game.type.js";
+import { HumanController } from "../controllers/HumanController.js"
+import { BotController } from "../controllers/BotController.js"
+
+enum GameEndReason
+{
+	DISCONNECT,
+	SCORE,
+	SERVER_SHUTDOWN
+}
+
+const GameEndReasonStr = ["DISCONNECT", "SCORE", "SERVER_SHUTDOWN"]
+
 
 const hertz = 60
 const tick_ms = 1000 / hertz
@@ -19,22 +32,49 @@ private intervalId : NodeJS.Timeout | undefined
 private IAinterval : NodeJS.Timeout | undefined
 private status : 'state' | 'end' = 'state'
 private nbFrame : number = 0
-private gameUUID : UUID
+public readonly id: UUID
+private onEndCallback?: (game: RemoteGame) => void
 
-constructor ( users: User[])
+constructor ( users: User[], onEnd?: (game: RemoteGame) => void)
 {
-	this.gameUUID = randomUUID()
+	this.id = randomUUID()
+	this.onEndCallback = onEnd
 	this.ball = new Ball()
 	this.predictions = this.ball.predictImpact(hertz)
 	const nbPlayer = users.length
-	this.players = users.map((u:User, index:number) => new Player(index, nbPlayer, u))
+	this.players = users.map((user:User, index:number) => {
+
+		// const controller = 	(user.id === "")
+		// ? new BotController(min, max, paddleSize, defaultAngle)
+		// : new HumanController(user)
+ 		// return new Player(index, nbPlayer, controller)
+		return new Player(index, nbPlayer, user)
+	})
 	this.startGameLoop();
-	console.log(`${this.gameUUID} game start`)
+	console.log(`${this.id} game start`)
 }//constructor()
+
+private endGame(reason: GameEndReason)
+{
+	console.log(`${this.id} game ended with ${GameEndReasonStr[reason]}`)
+	this.onEndCallback?.(this)
+}
+
+public hasUser(user: User): boolean
+{
+	return this.players.some(p => p.user === user)
+}
+
+public getUsers(): User[]
+{
+	return this.players
+		.map(p => p.user)
+		.filter(u => u.id !== "")
+}
 
 public destroy()
 {
-	console.log(`${this.gameUUID} game destroy`)
+	console.log(`${this.id} game destroy`)
 	if (this.intervalId)
 	{
 		clearInterval(this.intervalId)
@@ -121,7 +161,7 @@ private gameTick()
 	if (this.checkDisconnection())
 	{
 		console.log("destroy from checkDisconnection")
-		return this.destroy()
+		return this.endGame(GameEndReason.DISCONNECT)
 	}
 	this.players.forEach(p=>p.handleKey(this.predictions))
 	if (this.ball.vx === 0 && this.ball.vy === 0)
@@ -172,7 +212,7 @@ private gameTick()
 		{
 			this.status = 'end'
 			this.broadcastState(dist, theta, changeColor);
-			return (this.destroy())
+			return (this.endGame(GameEndReason.SCORE))
 		}
 		if (playerBounced)
 		{
