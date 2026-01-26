@@ -48,7 +48,7 @@ function createStateStore() {
 		}
 		for (const fn of subscribers) fn(state)
 
-		console.log('State: ', state)
+		console.log('Update State: ', state)
 	}
 
 	function getStateUUID() {

@@ -18,7 +18,7 @@ if (!ws) {
 			console.log("gamesocket created");
 			ws.onopen = e => {
 				if (!ws) return NotificationStore.notify("Network error, websocket shutdown", "ERROR");
-				ws.send(JSON.stringify({type: 'auth',username: UserStore.getUserName()}));
+				ws.send(json_stringify({type: 'auth',username: UserStore.getUserName()}));
 			}
 			ws.onmessage = e => {
 				const message: FrontType = json_parse(e.data) as FrontType
@@ -43,27 +43,30 @@ if (!ws) {
 						NotificationStore.notify("start_remote_game", "SUCCESS");
 						return navigate('remote_game');
 					}
+					case 'list-game':
+					{
+						return (LobbyStore.setGamePendings(message.games))
+					}
 					case 'duel':
 					{
 						if (!ws) return
 						switch (message.action)
 						{
 							case 'accept':
+							{
+								LobbyStore.removeDuel(message.from);
 								NotificationStore.notify(`${message.from} accept you duel`, "INFO")
-								LobbyStore.addDuel(message)
 								return navigate('remote_game')
+							}
 							case 'decline':
-								LobbyStore.addDuel(message)
-								return NotificationStore.notify(`duel has been declined from ${message.from}`, "INFO")
-								// return console.log(`duel has been declined from ${message.from}`)
-							case 'propose': {
-								NotificationStore.notify(`${message?.from} send you a duel, do you accept?`, "INFO")
-								LobbyStore.addDuel(message)
-								if (confirm(`${message?.from} send you a duel, do you accept?`))
-								{
-									ws.send(json_stringify({ type: 'duel', to: message?.from, action: 'accept' }));
-									return navigate('remote_game');
-								} else return ws.send(json_stringify({ type: 'duel', to: message?.from, action: 'decline' }))
+							{
+								LobbyStore.removeDuel(message.from)
+								return NotificationStore.notify(`Duel has been declined from ${message.from}`, "INFO")
+							}
+							case 'propose':
+							{
+								LobbyStore.addIncomingDuel(message.from)
+								return NotificationStore.notify(`${message?.from} send you a duel`, "INFO")
 							}
 						}
 					}

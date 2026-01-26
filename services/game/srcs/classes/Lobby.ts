@@ -110,7 +110,8 @@ export default class Lobby
 	broadcast(payload: FrontType, exceptId?: string)
 	{
 		const now = Date.now()
-		for (const [id, user] of this.users.entries()) {
+		for (const [id, user] of this.users.entries())
+		{
 			if (id !== exceptId) user.send({ ...payload, timestamp: now, lobby: { size: this.size, nb_active: this.nb_active() } })
 		}
 	}

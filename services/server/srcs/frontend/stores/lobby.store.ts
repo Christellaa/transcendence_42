@@ -1,34 +1,83 @@
-import { DuelResponse, DuelType } from '../../types/message.type.ts'
+import type { DuelResponse, DuelType, GamePending } from '../../types/message.type.ts'
 
 type DuelStore = DuelResponse | DuelType
 
-type Subscriber = (message: DuelStore[]) => void
+type LobbyDuel = {
+	from: string
+	status: 'pending'
+}
 
-const duels : DuelStore[] = []
 
-function createLobbyStore() {
+type LobbyState = {
+	gamePendings: GamePending[]
+	duels: LobbyDuel[]
+}
+
+type Subscriber = (state: LobbyState) => void
+
+const state: LobbyState = {
+	gamePendings: [],
+	duels: []
+}
+
+function createLobbyStore()
+{
 	const subscribers = new Set<Subscriber>()
 
-	function subscribe(fn: Subscriber) {
+	function subscribe(fn: Subscriber)
+	{
 		subscribers.add(fn)
+		fn(state) // 🔥 push initial state
 		return () => subscribers.delete(fn)
 	}
 
-	function emit(duel: DuelStore[]) {
-		for (const fn of subscribers) fn(duel)
-	}
-
-	function addDuel(duel: DuelStore)
+	function emit()
 	{
-		duels.push(duel)
-		console.log("lobbystore, duels", duels)
+		for (const fn of subscribers) fn(state)
 	}
 
-	function getDuels() {
-		return duels
+	function addIncomingDuel(from: string)
+	{
+		const exists = state.duels.some(d => d.from === from)
+		if (exists) return
+
+		state.duels.push({ from, status: 'pending' })
+		emit()
 	}
 
-	return { subscribe, emit, getDuels, addDuel }
+	function removeDuel(from: string)
+	{
+		state.duels = state.duels.filter(d => d.from !== from)
+		emit()
+	}
+
+
+	// ---- GAME PENDING ----
+	function setGamePendings(games: GamePending[])
+	{
+		state.gamePendings = games
+		emit()
+	}
+
+	function clearGamePendings()
+	{
+		state.gamePendings = []
+		emit()
+	}
+
+	function getState()
+	{
+		return state
+	}
+
+	return {
+		subscribe,
+		getState,
+		setGamePendings,
+		clearGamePendings,
+		addIncomingDuel,
+		removeDuel
+	}
 }
 
 declare global {

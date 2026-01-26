@@ -11,6 +11,8 @@ import Lobby from './classes/Lobby.js'
 import { MessageType } from './types/message.type.js'
 import { createGameChannel } from './channels/create.game.channel.js'
 import { GameManager } from './classes/GameManager.js'
+import { joinGameChannel, listGamesChannel } from './channels/join.game.channel.js'
+import { leaveGameChannel } from './channels/leave.game.channel.js'
 
 const cert_crt = await getVaultSecret<string>('services_crt', (value) =>
 	value.replace(/\\n/g, '\n').trim()
@@ -63,19 +65,30 @@ const server = Bun.serve({
 				case 'duel' : return duelChannel(ws, data, lobby);
 				case 'input' : return inputChannel(ws, data, lobby);
 				case 'create-game' : return createGameChannel(ws, data, lobby);
+				case 'join-game': return joinGameChannel(ws, data, lobby);
+				case 'list-game': return listGamesChannel(ws, lobby);
+				case 'leave-game': return leaveGameChannel(ws, data, lobby);
 			}
 		},
 		close(ws: BunSocketType)
 		{
+			const user = ws.data.user
+			if (user)
+			{
+				lobby.gameManager.leaveSession(user)
+			}
 			const info = {
 				type: 'info',
 				msg: `Player ${ws.data.username} has disconnected`
 			}
-			for (const client of clientsList) {
-				if (client.socket !== ws && client.socket.readyState === WebSocket.OPEN) {
+			for (const client of clientsList)
+			{
+				if (client.socket !== ws && client.socket.readyState === WebSocket.OPEN)
+				{
 					client.socket.send(JSON.stringify(info))
 				}
-				if (client.socket === ws) {
+				if (client.socket === ws)
+				{
 					clientsList.delete(client)
 				}
 			}

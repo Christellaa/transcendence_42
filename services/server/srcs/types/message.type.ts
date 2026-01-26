@@ -93,17 +93,39 @@ export type NavigateType = {
 	navigate : string
 }
 
-export type CreateGameType = {
-	type : 'create-game',
-	gameInit : {
-		comCount: number,
-		playersCount: number
-	}
+export type GameInitType = {
+	humanCount: number,
+	botCount:number
 }
 
-export type MessageType = InputType | DuelType | AuthType | InfoType | NavigateType | CreateGameType
+export type CreateGameType = {
+	type : 'create-game',
+	game : GameInitType
+}
 
-export type FrontType = FrontErrorType | DuelResponse
+export type LeaveGameType = {
+	type: "leave-game"
+}
+
+export type GamePending = {
+	id:string,
+	nbPlayerReady: number,
+	nbPlayerMax: number
+}
+
+export type ListGameType = {
+	type: 'list-game',
+	games: GamePending[]
+}
+
+export type JoinGameType = {
+	type: "join-game"
+	sessionId: string
+}
+
+export type MessageType = InputType | DuelType | AuthType | InfoType | NavigateType | CreateGameType | LeaveGameType | JoinGameType
+
+export type FrontType = FrontErrorType | DuelResponse | ListGameType
 
 export type FrontErrorType = {
 	type: 'error' | 'system' | 'start-game'

@@ -50,28 +50,35 @@ $createGame.addEventListener('click', () => {
 
 	if (isRemote)
 	{
-		if (comCount + playersCount < minPlayers) {
+		if (comCount + playersCount < minPlayers)
+		{
 			errorMessage = 'Too few players/com for remote play'
-		} else if (comCount + playersCount > Number(maxRemotePlayers)) {
-			errorMessage = 'Too many players/com for remote play'
-		} else {
-			GameStore.send({type: 'create-game', gameInit : {
-				comCount, playersCount
-			}})
 		}
-	} else {
-		if (comCount + playersCount < minPlayers) {
+		else if (comCount + playersCount > Number(maxRemotePlayers))
+		{
+			errorMessage = 'Too many players/com for remote play'
+		}
+		else
+		{
+			GameStore.send({type: 'create-game', game : { humanCount: playersCount, botCount: comCount}})
+			navigate("lobby");
+		}
+	}
+	else
+	{
+		if (comCount + playersCount < minPlayers)
+		{
 			errorMessage = 'Too few players/com for local play'
-		} else if (comCount + playersCount > Number(maxLocalPlayers)) {
+		}
+		else if (comCount + playersCount > Number(maxLocalPlayers))
+		{
 			errorMessage = 'Too many players/com for local play'
 		}
-		else {
-			StateStore.update({createdGame: {
-				ai:comCount === 1,
-				pseudo1: UserStore.getUserName() || "Left",
-				pseudo2: "Marvin"
-			}})
+		else
+		{
+			StateStore.update({createdGame: { ai:comCount === 1, pseudo1: UserStore.getUserName() || "Left", pseudo2: "Marvin"}})
 			NotificationStore.notify("local game created", "INFO")
+			GameStore.send({type:"leave-game"})
 			navigate("local_game");
 		}
 	}

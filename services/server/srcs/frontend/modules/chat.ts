@@ -74,13 +74,12 @@ function blockUser(username: string) {
 }
 
 function duelUser(username: string) {
-	// NotificationStore.notify(`Do you want to duel ${UserStore.getUserName()}`, "INFO")
 	const choice = confirm(
 		`${UserStore.getUserName()}
 		Do you want to duel ${username}?`
 	)
-	if (choice) {
-		LobbyStore.addDuel({ type: 'duel', to: username, action: 'propose' })
+	if (choice)
+	{
 		GameStore.send({ type: 'duel', to: username, action: 'propose' })
 	}
 }

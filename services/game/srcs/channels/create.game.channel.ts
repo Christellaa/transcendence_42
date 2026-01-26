@@ -1,4 +1,3 @@
-import { RemoteGame } from '../classes/RemoteGame.js'
 import Lobby from '../classes/Lobby.js'
 import User from '../classes/User.js'
 import { json_stringify } from '../functions/json_wrapper.js'
@@ -8,35 +7,26 @@ import { CreateGameType } from '../types/message.type.js'
 export function createGameChannel(ws: BunSocketType, data: CreateGameType, lobby : Lobby)
 {
 	const currentUser : User = ws.data.user;
-	const { comCount, playersCount } = data.gameInit
-	console.log(`${ws.data.username} create game: `, data.gameInit);
-	if (playersCount === 1)
+	const existingSession = lobby.gameManager.getSessionByUser(currentUser);
+	if (existingSession && existingSession.isWaiting())
 	{
-		if (comCount < 1 || comCount > 7)
-			return ws.send(json_stringify({
-				type: "error",
-				text: `Too many or too few players`
+		return ws.send(json_stringify({
+			type: "error",
+			text: "You are already waiting in another game"
 		}))
-		currentUser.navigate = "remote_game"
-
-		const session = lobby.gameManager.createSession({
-			minPlayers: playersCount,
-			maxPlayers: playersCount,
-			bots: comCount
-		})
-
-		session.addHuman(currentUser)
-
-		// let users : User[] = []
-		// users.push(currentUser)
-		// for (let i=0; i < comCount; i++)
-		// {
-		// 	users.push(new User("", `bot_${i}`));
-		// }
-		// new RemoteGame(users);
-		// return ws.send(json_stringify({
-		// 	type: 'start-game',
-		// 	text: ""
-		// }))
 	}
+	const { humanCount, botCount } = data.game
+	const maxPlayer = botCount + humanCount
+	if (maxPlayer < 2 || maxPlayer > 8)
+		return ws.send(json_stringify({type: "error",text: `Too many or too few players`}))
+
+	console.log(`${ws.data.username} create game: `, data.game);
+	const session = lobby.gameManager.createSession({humanCount, botCount})
+
+	session.addHuman(currentUser)
+
+	lobby.broadcast({
+		type: "list-game",
+		games: lobby.gameManager.getJoinableSessionsInfo()
+	})
 }
