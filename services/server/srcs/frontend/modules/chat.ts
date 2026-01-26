@@ -28,7 +28,7 @@ function sendMessage() {
 	if (splitMsg[0] === '/mp') {
 		if (splitMsg[2]) {
 			message.to = splitMsg[1]
-			message.msg = splitMsg[2]
+			message.msg = splitMsg.slice(2).join(' ')
 			message.type = 'mp'
 		} else {
 			errorMsg = 'Missing message to send'
