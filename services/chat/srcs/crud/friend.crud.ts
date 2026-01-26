@@ -1,3 +1,4 @@
+import { sendUserList } from '../functions/sendUserList.fn'
 import { dbPostQuery } from '../services/db.service'
 import { BunSocketType } from '../types/bunSocket.type'
 import { SocketDataType } from '../types/socketData.type'
@@ -54,6 +55,7 @@ export async function insertFriendship(ws: BunSocketType, new_friend: BunSocketT
 
 		data.msg = `You and user ${new_friend.data.username} are now friends!`
 		ws.send(JSON.stringify(data))
+		sendUserList()
 	return true
 }
 

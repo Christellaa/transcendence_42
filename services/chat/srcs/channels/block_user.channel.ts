@@ -1,6 +1,7 @@
 import { blockUser, deblockUser, isDoubleBlock } from '../crud/block.crud'
 import { removeFromFriendships } from '../crud/friend.crud'
 import { removeFromFriendRequests } from '../crud/request.crud'
+import { sendUserList } from '../functions/sendUserList.fn'
 import { clientsSocket } from '../state/clients.state'
 import { BunSocketType } from '../types/bunSocket.type'
 import { SocketDataType } from '../types/socketData.type'
@@ -28,6 +29,7 @@ export async function blockUserChannel(ws: BunSocketType, data: SocketDataType) 
 		if (blockUserStatus === 'true') {
 			removeFromFriendRequests(ws, clientFound.data.username, data)
 			removeFromFriendships(ws, clientFound, data)
+			sendUserList()
 		}
 	} else {
 		data.msg = 'Player not found'

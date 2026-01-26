@@ -4,6 +4,7 @@ import { isAtLeastOneBlocked } from '../crud/block.crud'
 import { isFriend, insertFriendship, removeFromFriendships } from '../crud/friend.crud'
 import { insertFriendRequest, isDoubleFriendRequest, isInFriendRequests, removeFromFriendRequests } from '../crud/request.crud'
 import { clientsSocket } from '../state/clients.state'
+import { sendUserList } from '../functions/sendUserList.fn'
 
 export async function reqFriendChannel(ws: BunSocketType, data: SocketDataType) {
 	let clientFound: BunSocketType
@@ -38,6 +39,7 @@ export async function reqFriendChannel(ws: BunSocketType, data: SocketDataType) 
 
 				data.msg = `You and user ${clientFound.data.username} are no longer friends!`
 				ws.send(JSON.stringify(data))
+				sendUserList()
 			}
 			return
 		}

@@ -1,3 +1,4 @@
+import { sendUserList } from '../functions/sendUserList.fn'
 import { dbPostQuery } from '../services/db.service'
 import { BunSocketType } from '../types/bunSocket.type'
 import { SocketDataType } from '../types/socketData.type'
@@ -76,6 +77,7 @@ export async function deblockUser(ws: BunSocketType, blocked_user: string, data:
 	data.notificationLevel = 'info'
 	data.msg = `User ${blocked_user} has been unblocked.`
 	ws.send(JSON.stringify(data))
+	sendUserList()
 }
 
 export async function blockUser(ws: BunSocketType, blocked_user: string, data: SocketDataType): Promise<string> {
