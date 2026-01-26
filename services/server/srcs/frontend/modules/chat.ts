@@ -85,11 +85,43 @@ function duelUser(username: string) {
 	}
 }
 
+async function isBlocked(blocker: string, blocked: string): Promise<boolean> {
+	try {
+		const blockedUser = await fetch('/get_blocked_user', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ blocker, blocked })
+		})
+		if (!blockedUser.ok) return false
+		const body = await blockedUser.json()
+		console.log('body.isBlocked: ', body.isBlocked)
+		return body.isBlocked
+	} catch (error) {
+		return false
+	}
+}
+
+async function isFriend(user1: string, user2: string): Promise<boolean> {
+	try {
+		const friendUser = await fetch('/get_friend_user', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ user1, user2 })
+		})
+		if (!friendUser.ok) return false
+		const body = await friendUser.json()
+		console.log('body.isFriend: ', body.isFriend)
+		return body.isFriend
+	} catch (error) {
+		return false
+	}
+}
+
 function updateUserList(users: string[]) {
 	$chatUsers.querySelectorAll('user-line').forEach(el => {
 		el.remove()
 	})
-	users.forEach(user => {
+	users.forEach(async user => {
 		const $userLine = document.createElement('user-line')
 		const $userName = document.createElement('user-name')
 
@@ -116,12 +148,18 @@ function updateUserList(users: string[]) {
 			$userMp.appendChild($userMpImg)
 
 			$userBlock.classList.add('user-icon')
-			$userBlockImg.setAttribute('src', '/images/block.svg')
+			if (await isBlocked(UserStore.getUserName(), user))
+				$userBlockImg.setAttribute('src', '/images/unblock.svg')
+			else
+				$userBlockImg.setAttribute('src', '/images/block.svg')
 			$userBlockImg.setAttribute('alt', '')
 			$userBlock.appendChild($userBlockImg)
 
 			$userAddFriend.classList.add('user-icon')
-			$userAddFriendImg.setAttribute('src', '/images/add_friend.svg')
+			if (await isFriend(UserStore.getUserName(), user))
+				$userAddFriendImg.setAttribute('src', '/images/remove_friend.svg')
+			else
+				$userAddFriendImg.setAttribute('src', '/images/add_friend.svg')
 			$userAddFriendImg.setAttribute('alt', '')
 			$userAddFriend.appendChild($userAddFriendImg)
 

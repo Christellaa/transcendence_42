@@ -158,3 +158,37 @@ export async function deleteUser(req: FastifyRequest, reply: FastifyReply) {
 	if (body.status >= 400) return reply.status(body.status).send({ message: body.message })
 	return reply.status(200).send({ message: `User deleted: ${id}` })
 }
+
+export async function getBlockedUser(req: FastifyRequest, reply: FastifyReply) {
+	const { blocker, blocked } = await req.body as { blocker: string, blocked: string }
+	console.log('blocker: ', blocker, ' blocked: ', blocked);
+	const res = await dbPostQuery({
+		endpoint: 'dbGet',
+		query: {
+			verb: 'read',
+			sql: 'SELECT * FROM blocks WHERE blocker_username = ? AND blocked_username = ?',
+			data: [blocker, blocked]
+		}
+	})
+	if (res.status == 404) return reply.status(200).send({ isBlocked: false })
+	if (res.status >= 400) return reply.status(res.status).send({ message: res.message })
+	const isBlocked = res.data ? true : false
+	return reply.status(200).send({ isBlocked })
+}
+
+export async function getFriendUser(req: FastifyRequest, reply: FastifyReply) {
+	const { user1, user2 } = await req.body as { user1: string, user2: string }
+	console.log('user1: ', user1, ' user2: ', user2)
+	const res = await dbPostQuery({
+		endpoint: 'dbGet',
+		query: {
+			verb: 'read',
+			sql: 'SELECT * FROM friendships WHERE (username_1 = ? AND username_2 = ?) OR (username_1 = ? AND username_2 = ?)',
+			data: [user1, user2, user2, user1]
+		}
+	})
+	if (res.status == 404) return reply.status(200).send({ isFriend: false })
+	if (res.status >= 400) return reply.status(res.status).send({ message: res.message })
+	const isFriend = res.data ? true : false
+	return reply.status(200).send({ isFriend })
+}

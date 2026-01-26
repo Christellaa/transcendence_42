@@ -1,6 +1,6 @@
 import { FastifyInstance } from 'fastify'
 import { logoutUser, logUser, registerUser } from './auth.route.js'
-import { deleteUser, getUsers ,getUserProfile, updateUser, userDashboard, getUserFriends } from './user.route.js'
+import { deleteUser, getUsers ,getUserProfile, updateUser, userDashboard, getUserFriends, getBlockedUser, getFriendUser } from './user.route.js'
 import { getMetrics } from './metrics.route.js'
 import { handlePOSTApiAuthRegister, handlePOSTApiAuthLogin, getClientID } from './api.route.js'
 import { getPayload } from '../crud/auth.crud.js'
@@ -84,6 +84,16 @@ export async function userRoutes(fastify: FastifyInstance) {
 		method: 'DELETE',
 		url: '/users',
 		handler: deleteUser
+	})
+	fastify.route({
+		method: 'POST',
+		url: '/get_blocked_user',
+		handler: getBlockedUser
+	})
+	fastify.route({
+		method: 'POST',
+		url: '/get_friend_user',
+		handler: getFriendUser
 	})
 }
 
