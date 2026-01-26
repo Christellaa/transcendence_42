@@ -1,6 +1,5 @@
 import { randomUUID, UUID } from 'crypto'
-import { Player } from "./Player_old.js";
-// import { Player } from './Player.js'
+import { Player } from "./Player.js";
 import { Ball } from "./Ball.js";
 import User from "./User.js";
 import { arena, board } from "../functions/game.scale.js"
