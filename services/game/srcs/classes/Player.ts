@@ -14,7 +14,6 @@ export class Player
 	paddleSize: number
 	angle: number
 	score: number
-	// pause: boolean
 	ai: boolean
 	pseudo: string
 	tangenteSpeed: number
@@ -26,7 +25,6 @@ export class Player
 		this.paddleSize = 0.25 * Math.PI / nbPlayer
 		this.user = user
 		this.tangenteSpeed = 0
-		// this.pause = false
 		if (user.id === "")
 		{
 			this.pseudo = "🤖" + this.user.pseudo
@@ -55,7 +53,7 @@ export class Player
 			if (pr.theta > this.minAngle && pr.theta < this.maxAngle)
 			{
 				theta = pr.theta
-				break   // <--- sort de la boucle dès qu'on trouve le premier
+				break
 			}
 		}
 		if (this.angle > theta + this.paddleSize / 2) this.decrementAngle()
@@ -66,23 +64,14 @@ export class Player
 	{
 		const lastKey = this.user.key
 		this.user.key = "none"
-		// if (lastKey === "space") return this.togglePause()
-		// if (lastKey === "chatGPT") this.ai = !this.ai
 		if (this.ai)
 		{
 			return this.handleIA(predictionIA)
 		}
-		// if (this.user.socket && this.user.socket.readyState !== WebSocket.OPEN) return this.togglePause()
 		if (lastKey === "none") this.decreaseTangenteSpeed()
 		else if (lastKey === "-") this.incrementAngle()
 		else if (lastKey === "+") this.decrementAngle()
 	}
-
-	// togglePause()
-	// {
-	// 	this.pause = !this.pause
-	// 	if (this.pause) console.log(`⏸️ Joueur ${this.pseudo} toggle pause`)
-	// }
 
 	resetAngle()
 	{
