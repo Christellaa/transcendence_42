@@ -64,12 +64,17 @@ if (codeParam) {
 				return
 			}
 			if (res.info.message === '2FA_REQUIRED') {
-				NotificationStore.notify('Two-Factor Authentication required. Please enter your 2FA code.', "INFO")
-				start2FAFlow($page, 'login', () => {
-					NotificationStore.notify('Login successful', "SUCCESS")
-					UserStore.emit(res)
-					navigate('')
-				}, res)
+				NotificationStore.notify('Two-Factor Authentication required. Please enter your 2FA code.', 'INFO')
+				start2FAFlow(
+					$page,
+					'login',
+					() => {
+						NotificationStore.notify('Login successful', 'SUCCESS')
+						UserStore.emit(res)
+						navigate('')
+					},
+					res
+				)
 				return
 			}
 			UserStore.emit(res)
@@ -92,7 +97,7 @@ function handleUserForm(self: HTMLElement) {
 		$submitBtn.onclick = e => {
 			e.preventDefault()
 			if (hasInvalidFields($loginForm)) {
-				alert('Form contains invalid fields.')
+				NotificationStore.notify('Form contains invalid fields', 'ERROR')
 				return
 			}
 

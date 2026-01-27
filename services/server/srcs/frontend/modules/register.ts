@@ -19,6 +19,7 @@ let trackEvent = false
 
 const $spinner = document.querySelector('span[type="spinner"] img') as HTMLImageElement
 const $menuButtons = document.querySelector('menu-buttons') as HTMLElement
+const $navButton = document.querySelector('nav-button') as HTMLElement
 const $registerForm = document.querySelector('form') as HTMLElement
 const urlParams = new URLSearchParams(window.location.search)
 const codeParam = urlParams.get('code')
@@ -45,6 +46,8 @@ const unsubCurrentButtonStore = CurrentButtonStore.subscribe(el => (currentButto
 start42OAuth(document.querySelector('nav-button')!, 'https://localhost/register')
 
 if (codeParam) {
+	// $spinner.style.display = 'none'
+	$navButton.style.display = 'none'
 	fetch('https://localhost:443/api/auth/register', {
 		method: 'POST',
 		body: JSON.stringify({ code: codeParam })
@@ -57,16 +60,21 @@ if (codeParam) {
 		})
 		.then(res => {
 			if (res.info.status >= 400) {
-				NotificationStore.notify(res.info.message, 'ERROR')
+				if (res.info.message?.errno === 19) {
+					NotificationStore.notify('Username or email already taken', 'ERROR')
+				} else {
+					NotificationStore.notify(res.info.message, 'ERROR')
+				}
 				return
 			}
-			NotificationStore.notify('Login successful', "SUCCESS")
+			NotificationStore.notify('Login successful', 'SUCCESS')
 			UserStore.emit(res)
 			navigate('')
 		})
 } else {
 	$spinner.style.display = 'none'
 	$menuButtons.style.display = 'flex'
+	$navButton.style.display = 'flex'
 }
 
 function handleUserForm(self: HTMLElement) {
@@ -85,7 +93,7 @@ function handleUserForm(self: HTMLElement) {
 			e.preventDefault()
 			const formData = createFormData($registerForm, $avatarInput)
 			if (hasInvalidFields($registerForm)) {
-				alert('Form contains invalid fields.')
+				NotificationStore.notify('Form contains invalid fields.', 'ERROR')
 				return
 			}
 			fetchRegister(formData, $registerForm)

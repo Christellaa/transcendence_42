@@ -16,13 +16,14 @@ function handleUpdateProfile() {
 	const $avatarPreview = $page.querySelector('#avatarPreview') as HTMLImageElement
 	const $resetAvatarBtn = $page.querySelector('#resetAvatarButton') as HTMLButtonElement
 	const $toggle2FABtn = $page.querySelector('#toggle-2fa-btn') as HTMLButtonElement
-	
+
 	resetAvatarButton($resetAvatarBtn, $avatarInput, $avatarPreview)
-	
+
 	render2FAState($toggle2FABtn, UserStore.getUser2FAStatus())
 	$toggle2FABtn.onclick = () => {
 		start2FAFlow($page, UserStore.getUser2FAStatus() ? 'disable' : 'enable', () =>
-			NotificationStore.notify(`2FA ${UserStore.getUser2FAStatus() ? 'disabled' : 'enabled'}`, 'SUCCESS'))
+			NotificationStore.notify(`2FA ${UserStore.getUser2FAStatus() ? 'disabled' : 'enabled'}`, 'SUCCESS')
+		)
 	}
 
 	if (trackEvent === false) {
@@ -33,7 +34,7 @@ function handleUpdateProfile() {
 			const avatarFile = $avatarInput.files ? $avatarInput.files[0] : null
 
 			if (username === '' && !avatarFile) {
-				alert('Please update at least one field before submitting.')
+				NotificationStore.notify('Please update at least one field before submitting', 'INFO')
 				return
 			}
 
