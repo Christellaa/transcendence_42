@@ -150,6 +150,13 @@ page {
 	color: #fff;
 }
 
+@media (max-width: 700px) {
+	page {
+		height: auto;
+		padding: 2rem 0;
+	}
+}
+
 span[type='spinner'] img {
 	height: 128px;
 	width: 128px;

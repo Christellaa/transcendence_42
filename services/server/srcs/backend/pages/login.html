@@ -90,7 +90,30 @@
 			color: red;
 			margin-top: 8px;
 		}
-	</style>
+
+		@media (max-width: 700px) {
+			form {
+				grid-template-columns: 1fr;
+				row-gap: 0.5rem;
+			}
+		
+			form-section span {
+				text-align: center;
+				justify-self: start;
+			}
+		
+			form-section input {
+				justify-self: center;
+				width: 100%;
+				max-width: 320px;
+			}
+		
+			form-section.center-section {
+				flex-direction: column;
+				margin-top: 1rem;
+			}
+		}
+		</style>
 </head>
 
 <page type="login">

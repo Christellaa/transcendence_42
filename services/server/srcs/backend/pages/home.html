@@ -5,6 +5,7 @@
 		.wave {
 			font-size: 5.5rem;
 		}
+
 		.wave span {
 			display: inline-block;
 			width: 24px;
@@ -71,6 +72,20 @@
 			}
 			100% {
 				filter: hue-rotate(360deg);
+			}
+		}
+
+		@media (max-width: 700px) {
+			.wave {
+				font-size: 3.3rem;
+			}
+
+			.wave span {
+				width: 20px;
+			}
+
+			state {
+				font-size: 2.2rem;
 			}
 		}
 	</style>
