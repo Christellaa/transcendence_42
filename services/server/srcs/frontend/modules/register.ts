@@ -46,7 +46,6 @@ const unsubCurrentButtonStore = CurrentButtonStore.subscribe(el => (currentButto
 start42OAuth(document.querySelector('nav-button')!, 'https://localhost/register')
 
 if (codeParam) {
-	// $spinner.style.display = 'none'
 	$navButton.style.display = 'none'
 	fetch('https://localhost:443/api/auth/register', {
 		method: 'POST',
@@ -65,6 +64,7 @@ if (codeParam) {
 				} else {
 					NotificationStore.notify(res.info.message, 'ERROR')
 				}
+				navigate('register')
 				return
 			}
 			NotificationStore.notify('Login successful', 'SUCCESS')
