@@ -29,7 +29,9 @@ function playMatch(match : TournamentMatch | undefined)
 		const score = gameController.getCurrentScore();
 		TournamentController.finishMatch(score);
 		gameController.destroy();
-		navigate("tournament_tree");
+		setTimeout(()=>{
+			navigate("tournament_tree");
+		}, 1500)
 	});
 
 	window.onresize = gameView.resize;

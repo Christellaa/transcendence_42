@@ -76,7 +76,7 @@ $createGame.addEventListener('click', () => {
 		}
 		else
 		{
-			StateStore.update({createdGame: { ai:comCount === 1, pseudo1: UserStore.getUserName() || "Left", pseudo2: "Marvin"}})
+			StateStore.update({createdGame: { ai:comCount === 1, pseudo1: UserStore.getUserName() || "Anonymous", pseudo2: comCount === 1?"Marvin":"Guest"}})
 			NotificationStore.notify("local game created", "INFO")
 			GameStore.send({type:"leave-game"})
 			navigate("local_game");

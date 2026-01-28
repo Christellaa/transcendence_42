@@ -61,7 +61,7 @@ bash ./scripts/generate_yml_conf_files.sh
 echo "Setting up Thanos Store volume"
 bash ./services/metrics/thanosStore/init_volume.sh
 
-curl -s https://pastebin.com/raw/xVZfbNms -o ./services/vault/.env.vault
+# curl -s https://pastebin.com/raw/xVZfbNms -o ./services/vault/.env.vault
 
 echo "Setting up .env.vault"
 ENV_VAULT="./services/vault/.env.vault"

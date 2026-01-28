@@ -50,34 +50,6 @@ $logoutButton.addEventListener('click', async () => {
 	navigate('')
 })
 
-async function saveMatch() {
-	const res = await fetch('/add_match', {
-		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({
-			matchType: 'classic',
-			players: [
-				{
-					username: 'alice',
-					gameRes: 'win'
-				},
-				{
-					username: 'bob',
-					gameRes: 'lose'
-				},
-				{
-					username: 'trent',
-					gameRes: 'lose'
-				},
-				{
-					username: 'carol',
-					gameRes: 'lose'
-				}
-			]
-		})
-	})
-	if (res.status >= 400) NotificationStore.notify('Error saving match', 'ERROR')
-}
 
 const unsubCurrentButtonStore = CurrentButtonStore.subscribe(el => (currentButton = el))
 

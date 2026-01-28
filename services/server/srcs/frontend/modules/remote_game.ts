@@ -7,6 +7,7 @@ import { UserStore } from '../stores/user.store.js'
 import { NotificationStore } from '../stores/notification.store.js'
 import { navigate } from '../js/routing.js'
 import { LobbyStore } from '../stores/lobby.store.js'
+import { MatchTypeToSave, saveMatch } from '../functions/saveMatch.js'
 
 const $score = document.getElementById('score') as HTMLElement
 const $debug = document.getElementById('debug') as HTMLElement
@@ -47,6 +48,34 @@ function playRemote()
 }
 playRemote()
 
+function buildMatchPayload(gameState: GameState): MatchTypeToSave {
+  const winnerScore = Math.max(...gameState.players.map(p => p.score))
+
+  return {
+    matchType: 'classic',
+    players: gameState.players.map(p => ({
+      username: p.pseudo,
+      gameRes: p.score === winnerScore ? 'win' : 'lose'
+    }))
+  }
+}
+
+
+function isSaver(gameState: GameState, myPseudo: string): boolean {
+  const pseudos = gameState.players
+    .filter(p => !p.ai)
+    .map(p => p.pseudo)
+    .sort()
+
+  return pseudos[0] === myPseudo
+}
+
+function saveMatchResult(data:GameState)
+{
+	if (isSaver(data, UserStore.getUserName()))
+		saveMatch(buildMatchPayload(data))
+}
+
 function onMessage(e:any)
 {
 	const data = json_parse(e.data) as GameState | GamePause | Countdown | GameDisconnect
@@ -76,6 +105,7 @@ function onMessage(e:any)
 			end = true
 			anglePlayer = -1;
 			$debug.textContent = data.nbFrame.toString()
+			saveMatchResult(data);
 			NotificationStore.notify("Game finished", "INFO")
 			break
 		}

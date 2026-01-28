@@ -3,8 +3,6 @@ import { duelChannel } from './channels/duel.channel.js'
 import { inputChannel } from './channels/input.channel.js'
 import { navigateChannel } from './channels/navigate.channel.js'
 import JSONParser from './functions/json_parser.fn'
-// import { clientsList, clientsSocket } from './state/clients.state'
-// import { sendUserList } from './functions/sendUserList.fn'
 import { BunSocketType } from './types/bunSocket.type'
 import { getVaultSecret } from './services/vault.service.js'
 import Lobby from './classes/Lobby.js'
@@ -45,13 +43,12 @@ const server = Bun.serve({
 		})
 	},
 	websocket: {
-		open(ws)
+		open(ws: BunSocketType)
 		{
 			const info : FrontSystemType = {
 				type: 'system',
 				text: 'WebGameSocket ON'
 			}
-			// clientsSocket.add(ws)
 			ws.send(json_stringify(info))
 		},
 		message(ws: BunSocketType, message)
@@ -74,7 +71,13 @@ const server = Bun.serve({
 		{
 			const user = ws.data.user
 			if (!user) return ;
-			lobby.gameManager.leaveSession(user)
+			if (lobby.gameManager.leaveSession(user))
+			{
+				lobby.broadcast({
+					type: "list-game",
+					games: lobby.gameManager.getJoinableSessionsInfo()
+				})
+			}
 			lobby.removeUser(user)
 		}
 	}

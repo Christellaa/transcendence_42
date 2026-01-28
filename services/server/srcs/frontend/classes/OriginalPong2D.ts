@@ -1,3 +1,4 @@
+import { saveMatch } from "../functions/saveMatch.ts";
 import { NotificationStore } from "../stores/notification.store.ts";
 
 enum GameState
@@ -286,7 +287,8 @@ export class GameView
                 break;
             case (GameState.GAME_OVER):
                 ctx.fillText(ENG.gameover, width * 0.5, height * 0.5 + 0.8 * this.scale);
-                ctx.fillText(ENG.restart, width * 0.5, height * 0.5 + 1.6 * this.scale);
+                if (!model.isTournament)
+                    ctx.fillText(ENG.restart, width * 0.5, height * 0.5 + 1.6 * this.scale);
                 break;
             default:
 		}
@@ -579,13 +581,18 @@ export class GameController
         this.model.state = GameState.GAME_OVER;
         this.onGameOver()
     }
-
+    
     private checkGameOver(): void
     {
-        if (
-            this.model.leftScore >= this.model.maxScore ||
-            this.model.rightScore >= this.model.maxScore
-        ) {
+        const leftWin : boolean = this.model.leftScore >= this.model.maxScore
+        const rightWin : boolean = this.model.rightScore >= this.model.maxScore
+        if (leftWin || rightWin)
+        {
+            if (!this.model.isTournament)
+                saveMatch({matchType: 'duel', players: [
+                    {username: this.model.leftPlayerName, gameRes: leftWin?"win":"lose"},
+                    {username: this.model.rightPlayerName, gameRes: rightWin?'win':'lose'}
+                ]})
             this.handleGameOver()
         }
     }
