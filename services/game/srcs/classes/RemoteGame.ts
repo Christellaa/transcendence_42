@@ -6,6 +6,7 @@ import { arena, board } from "../functions/game.scale.js"
 import type { Impact, GameState, Countdown, GamePause, GameDisconnect } from "../types/game.type.js";
 import { HumanController } from "../controllers/HumanController.js"
 import { BotController } from "../controllers/BotController.js"
+import { saveMatchFromGameService } from '../functions/saveMatchFromGameService.js';
 
 enum GameEndReason
 {
@@ -53,11 +54,32 @@ constructor ( users: User[], onEnd?: (game: RemoteGame) => void)
 	console.log(`${this.id} game start`)
 }//constructor()
 
-private endGame(reason: GameEndReason)
-{
-	console.log(`${this.id} game ended with ${GameEndReasonStr[reason]}`)
-	this.onEndCallback?.(this)
+private endGame(reason: GameEndReason): void {
+    console.log(`${this.id} game ended with ${GameEndReasonStr[reason]}`)
+
+    // if (reason === GameEndReason.SCORE) {
+
+    //     // score maximum (plusieurs gagnants possibles)
+    //     const winnerScore = this.players.reduce(
+    //         (max, p) => Math.max(max, p.score),
+    //         0
+    //     )
+
+    //     const playersStat = this.players.map(p => ({
+    //         username: p.pseudo,
+    //         gameRes: p.score === winnerScore ? 'win' : 'lose' as 'win' | 'lose'
+    //     }))
+
+    //     // fire-and-forget volontaire
+    //     saveMatchFromGameService({
+    //         matchType: 'classic',
+    //         players: playersStat
+    //     })
+    // }
+
+    this.onEndCallback?.(this)
 }
+
 
 public hasUser(user: User): boolean
 {

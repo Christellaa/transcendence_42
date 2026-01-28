@@ -113,20 +113,15 @@ function isFriend(user1: string, user2: string): Promise<boolean> {
 	})
 }
 
-let isRunning = false
-
 async function updateUserList(users: string[]) {
-	if (isRunning === true) return
-	isRunning = true
-	$chatUsers.querySelectorAll('user-line').forEach(el => {
-		el.remove()
-	})
 
+	let usersEl = []
+	
 	for (const user of users) {
 		const username = UserStore.getUserName()
-		const $userLine = document.createElement('user-line')
+		const $userLine = document.createElement('user-line')	
 		const $userName = document.createElement('user-name')
-
+		
 		$userLine.appendChild($userName)
 		$userName.innerText = user
 		if (user !== username) {
@@ -138,42 +133,40 @@ async function updateUserList(users: string[]) {
 			const $userBlockImg = document.createElement('img')
 			const $userAddFriend = document.createElement('user-add-friend')
 			const $userAddFriendImg = document.createElement('img')
-
+			
 			$userDuel.classList.add('user-icon')
 			$userDuelImg.setAttribute('src', '/images/duel.svg')
 			$userDuelImg.setAttribute('alt', '')
 			$userDuel.appendChild($userDuelImg)
-
+			
 			$userMp.classList.add('user-icon')
 			$userMpImg.setAttribute('src', '/images/mp.svg')
 			$userMpImg.setAttribute('alt', '')
 			$userMp.appendChild($userMpImg)
-
+			
 			$userBlock.classList.add('user-icon')
-			if (await isBlocked(UserStore.getUserName(), user)) $userBlockImg.setAttribute('src', '/images/unblock.svg')
-			else $userBlockImg.setAttribute('src', '/images/block.svg')
+			$userBlockImg.setAttribute('src', '/images/block.svg')
 			$userBlockImg.setAttribute('alt', '')
 			$userBlock.appendChild($userBlockImg)
-
+			
 			$userAddFriend.classList.add('user-icon')
-			if (await isFriend(UserStore.getUserName(), user)) $userAddFriendImg.setAttribute('src', '/images/remove_friend.svg')
-			else $userAddFriendImg.setAttribute('src', '/images/add_friend.svg')
+			$userAddFriendImg.setAttribute('src', '/images/add_friend.svg')
 			$userAddFriendImg.setAttribute('alt', '')
 			$userAddFriend.appendChild($userAddFriendImg)
-
+			
 			$userLine.appendChild($userDuel)
 			$userLine.appendChild($userMp)
 			$userLine.appendChild($userBlock)
 			$userLine.appendChild($userAddFriend)
-
+			
 			$userMp.addEventListener('click', _ => {
 				mpUser(user)
 			})
-
+			
 			$userAddFriend.addEventListener('click', _ => {
 				addUserAsFriend(user)
 			})
-
+			
 			$userBlock.addEventListener('click', _ => {
 				blockUser(user)
 			})
@@ -181,10 +174,40 @@ async function updateUserList(users: string[]) {
 				duelUser(user)
 			})
 		}
-		$chatUsers.appendChild($userLine)
+		usersEl.push($userLine)
 	}
-	isRunning = false
+	
+	$chatUsers.querySelectorAll('user-line').forEach(el => {
+		el.remove()
+	})
+
+	for (let el of usersEl)
+		$chatUsers.appendChild(el)
+	updateButtons()
 }
+
+async function 	updateButtons()
+{
+	const $elements = document.querySelectorAll('user-line')
+	const currentUsername = UserStore.getUserName()
+
+	for (const userEl of $elements)
+	{
+		const username = userEl.querySelector('user-name')!.innerHTML
+		const $userBlockImg = userEl.querySelector('user-block img')!
+		const $userAddFriendImg = userEl.querySelector('user-add-friend img')!
+
+		if (username !== currentUsername)
+		{
+			if (await isBlocked(currentUsername, username)) $userBlockImg.setAttribute('src', '/images/unblock.svg')
+				else $userBlockImg.setAttribute('src', '/images/block.svg')
+			if (await isFriend(currentUsername, username)) $userAddFriendImg.setAttribute('src', '/images/remove_friend.svg')
+				else $userAddFriendImg.setAttribute('src', '/images/add_friend.svg')
+		}
+	}
+
+}
+
 
 function updateChat(newChat: MessageType[]) {
 	$chatWindow.innerText = ''

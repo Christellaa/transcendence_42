@@ -47,7 +47,7 @@ export default class Lobby
 	removeUser(user: User)
 	{
 		if (!user) return
-
+		this.users.delete(user.id);
 		console.log(`❌ ${user.pseudo} left the lobby`)
 		const info : FrontInfoType = {type: 'info',text : `${user.pseudo} left the lobby`}
 		this.broadcast(info)

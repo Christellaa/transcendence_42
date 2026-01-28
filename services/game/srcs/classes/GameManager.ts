@@ -7,7 +7,6 @@ import { GameInitType, GamePending } from '../types/message.type.js'
 export class GameManager
 {
 
-// private games = new Map<UUID, RemoteGame>()
 private sessions = new Map<UUID, GameSession>()
 
 createGame(users: User[]) : RemoteGame
@@ -17,7 +16,6 @@ createGame(users: User[]) : RemoteGame
 	{
 		user.send({ type: 'start-game', text: "" })
 	}
-	// this.games.set(game.id, game)
 	return game
 }
 
@@ -39,18 +37,8 @@ getSessionById(id: string): GameSession | undefined
 
 removeGame(game: RemoteGame)
 {
-	// this.games.delete(game.id)
 	game.destroy()
 }
-
-// getGameByUser(user: User): RemoteGame | undefined
-// {
-// 	for (const game of this.games.values())
-// 	{
-// 		if (game.hasUser(user)) return game
-// 	}
-// 	return undefined;
-// }
 
 createSession(options : GameInitType): GameSession
 {
@@ -86,7 +74,6 @@ leaveSession(user: User): boolean
 
 	if (!session.removeHuman(user)) return false
 
-	// Supprimer la session si plus aucun humain
 	if (session.isWaiting() && session.getHumanCount() === 0)
 	{
 		this.removeSession(session)
