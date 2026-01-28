@@ -63,6 +63,7 @@ function createGameStore() {
 				case 'start-game':
 				{
 					NotificationStore.notify("START remote game", "SUCCESS");
+					LobbyStore.refreshSessionId("")
 					return navigate('remote_game');
 				}
 				case 'session-id':
