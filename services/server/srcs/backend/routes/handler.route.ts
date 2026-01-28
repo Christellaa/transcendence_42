@@ -5,6 +5,7 @@ import { getMetrics } from './metrics.route.js'
 import { handlePOSTApiAuthRegister, handlePOSTApiAuthLogin, getClientID } from './api.route.js'
 import { getPayload } from '../crud/auth.crud.js'
 import { send2FACode, validate2FACode } from './2fa.route.js'
+import { addMatch } from './match.route.js'
 
 export async function authRoutes(fastify: FastifyInstance) {
 	fastify.route({
@@ -94,6 +95,14 @@ export async function userRoutes(fastify: FastifyInstance) {
 		method: 'POST',
 		url: '/get_friend_user',
 		handler: getFriendUser
+	})
+}
+
+export async function gameRoute (fastify: FastifyInstance) {
+	fastify.route({
+		method: 'POST',
+		url: '/add_match',
+		handler: addMatch
 	})
 }
 

@@ -19,20 +19,15 @@ import { totalHttpRequests } from './services/prometheus.service.js'
 import { createTransporter } from './services/ethereal.service.js'
 
 /********************** Routes **********************/
-import { authRoutes, metricsRoutes, userRoutes } from './routes/handler.route.js'
+import { authRoutes, gameRoute, metricsRoutes, userRoutes } from './routes/handler.route.js'
 import { routerRoute } from './routes/router.route.js'
 import { getVaultSecret } from './services/vault.service.js'
 
 setDirName(path.resolve())
 
-const cert_crt = await getVaultSecret<string>('services_crt', (value) =>
-	value.replace(/\\n/g, '\n').trim()
-)
-const cert_key = await getVaultSecret<string>('services_key', (value) =>
-	value.replace(/\\n/g, '\n').trim()
-)
-if (!cert_crt || !cert_key)
-	console.error('Failed to load TLS certificates from Vault service.')
+const cert_crt = await getVaultSecret<string>('services_crt', value => value.replace(/\\n/g, '\n').trim())
+const cert_key = await getVaultSecret<string>('services_key', value => value.replace(/\\n/g, '\n').trim())
+if (!cert_crt || !cert_key) console.error('Failed to load TLS certificates from Vault service.')
 
 const fastify: FastifyInstance = Fastify({
 	https: {
@@ -71,6 +66,7 @@ metricsRoutes(fastify)
 authRoutes(fastify)
 userRoutes(fastify)
 routerRoute(fastify)
+gameRoute(fastify)
 
 publicWatcher()
 

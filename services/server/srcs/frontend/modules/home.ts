@@ -6,6 +6,7 @@ import { StateStore } from '../stores/state.store'
 import { PageUpdateStore } from '../stores/page_state'
 import { ChatStore } from '../stores/chat.store'
 import { GameStore } from '../stores/game.store'
+import { NotificationStore } from '../stores/notification.store'
 
 type LoginButtonValues = {
 	[key: string]: {
@@ -48,6 +49,35 @@ $logoutButton.addEventListener('click', async () => {
 	UserStore.clear()
 	navigate('')
 })
+
+async function saveMatch() {
+	const res = await fetch('/add_match', {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({
+			matchType: 'classic',
+			players: [
+				{
+					username: 'alice',
+					gameRes: 'win'
+				},
+				{
+					username: 'bob',
+					gameRes: 'lose'
+				},
+				{
+					username: 'trent',
+					gameRes: 'lose'
+				},
+				{
+					username: 'carol',
+					gameRes: 'lose'
+				}
+			]
+		})
+	})
+	if (res.status >= 400) NotificationStore.notify('Error saving match', 'ERROR')
+}
 
 const unsubCurrentButtonStore = CurrentButtonStore.subscribe(el => (currentButton = el))
 
