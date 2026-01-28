@@ -27,7 +27,7 @@ export async function handlePOSTApiAuthRegister(req: FastifyRequest, reply: Fast
 			grant_type: 'authorization_code',
 			client_secret: CLIENT_SECRET as string,
 			code,
-			redirect_uri: 'https://localhost/register',
+			redirect_uri: 'https://localhost:8443/register',
 			state: uuidv4()
 		})
 
@@ -50,7 +50,7 @@ export async function handlePOSTApiAuthLogin(req: FastifyRequest, reply: Fastify
 			grant_type: 'authorization_code',
 			client_secret: CLIENT_SECRET as string,
 			code,
-			redirect_uri: 'https://localhost/login',
+			redirect_uri: 'https://localhost:8443/login',
 			state: uuidv4()
 		})
 
