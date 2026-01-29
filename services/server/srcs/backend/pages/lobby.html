@@ -7,7 +7,8 @@
 	/>
 	<style module>
 		/* Page layout */
-page[type="lobby"] {
+page[type="lobby"]
+{
 	display: flex;
 	flex-direction: column;
 	align-items: center;
@@ -16,7 +17,8 @@ page[type="lobby"] {
 }
 
 /* Lobby container */
-lobby-container {
+lobby-container
+{
 	width: 100%;
 	max-width: 720px; /* desktop centered column */
 	display: flex;
@@ -27,28 +29,37 @@ lobby-container {
 	border-radius: 12px;
 }
 
+.hidden
+{
+	display: none
+}
+
 /* Panels */
-.panel {
+.panel
+{
 	display: flex;
 	flex-direction: column;
 	gap: 0.75rem;
 }
 
-.panel h2 {
+.panel h2
+{
 	font-size: 1.2rem;
 	font-weight: bold;
 	opacity: 0.9;
 }
 
 /* Lists */
-.list {
+.list
+{
 	display: flex;
 	flex-direction: column;
 	gap: 0.5rem;
 }
 
 /* Row (game / duel) */
-.list > div {
+.list > div
+{
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
@@ -60,7 +71,8 @@ lobby-container {
 }
 
 /* Buttons */
-button {
+button
+{
 	border: none;
 	border-radius: 6px;
 	padding: 0.4rem 0.75rem;
@@ -69,35 +81,42 @@ button {
 }
 
 /* Button variants */
-.join-game {
+.join-game
+{
 	background: #4ade80;
 	color: #063;
 }
 
-.leave-game {
+.leave-game
+{
 	background: #f87171;
 	color: #400;
 }
 
-.accept {
+.accept
+{
 	background: #60a5fa;
 	color: #023;
 }
 
-.decline {
+.decline
+{
 	background: #fbbf24;
 	color: #432;
 }
 
 /* Mobile tweaks */
-@media (max-width: 480px) {
-	.list > div {
+@media (max-width: 480px)
+{
+	.list > div
+	{
 		flex-direction: column;
 		align-items: stretch;
 		text-align: center;
 	}
 
-	.list > div button {
+	.list > div button
+	{
 		width: 100%;
 	}
 }
@@ -107,7 +126,7 @@ button {
 
 <page type="lobby">
 	<page-title>Lobby</page-title>
-	<lobby-container>
+	<lobby-container class="hidden">
 		<section class="panel">
 			<h2>Games available</h2>
 			<div id="game-list" class="list"></div>
