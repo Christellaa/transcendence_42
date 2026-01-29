@@ -6,7 +6,7 @@ import { NotificationStore } from '../stores/notification.store'
 import { hasInvalidFields, createLoginFormData, setupUsernameAndPwdFieldsValidation } from '../functions/formValidation.js'
 import { start42OAuth } from '../functions/start42OAuth.js'
 import { fetchLogin } from '../functions/loginRegisterFetch.js'
-import { redirectIfAuthenticated } from '../functions/authGuard.js'
+import { inertForm, redirectIfAuthenticated } from '../functions/authGuard.js'
 import { start2FAFlow } from '../functions/twofa_auth.js'
 
 /* 
@@ -130,7 +130,9 @@ function handleUserForm(self: HTMLElement) {
 function selectloginType(loginType: string, self: HTMLElement) {
 	if (loginType === '42') {
 		start42OAuth(self, `https://localhost:8443/login`)
+		inertForm($loginForm, true)
 	} else {
+		inertForm($loginForm, false)
 		handleUserForm(self)
 	}
 }

@@ -11,8 +11,7 @@ import {
 } from '../functions/formValidation.js'
 import { start42OAuth } from '../functions/start42OAuth.js'
 import { fetchRegister } from '../functions/loginRegisterFetch.js'
-import { redirectIfAuthenticated } from '../functions/authGuard.js'
-import { PageUpdateStore } from '../stores/page_state.js'
+import { inertForm, redirectIfAuthenticated } from '../functions/authGuard.js'
 import { NotificationStore } from '../stores/notification.store.js'
 
 let trackEvent = false
@@ -120,22 +119,11 @@ function handleUserForm(self: HTMLElement) {
 function selectRegisterType(registerType: string, self: HTMLElement) {
 	if (registerType === '42') {
 		start42OAuth(self, 'https://localhost:8443/register')
-		inertForm(true)
+		inertForm($registerForm, true)
 	} else {
-		inertForm(false)
+		inertForm($registerForm, false)
 		handleUserForm(self)
 	}
-}
-
-function inertForm(toInert: boolean) {
-	$registerForm.querySelectorAll('form-section *[tabindex]').forEach(el => {
-		if (toInert === true) {
-			el.setAttribute('inert', 'true')
-		} else {
-			el.removeAttribute('inert')
-		}
-	})
-	PageUpdateStore.emit('register form')
 }
 
 const unsubKeyStore = KeyboardStore.subscribe(key => {
