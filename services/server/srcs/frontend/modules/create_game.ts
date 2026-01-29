@@ -18,13 +18,15 @@ const $enableRemote: HTMLInputElement = document.querySelector('enable-remote in
 const $errorMessageEl: HTMLElement = document.querySelector('error-message')!
 const $createGame: HTMLButtonElement = document.querySelector('create-game')!
 
-function checkIfUserIsConnected() {
+function checkIfUserIsConnected()
+{
 	return UserStore.isValid();
 }
 
-const remote = document.querySelector("enable-remote");
-if (remote && checkIfUserIsConnected()) {
-	remote.classList.remove("hidden");
+const $remote = document.querySelector("enable-remote");
+if ($remote && checkIfUserIsConnected())
+{
+	$remote.classList.remove("hidden");
 }
 
 

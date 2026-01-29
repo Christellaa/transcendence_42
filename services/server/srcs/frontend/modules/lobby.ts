@@ -1,10 +1,22 @@
 import { GamePending } from "../../types/message.type.ts"
 import { GameStore } from "../stores/game.store.ts"
 import { LobbyDuel, LobbyStore } from "../stores/lobby.store.ts"
+import { UserStore } from "../stores/user.store.ts"
 
 const $pageLobby : Element | null = document.querySelector("page[type=lobby]")!
 const $gameList : HTMLElement | null = document.querySelector("#game-list")
 const $duelsDiv : HTMLElement | null = document.getElementById("game-duels")
+
+function checkIfUserIsConnected()
+{
+	return UserStore.isValid();
+}
+
+const $lobbyContainer = document.querySelector("lobby-container")
+if ($lobbyContainer && checkIfUserIsConnected())
+{
+	$lobbyContainer.classList.remove("hidden");
+}
 
 const refreshGamePendings = (gamePendings : GamePending[], sessionId : string)=>
 {
@@ -31,7 +43,7 @@ const refreshGamePendings = (gamePendings : GamePending[], sessionId : string)=>
 		$gameList.appendChild(row)
 	}
 }
-				
+
 const refreshDuels = (duels: LobbyDuel[]) =>
 {
 	if (!$duelsDiv) return;
