@@ -41,7 +41,8 @@ export type JoinGameType = {
 export type GamePending = {
 	id:string,
 	nbPlayerReady: number,
-	nbPlayerMax: number
+	nbPlayerMax: number,
+	users: string[]
 }
 
 

@@ -259,7 +259,7 @@ function formatScore(players: any, end: boolean = false): string
 			<div class="score-pill ${leader}"
 				style="background:${p.bg}; color:${p.fg};">
 				<span>${AI}</span>
-				<span class="score-name">${p.pseudo.slice(0,6)}</span>
+				<span class="score-name">${p.pseudo.slice(0,8)}</span>
 				<span class="score-value">${p.score}</span>
 				<span>${crown}</span>
 			</div>

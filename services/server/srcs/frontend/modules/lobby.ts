@@ -15,31 +15,114 @@ const unsubscribeUserStore = UserStore.subscribe(({ isValid })=>{
 	}
 })
 
-const refreshGamePendings = (gamePendings : GamePending[], sessionId : string)=>
+const refreshGamePendings2 = (gamePendings: GamePending[], sessionId: string)=>
 {
 	if (!$gameList) return;
 	$gameList.innerHTML = ""
+
 	for (const game of gamePendings)
 	{
 		const row = document.createElement("div")
-		row.textContent = `Game ( ${game.nbPlayerReady} / ${game.nbPlayerMax} )`
+
+		/* label */
+		const label = document.createElement("span")
+		label.className = "game-label"
+		label.innerHTML =
+			`Game <span class="game-slots">${game.nbPlayerReady}/${game.nbPlayerMax}</span>`
+
+		/* actions */
+		const actions = document.createElement("div")
+		actions.className = "row-actions"
+
 		const action = document.createElement("button")
+
 		if (sessionId === game.id)
 		{
-			action.textContent = "leave"
+			row.classList.add("game-current")
+			action.textContent = "Leave"
 			action.className = "leave-game"
-			action.onclick = ()=>{ GameStore.send({type: "leave-game"})}
+			action.onclick = () => {
+				GameStore.send({ type: "leave-game" })
+			}
 		}
-		if (sessionId === "")
+		else if (sessionId === "")
 		{
-			action.textContent = "join"
+			action.textContent = "Join"
 			action.className = "join-game"
-			action.onclick = () => { GameStore.send({type: "join-game", sessionId: game.id }); }
+			action.onclick = () => {
+				GameStore.send({ type: "join-game", sessionId: game.id })
+			}
 		}
-		row.appendChild(action)
+
+		actions.appendChild(action)
+		row.appendChild(label)
+		row.appendChild(actions)
+
 		$gameList.appendChild(row)
 	}
 }
+
+const refreshGamePendings = (gamePendings: GamePending[], sessionId: string) => {
+	if (!$gameList) return;
+	$gameList.innerHTML = ""
+	for (const game of gamePendings) {
+		const row = document.createElement("div")
+
+		/* label */
+		const label = document.createElement("span")
+		label.className = "game-label"
+
+		// Compteur joueurs
+		const slots = document.createElement("span")
+		slots.className = "game-slots"
+		slots.textContent = `${game.nbPlayerReady}/${game.nbPlayerMax}`
+		label.appendChild(document.createTextNode("Game "))
+		label.appendChild(slots)
+
+		// Liste des utilisateurs, chaque pseudo dans un span avec dataset
+		const usersContainer = document.createElement("span")
+		usersContainer.className = "game-users"
+
+		game.users.forEach(u => {
+			const userSpan = document.createElement("span")
+			userSpan.className = "game-user"
+			userSpan.textContent = u.slice(0, 8) // limite à 8 caractères
+			userSpan.dataset.user = u // 🔥 on stocke le pseudo complet
+			usersContainer.appendChild(userSpan)
+			usersContainer.appendChild(document.createTextNode(" ")) // petit espace entre pseudos
+		})
+
+		label.appendChild(usersContainer)
+
+		/* actions */
+		const actions = document.createElement("div")
+		actions.className = "row-actions"
+
+		const action = document.createElement("button")
+
+		if (sessionId === game.id) {
+			row.classList.add("game-current")
+			action.textContent = "Leave"
+			action.className = "leave-game"
+			action.onclick = () => {
+				GameStore.send({ type: "leave-game" })
+			}
+		} else if (sessionId === "") {
+			action.textContent = "Join"
+			action.className = "join-game"
+			action.onclick = () => {
+				GameStore.send({ type: "join-game", sessionId: game.id })
+			}
+		}
+
+		actions.appendChild(action)
+		row.appendChild(label)
+		row.appendChild(actions)
+
+		$gameList.appendChild(row)
+	}
+}
+
 
 const refreshDuels = (duels: LobbyDuel[]) =>
 {
@@ -48,23 +131,34 @@ const refreshDuels = (duels: LobbyDuel[]) =>
 	for (const duel of duels)
 	{
 		const row = document.createElement("div")
-		row.textContent = `${duel.from} wants to duel you`
+
+		const label = document.createElement("span")
+		label.className = "duel-label"
+		label.textContent = `${duel.from} wants to duel you`
+
+		const actions = document.createElement("div")
+		actions.className = "row-actions"
+
 		const accept = document.createElement("button")
 		accept.textContent = "Accept"
 		accept.className = "accept"
-		accept.onclick = () =>
-		{
+		accept.onclick = () => {
 			GameStore.send({ type: 'duel', to: duel.from, action: 'accept' });
 		}
+
 		const decline = document.createElement("button")
 		decline.textContent = "Decline"
 		decline.className = "decline"
-		decline.onclick = () =>
-		{
+		decline.onclick = () => {
 			GameStore.send({ type: 'duel', to: duel.from, action: 'decline' })
 		}
-		row.appendChild(accept)
-		row.appendChild(decline)
+
+		actions.appendChild(accept)
+		actions.appendChild(decline)
+
+		row.appendChild(label)
+		row.appendChild(actions)
+
 		$duelsDiv.appendChild(row)
 	}
 }

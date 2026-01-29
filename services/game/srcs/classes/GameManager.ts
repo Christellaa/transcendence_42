@@ -63,7 +63,8 @@ getJoinableSessionsInfo() : GamePending[]
 	return this.getJoinableSessions().map(session => ({
 		id: session.id,
 		nbPlayerReady: session.getPlayerReady(),
-		nbPlayerMax: session.getPlayerMax()
+		nbPlayerMax: session.getPlayerMax(),
+		users: session.getUserListName()
 	}))
 }
 

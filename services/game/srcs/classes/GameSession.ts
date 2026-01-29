@@ -85,9 +85,9 @@ private startGame()
 	}
 
 	const users: User[] = [...this.humans]
-	for (let i = 0; i < this.gameInit.botCount; i++)
+	for (let i = 1; i <= this.gameInit.botCount; i++)
 	{
-		users.push(new User("", `bot_${i}`))
+		users.push(new User("", `marvin_${i}`))
 	}
 
 	this.game = this.gameManager.createGame(users)
@@ -119,6 +119,16 @@ isWaiting(): boolean
 getHumanCount(): number
 {
 	return this.humans.length
+}
+
+getUserListName(): string[]
+{
+	let userListName = this.humans.map(u=>u.pseudo)
+	for (let i = 1; i <= this.gameInit.botCount; i++)
+	{
+		userListName.push(`marvin_${i}`)
+	}
+	return userListName
 }
 
 getPlayerReady()

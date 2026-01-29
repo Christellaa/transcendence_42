@@ -80,6 +80,14 @@ button
 	cursor: pointer;
 }
 
+button {
+	transition:
+		filter 0.12s ease,
+		transform 0.06s ease,
+		box-shadow 0.12s ease;
+}
+
+
 /* Button variants */
 .join-game
 {
@@ -93,16 +101,170 @@ button
 	color: #400;
 }
 
-.accept
-{
-	background: #60a5fa;
-	color: #023;
+#game-duels > div {
+	background: rgba(96, 165, 250, 0.12);
+	border: 1px solid rgba(96, 165, 250, 0.35);
 }
 
-.decline
+#game-duels > div {
+	transition:
+		background 0.15s ease,
+		transform 0.12s ease,
+		box-shadow 0.15s ease;
+	cursor: default;
+}
+
+#game-duels > div:hover {
+	background: rgba(96, 165, 250, 0.20);
+	transform: translateY(-1px);
+	box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+}
+
+/* ===== Pending games ===== */
+
+#game-list > div {
+	background: rgba(74, 222, 128, 0.10);
+	border: 1px solid rgba(74, 222, 128, 0.30);
+
+	transition:
+		background 0.15s ease,
+		transform 0.12s ease,
+		box-shadow 0.15s ease;
+}
+
+#game-list > div:hover:not(.game-current) {
+	background: rgba(74, 222, 128, 0.18);
+	transform: translateY(-1px);
+	box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+}
+
+.game-users {
+	margin-left: 10px;
+	font-size: 0.85rem;
+	font-weight: 500;
+	opacity: 0.8;
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: 4px;
+}
+
+.game-user {
+	background: rgba(255,255,255,0.1);
+	padding: 1px 4px;
+	border-radius: 4px;
+	white-space: nowrap;
+}
+
+.game-label {
+	font-weight: 600;
+	opacity: 0.95;
+}
+
+.game-slots {
+	margin-left: 6px;
+	padding: 2px 6px;
+	border-radius: 999px;
+
+	font-size: 0.85em;
+	font-weight: 800;
+
+	background: rgba(0,0,0,0.35);
+	color: white;
+}
+
+.join-game:hover {
+	filter: brightness(1.08);
+	box-shadow: 0 2px 6px rgba(74,222,128,0.5);
+}
+
+.leave-game:hover {
+	filter: brightness(1.08);
+	box-shadow: 0 2px 6px rgba(248,113,113,0.45);
+}
+
+
+button:active {
+	transform: translateY(1px) scale(0.98);
+}
+
+/* duel label */
+.duel-label {
+	font-weight: 600;
+	opacity: 0.95;
+}
+
+/* zone boutons */
+.row-actions {
+	display: flex;
+	gap: 0.4rem;
+	margin-left: auto; /* 🔥 pousse à droite */
+}
+
+.accept {
+	background: #3b82f6;
+	color: white;
+	font-weight: 600;
+}
+
+.accept:hover {
+	filter: brightness(1.1);
+	box-shadow: 0 2px 6px rgba(59,130,246,0.5);
+}
+
+.decline {
+	background: #f59e0b;
+	color: #222;
+	font-weight: 600;
+}
+
+.decline:hover {
+	filter: brightness(1.1);
+	box-shadow: 0 2px 6px rgba(245,158,11,0.45);
+}
+
+.duel-label:hover {
+	opacity: 1;
+}
+
+/* ===== Current joined game ===== */
+
+.game-current {
+	border: 2px solid gold !important;
+	background: rgba(255, 215, 0, 0.12) !important;
+
+	box-shadow:
+		0 0 0 1px rgba(255,215,0,0.4),
+		0 0 14px rgba(255,215,0,0.35);
+
+	position: relative;
+}
+
+@keyframes gamePulse {
+	0%   { box-shadow: 0 0 8px rgba(255,215,0,0.25); }
+	50%  { box-shadow: 0 0 18px rgba(255,215,0,0.55); }
+	100% { box-shadow: 0 0 8px rgba(255,215,0,0.25); }
+}
+
+.game-current {
+	animation: gamePulse 2.2s ease-in-out infinite;
+}
+
+@media (hover: none) {
+	#game-duels > div:hover {
+		transform: none;
+		box-shadow: none;
+	}
+}
+
+@media (max-width: 480px)
 {
-	background: #fbbf24;
-	color: #432;
+	#game-list > div {
+		flex-direction: row;
+	}
+
+	.game-label {
+		font-size: 0.9rem;
+	}
 }
 
 /* Mobile tweaks */
