@@ -6,7 +6,6 @@ import { UserStore } from "../stores/user.store"
 
 export function clearUserState()
 {
-	ChatStore.removeWebsocket()
 	GameStore.removeWebGameSocket()
 	UserStore.clear()
 	LobbyStore.clear()
@@ -19,5 +18,6 @@ export async function handleLogout()
 		method: 'POST',
 		credentials: 'include'
 	})
+	ChatStore.removeWebsocket()
 	clearUserState();
 }
