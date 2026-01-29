@@ -17,8 +17,8 @@ const view = new GameView($canvas);
 const aiActivated = createdGame?.ai || false
 const controller = new GameController(model, view, aiActivated);
 
-view.resize();
-view.render(model)
+view?.render(model)
+view?.resize()
 
 function popUpDefault(event : any)
 {
@@ -33,12 +33,12 @@ window.addEventListener("popstate", popUpDefault);
 ========================= */
 
 const cleanupLocalGame = () => {
-    view.destroy()
-    controller.destroy()
+    view?.destroy()
+    controller?.destroy()
     window.removeEventListener("beforeunload", popUpDefault)
     window.removeEventListener("popstate", popUpDefault)
-    $pageLocalGame.removeEventListener("cleanup", cleanupLocalGame)
+    $pageLocalGame?.removeEventListener("cleanup", cleanupLocalGame)
 }
 
-$pageLocalGame.addEventListener("cleanup", cleanupLocalGame);
+$pageLocalGame?.addEventListener("cleanup", cleanupLocalGame)
 

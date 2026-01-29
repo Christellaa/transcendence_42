@@ -9,7 +9,7 @@ const gameModel = new GameModel();
 const gameView = new GameView($canvas);
 const gameController = new GameController(gameModel, gameView, false);
 
-const match = TournamentController.getCurrentMatch()
+const match = TournamentController?.getCurrentMatch()
 
 playMatch(match);
 
@@ -20,25 +20,22 @@ function playMatch(match : TournamentMatch | undefined)
 		return navigate("tournament_select");
 	}
 
-	gameModel.init(match.playerLeft.alias, match.playerRight.alias, true);
+	gameModel?.init(match.playerLeft.alias, match.playerRight.alias, true);
 
-	gameController.setGameOver(() => {
-		const score = gameController.getCurrentScore();
-		TournamentController.finishMatch(score);
-		gameController.destroy();
+	gameController?.setGameOver(() => {
+		const score = gameController?.getCurrentScore();
+		TournamentController?.finishMatch(score);
 		setTimeout(()=>{
 			navigate("tournament_tree");
 		}, 1500)
 	});
-
-	window.onresize = gameView.resize;
-	gameController.start();
-	gameView.resize();
+	gameView?.render(gameModel)
+	gameView?.resize()
 }
 function beforeunloadTournamentMatch(event : any)
 {
 	event.preventDefault();
-	TournamentController.reset();
+	TournamentController?.reset();
 }
 
 window.addEventListener("beforeunload", beforeunloadTournamentMatch)
@@ -49,10 +46,11 @@ Cleanup SPA
 ========================= */
 
 const cleanupTournamentMatch = () => {
-	gameController.destroy();
-	window.removeEventListener("beforeunload", beforeunloadTournamentMatch);
-	window.removeEventListener("popstate", beforeunloadTournamentMatch);
-	$pageTournamentMatch.removeEventListener("cleanup", cleanupTournamentMatch);
+	gameView?.destroy()
+	gameController?.destroy()
+	window.removeEventListener("beforeunload", beforeunloadTournamentMatch)
+	window.removeEventListener("popstate", beforeunloadTournamentMatch)
+	$pageTournamentMatch?.removeEventListener("cleanup", cleanupTournamentMatch)
 }
 
-$pageTournamentMatch.addEventListener("cleanup", cleanupTournamentMatch);
+$pageTournamentMatch?.addEventListener("cleanup", cleanupTournamentMatch)

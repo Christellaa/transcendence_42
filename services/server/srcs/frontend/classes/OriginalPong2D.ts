@@ -185,6 +185,7 @@ export class GameView
     private offsetY = 0;
     private controller : GameController | undefined;
     private ctx : CanvasRenderingContext2D
+    private lastState : GameModel | null = null
     private resizeHandler = () => this.resize();
 
     constructor(private canvas: HTMLCanvasElement)
@@ -229,10 +230,13 @@ export class GameView
 
         this.offsetX = (this.canvas.width - width * this.scale) / 2;
         this.offsetY = (this.canvas.height - height * this.scale) / 2;
+        if (this.lastState)
+            this.render(this.lastState)
     }
 
     render(model: GameModel): void
     {
+        this.lastState = model
         const ctx = this.ctx;
 		const width = ctx.canvas.width;
 		const height = ctx.canvas.height;
@@ -580,7 +584,7 @@ export class GameController
         this.model.state = GameState.GAME_OVER;
         this.onGameOver()
     }
-    
+
     private checkGameOver(): void
     {
         const leftWin : boolean = this.model.leftScore >= this.model.maxScore
