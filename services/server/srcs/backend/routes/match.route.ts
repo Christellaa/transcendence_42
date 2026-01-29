@@ -7,7 +7,7 @@ const USERNAME_LIMIT = {
 	max: 20
 }
 
-const USERNAME_REGEX = /^[A-Za-z0-9_]+$/
+const USERNAME_REGEX = /^[A-Za-z0-9_-]+$/
 
 type MatchTypeToSave = {
 	matchType: 'tournament' | 'classic' | 'duel'
