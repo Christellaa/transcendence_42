@@ -32,14 +32,13 @@ const loginButtonValues: LoginButtonValues = {
 const $page: HTMLElement = document.querySelector('page[type=index]')!
 const $loginButton: HTMLElement = document.querySelector('nav-button[data-route="login"]')!
 const $logoutButton: HTMLElement = document.getElementById('logout_btn')!
-const $loginButtonParent: HTMLElement = $loginButton.parentElement!
-const $logoutButtonParent: HTMLElement = $logoutButton.parentElement!
+const $loginButtonParent: HTMLElement = $loginButton?.parentElement!
+const $logoutButtonParent: HTMLElement = $logoutButton?.parentElement!
 let currentButton: HTMLElement
 
-
-
-$logoutButton.addEventListener('click', async () => {handleLogout()})
-
+$logoutButton.addEventListener('click', async () => {
+	handleLogout()
+})
 
 const unsubCurrentButtonStore = CurrentButtonStore.subscribe(el => (currentButton = el))
 
