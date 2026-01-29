@@ -36,7 +36,7 @@ const $loginButtonParent: HTMLElement = $loginButton?.parentElement!
 const $logoutButtonParent: HTMLElement = $logoutButton?.parentElement!
 let currentButton: HTMLElement
 
-$logoutButton.addEventListener('click', async () => {
+$logoutButton?.addEventListener('click', async () => {
 	handleLogout()
 })
 
@@ -79,7 +79,7 @@ const unsubUserStore = UserStore.subscribe((user: UserType) => {
 	} else {
 		if ($elementBackup) $loginButtonParent.appendChild($elementBackup)
 		$elementBackup = $logoutButton
-		$logoutButton.remove()
+		$logoutButton?.remove()
 		PageUpdateStore.emit('user invalid')
 	}
 })
