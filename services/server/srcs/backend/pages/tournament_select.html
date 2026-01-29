@@ -2,24 +2,29 @@
 	<title>Tournament Start</title>
 	<meta name="description" content="PongPong Tournament Page" module />
 	<style module>
-		page [type='tournament_select'] {
+		page [type='tournament_select']
+		{
 			display: flex;
 			flex-direction: column;
 		}
 
-		player {
+		player
+		{
 			align-items: center;
 			display: flex;
 			flex-direction: column;
 		}
 
-		player input {
+		player input
+		{
 			color: #000;
 			padding: 0.5rem 1rem;
 			background-color: rgba(255, 255, 255, 0.75);
+			border-radius: 12px;
 		}
 
-		player-grid {
+		player-grid
+		{
 			display: grid;
 			grid-template-columns: 1fr 1fr;
 			grid-template-rows: 1fr 1fr;
@@ -27,7 +32,100 @@
 			margin-bottom: 1rem;
 		}
 
-		@media (max-width: 700px) {
+		input.invalid
+		{
+			border: 4px solid #e53935;
+		}
+
+		.label
+		{
+			color: #ffffff;
+			font-size: 1.1rem;
+			min-height: 1em;
+			display: block;
+			text-shadow:
+				-1px -1px 0 #6a5cff,
+				1px -1px 0 #6a5cff,
+				-1px  1px 0 #6a5cff,
+				1px  1px 0 #6a5cff;
+		}
+
+		small.error
+		{
+			color: #e53935;
+			font-size: 1.1rem;
+			min-height: 1em;
+			display: block;
+			text-shadow:
+				-1px -1px 0 #ffffff,
+				1px -1px 0 #ffffff,
+				-1px  1px 0 #ffffff,
+				1px  1px 0 #ffffff;
+		}
+
+		button#go:disabled
+		{
+			opacity: 0.45;
+			cursor: not-allowed;
+			filter: grayscale(60%);
+			box-shadow: none;
+			background: linear-gradient(
+				135deg,
+				#4a4a4a,
+				#2f2f2f
+			);
+		}
+
+		button#go
+		{
+			padding: 0.6em 1.4em;
+			margin-top: 0.5rem;
+			margin-bottom: 1rem;
+			border-radius: 12px;
+			border: none;
+			font-weight: 700;
+			letter-spacing: 0.05em;
+			color: white;
+			background: linear-gradient(
+				135deg,
+				#6a5cff,
+				#8b5cf6
+			);
+			box-shadow:
+				0 0 12px rgba(139, 92, 246, 0.6),
+				0 0 4px rgba(255, 255, 255, 0.3);
+			transition:
+				transform 0.15s ease,
+				box-shadow 0.15s ease,
+				filter 0.15s ease;
+		}
+
+		button#go:not(:disabled):hover
+		{
+			transform: translateY(-2px);
+			box-shadow:
+				0 0 20px rgba(139, 92, 246, 0.9),
+				0 0 6px rgba(255, 255, 255, 0.5);
+			filter: brightness(1.1);
+		}
+
+		button#go:not(:disabled):active
+		{
+			transform: translateY(0);
+			box-shadow:
+				0 0 8px rgba(139, 92, 246, 0.5);
+			filter: brightness(0.95);
+		}
+
+		button#go:focus-visible
+		{
+			outline: 2px solid #ffffff;
+			outline-offset: 3px;
+		}
+
+
+		@media (max-width: 700px)
+		{
 			player-grid {
 				grid-template-columns: 1fr;
 				grid-template-rows: 1fr;
@@ -37,28 +135,41 @@
 </head>
 
 <page type="tournament_select">
+
 	<page-title>Tournament Start</page-title>
 
 	<player-grid>
 		<player>
-			<span>Host Player</span>
-			<input type="text" name="" id="playerHost" placeholder="player1" value="Alice" />
+			<span class="label">Host Player</span>
+			<input type="text" id="playerHost" placeholder="player1" value="Alice" />
+			<small class="error" data-error-for="playerHost"></small>
 		</player>
+
 		<player>
-			<span>Player 2</span>
-			<input type="text" name="" id="player2" placeholder="player2" value="Bob" />
+			<span class="label">Player 2</span>
+			<input type="text" id="player2" placeholder="player2" value="Bob" />
+			<small class="error" data-error-for="player2"></small>
 		</player>
+
 		<player>
-			<span>Player 3</span>
-			<input type="text" name="" id="player3" placeholder="player3" value="Charles" />
+			<span class="label">Player 3</span>
+			<input type="text" id="player3" placeholder="player3" value="Charles" />
+			<small class="error" data-error-for="player3"></small>
 		</player>
+
 		<player>
-			<span>Player 4</span>
-			<input type="text" name="" id="player4" placeholder="player4" value="Dolly" />
+			<span class="label">Player 4</span>
+			<input type="text" id="player4" placeholder="player4" value="Dolly" />
+			<small class="error" data-error-for="player4"></small>
 		</player>
 	</player-grid>
-	<button style="margin: 20px 0 20px 0;" type="submit" id="go" class="button text-4xl">Start Tournament!</button>
+
+	<button type="submit" id="go" class="button text-4xl">
+		Start Tournament!
+	</button>
+
 	<span data-route="lobby" tabindex="5" class="button text-4xl">Back</span>
+
 </page>
 
 <script type="module" src="modules/tournament_select.js"></script>
