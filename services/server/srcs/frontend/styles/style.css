@@ -202,9 +202,10 @@ nav-right:hover {
 }
 
 .field-error-message {
-	flex-basis: 100%;
+	justify-self: center;
 	text-align: center;
 	color: red;
 	font-size: 0.875rem;
-	margin-top: 0.25rem;
+	grid-column: 1 / -1;
+	margin-top: -0.7rem;
 }
