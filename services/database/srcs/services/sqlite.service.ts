@@ -28,26 +28,26 @@ export default function initDb() {
 		bcrypt.hash('pwd', salt).then(pass => {
 			db.exec(`
 			INSERT OR IGNORE INTO users (id, username, email, pwd, avatar, is_oauth) VALUES
-				(1,  'alice',  'alice@test.com',  '${pass}',  NULL, 0),
-				(2,  'bobby',    'bobby@test.com',    '${pass}',  NULL, 0),
-				(3,  'carol',  'carol@test.com',  '${pass}',  NULL, 0),
-				(4,  'dave',   'dave@test.com',   '${pass}',  NULL, 0),
-				(5,  'evelyn',    'evelyn@test.com',    '${pass}',  NULL, 0),
-				(6,  'frank',  'frank@test.com',  '${pass}',  NULL, 0),
-				(7,  'grace',  'grace@test.com',  '${pass}',  NULL, 0),
-				(8,  'heidi',  'heidi@test.com',  '${pass}',  NULL, 0),
-				(9,  'ivan',   'ivan@test.com',   '${pass}',  NULL, 0),
-				(10, 'judy',   'judy@test.com',   '${pass}', NULL, 0),
-				(11, 'kate',   'kate@test.com',   '${pass}', NULL, 0),
-				(12, 'eleonora',    'eleonora@test.com',    '${pass}', NULL, 0),
-				(13, 'mallory','mallory@test.com','${pass}', NULL, 0),
-				(14, 'nancy',  'nancy@test.com',  '${pass}', NULL, 0),
-				(15, 'oscar',  'oscar@test.com',  '${pass}', NULL, 0),
-				(16, 'peggy',  'peggy@test.com',  '${pass}', NULL, 0),
-				(17, 'quentin','quentin@test.com','${pass}', NULL, 0),
-				(18, 'ruth',   'ruth@test.com',   '${pass}', NULL, 0),
-				(19, 'sybil',  'sybil@test.com',  '${pass}', NULL, 0),
-				(20, 'trent',  'trent@test.com',  '${pass}', NULL, 0);
+				(1,  'alice',  'alice@test.com',  '${pass}',  '/images/avatars/baseAvatar.jpg', 0),
+				(2,  'bobby',    'bobby@test.com',    '${pass}',  '/images/avatars/baseAvatar.jpg', 0),
+				(3,  'carol',  'carol@test.com',  '${pass}',  '/images/avatars/baseAvatar.jpg', 0),
+				(4,  'dave',   'dave@test.com',   '${pass}',  '/images/avatars/baseAvatar.jpg', 0),
+				(5,  'evelyn',    'evelyn@test.com',    '${pass}',  '/images/avatars/baseAvatar.jpg', 0),
+				(6,  'frank',  'frank@test.com',  '${pass}',  '/images/avatars/baseAvatar.jpg', 0),
+				(7,  'grace',  'grace@test.com',  '${pass}',  '/images/avatars/baseAvatar.jpg', 0),
+				(8,  'heidi',  'heidi@test.com',  '${pass}',  '/images/avatars/baseAvatar.jpg', 0),
+				(9,  'ivan',   'ivan@test.com',   '${pass}',  '/images/avatars/baseAvatar.jpg', 0),
+				(10, 'judy',   'judy@test.com',   '${pass}', '/images/avatars/baseAvatar.jpg', 0),
+				(11, 'kate',   'kate@test.com',   '${pass}', '/images/avatars/baseAvatar.jpg', 0),
+				(12, 'eleonora',    'eleonora@test.com',    '${pass}', '/images/avatars/baseAvatar.jpg', 0),
+				(13, 'mallory','mallory@test.com','${pass}', '/images/avatars/baseAvatar.jpg', 0),
+				(14, 'nancy',  'nancy@test.com',  '${pass}', '/images/avatars/baseAvatar.jpg', 0),
+				(15, 'oscar',  'oscar@test.com',  '${pass}', '/images/avatars/baseAvatar.jpg', 0),
+				(16, 'peggy',  'peggy@test.com',  '${pass}', '/images/avatars/baseAvatar.jpg', 0),
+				(17, 'quentin','quentin@test.com','${pass}', '/images/avatars/baseAvatar.jpg', 0),
+				(18, 'ruth',   'ruth@test.com',   '${pass}', '/images/avatars/baseAvatar.jpg', 0),
+				(19, 'sybil',  'sybil@test.com',  '${pass}', '/images/avatars/baseAvatar.jpg', 0),
+				(20, 'trent',  'trent@test.com',  '${pass}', '/images/avatars/baseAvatar.jpg', 0);
 			`)
 		})
 	})
