@@ -24,7 +24,7 @@ const unsubStateStore = StateStore.subscribe(async data => {
 		body: JSON.stringify({ name: selectedProfile })
 	})
 		.then(res => {
-			if (res.status >= 400) return ; //console.log('ERROR updating profile', res.status)
+			if (res.status >= 400) return
 			return res.json()
 		})
 		.then(res => {
@@ -64,9 +64,8 @@ function setMatches(matches: MatchType[]) {
 		const $tdWinner = document.createElement('td')
 		const $selectEl = document.createElement('select')
 
-		
 		const $tdOption = document.createElement('option')
-		$tdOption.innerText = match.players.split(',').length
+		$tdOption.innerText = String(match.players.split(',').length)
 		$selectEl.appendChild($tdOption)
 		match.players.split(',').forEach(player => {
 			const $tdOption = document.createElement('option')

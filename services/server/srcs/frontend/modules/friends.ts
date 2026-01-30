@@ -1,9 +1,12 @@
 import { navigate } from '../js/routing'
 import { StateStore } from '../stores/state.store'
 import { UserStore } from '../stores/user.store'
+import { ChatStore } from '../stores/chat.store'
+import { json_parse } from '../functions/json_wrapper'
 
 const $page: HTMLElement = document.querySelector('page[type=friends]')!
 const $tableData: HTMLElement = document.querySelector('friends table tbody')!
+let friendsList: FriendType[] = []
 
 type FriendType = {
 	username_1: string
@@ -23,19 +26,20 @@ UserStore.subscribe(user => {
 			body: JSON.stringify({ name: username })
 		})
 			.then(res => {
-				if (res.status >= 400) return ; //console.log('ERROR updating profile', res.status)
+				if (res.status >= 400) return
 				return res.json()
 			})
 			.then(res => {
 				if (res) {
-					setFriends(res)
+					setFriends(res, null)
 				}
 			})
 	}
 })
 
-function setFriends(friends: FriendType[]) {
+function setFriends(friends: FriendType[], onlineList: string[] | null) {
 	$tableData.innerHTML = ''
+	friendsList = friends
 	friends
 		.map(value => {
 			if (value.username_1 != username) return value.username_1
@@ -49,7 +53,12 @@ function setFriends(friends: FriendType[]) {
 
 			$tdName.innerText = friend
 			$tdProfile.innerHTML = 'View'
-			$tdStatus.innerText = 'Online'
+
+			if (onlineList?.findIndex(item => item === friend) == -1) {
+				$tdStatus.innerText = 'Offline'
+			} else {
+				$tdStatus.innerText = 'Online'
+			}
 
 			$tdProfile.addEventListener('click', () => {
 				StateStore.update({ selectedProfile: friend })
@@ -63,8 +72,26 @@ function setFriends(friends: FriendType[]) {
 		})
 }
 
+const unsubChatStore = ChatStore.subscribe(chat => {
+	const onlineUsers: any = []
+	chat.forEach(newChat => {
+		if (newChat.type === 'users') {
+			const users: string[] | undefined = json_parse(newChat?.msg) as string[] | undefined
+			if (users) {
+				users.forEach(user => {
+					if (onlineUsers.findIndex(item => item === user) == -1) {
+						onlineUsers.push(user)
+					}
+				})
+			}
+		}
+	})
+	setFriends(friendsList, onlineUsers)
+})
+
 const cleanPage = () => {
 	$page.removeEventListener('cleanup', cleanPage)
+	unsubChatStore()
 }
 
 $page.addEventListener('cleanup', cleanPage)
