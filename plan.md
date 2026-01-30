@@ -2,8 +2,6 @@
 
 show avatar
 
-chat : wrap long messages
-
 leave_pending_game when accept duel or local_game
 
 avant dernier push vogo:
