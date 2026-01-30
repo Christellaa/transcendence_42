@@ -116,12 +116,6 @@ export async function logUser(req: FastifyRequest, reply: FastifyReply) {
 	const alreadyLoggedInResponse = await checkIfAlreadyLoggedIn(req)
 	if (alreadyLoggedInResponse) return reply.status(200).send({ message: 'Already logged in' })
 
-	const usernameError = validateUsernameFormat(username)
-	if (usernameError) return reply.status(400).send({ message: usernameError })
-
-	const pwdError = validatePwdFormat(pwd)
-	if (pwdError) return reply.status(400).send({ message: pwdError })
-
 	const body = await dbPostQuery({
 		endpoint: 'dbGet',
 		query: { verb: 'read', sql: 'SELECT * FROM users WHERE username = ?', data: [username] }

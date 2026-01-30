@@ -3,7 +3,7 @@ import { CurrentButtonStore } from '../stores/current_button.store'
 import { KeyboardStore } from '../stores/keyboard.store'
 import { UserStore } from '../stores/user.store'
 import { NotificationStore } from '../stores/notification.store'
-import { hasInvalidFields, createLoginFormData, setupUsernameAndPwdFieldsValidation } from '../functions/formValidation.js'
+import { createLoginFormData } from '../functions/formValidation.js'
 import { start42OAuth } from '../functions/start42OAuth.js'
 import { fetchLogin } from '../functions/loginRegisterFetch.js'
 import { inertForm, redirectIfAuthenticated } from '../functions/authGuard.js'
@@ -46,7 +46,6 @@ let currentButton: HTMLElement
 
 const unsubCurrentButtonStore = CurrentButtonStore.subscribe(el => (currentButton = el))
 
-// `https://${location.host}/friends`
 start42OAuth(document.querySelector('nav-button'), `https://${location.host}/login`)
 
 function onSuccess(res: any) {
@@ -108,11 +107,6 @@ function handleUserForm(self: HTMLElement) {
 
 		$submitBtn.onclick = e => {
 			e.preventDefault()
-			if (hasInvalidFields($loginForm)) {
-				NotificationStore.notify('Form contains invalid fields', 'ERROR')
-				return
-			}
-
 			const formData = createLoginFormData($loginForm)
 			fetchLogin(formData)
 		}
@@ -131,7 +125,6 @@ function handleUserForm(self: HTMLElement) {
 
 	$loginForm.style.display = 'grid'
 
-	setupUsernameAndPwdFieldsValidation($loginForm)
 }
 
 function selectloginType(loginType: string, self: HTMLElement) {
@@ -148,10 +141,8 @@ const unsubKeyStore = KeyboardStore.subscribe(key => {
 	if (['ArrowLeft', 'ArrowRight'].includes(key.value)) {
 		const data = currentButton?.dataset
 		if (data && data?.stateValue) {
-			// console.log('data', data)
 			const action = actions[data.action]
 			const current = Number(data.stateValue)
-			// console.log('action', action)
 			const min = action.min
 			const max = action.max
 			const steps = action.steps

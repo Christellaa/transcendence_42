@@ -137,7 +137,7 @@ export function validatePwdFormat(pwd: string): string | null {
 	const trimmedPwd = pwd.trim()
 	if (trimmedPwd == '') return 'Password is required'
 	if (trimmedPwd.length < 8) return 'Password must be at least 8 characters'
-	if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).+$/.test(trimmedPwd)) return 'Required: 1 uppercase, 1 lowercase, 1 number, 1 special character'
+	if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).+$/.test(trimmedPwd)) return 'Required: 1 uppercase, 1 lowercase, 1 number, 1 special character (\!\@\#\$\%\^\&\*\_)'
 	return null
 }
 
