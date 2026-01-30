@@ -11,3 +11,5 @@ avant dernier push vogo:
 
 token tester signed = true (generateToken)
 donner aux mockup baseAvatar
+
+rename avatar by user id
