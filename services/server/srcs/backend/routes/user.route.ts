@@ -121,7 +121,7 @@ export async function updateUser(req: FastifyRequest, reply: FastifyReply) {
 	query += ' AND ('
 
 	entries.forEach(([key], index) => {
-		query += `${key} <> ?`
+		query += `${key} IS NULL OR ${key} <> ?`
 		if (index < entries.length - 1) query += ' OR '
 	})
 
