@@ -48,62 +48,11 @@ function handleUpdateProfile() {
 		)
 	}
 
-	// if (trackEvent === false) {
-	// 	trackEvent = true
-	// 	$submitBtn.onclick = e => {
-	// 		e.preventDefault()
-	// 		const username = $usernameInput.value.trim()
-	// 		const avatarFile = $avatarInput.files ? $avatarInput.files[0] : null
-
-	// 		if (username === '' && !avatarFile) {
-	// 			NotificationStore.notify('Please update at least one field before submitting', 'INFO')
-	// 			return
-	// 		}
-
-	// 		const formData = new FormData()
-	// 		if (username !== '') formData.append('username', username)
-	// 		if (avatarFile) formData.append('avatar', avatarFile)
-	// 		fetch(`https://${location.host}/update_user`, {
-	// 			method: 'PUT',
-	// 			body: formData
-	// 		})
-	// 			.then(res => {
-	// 				if (res.status >= 400) {
-	// 					// console.log('Error: ', res)
-	// 					return {
-	// 						error: true
-	// 					}
-	// 				}
-	// 				return res.json()
-	// 			})
-	// 			.then(res => {
-	// 				if (res?.error == true) {
-	// 					NotificationStore.notify('ERROR updating profile', 'ERROR')
-	// 					return
-	// 				}
-	// 				if (res?.message === 'No changes made') {
-	// 					NotificationStore.notify('No info changed', 'INFO')
-	// 				} else {
-	// 					NotificationStore.notify('User data updated', 'SUCCESS')
-	// 					ChatStore.send({
-	// 						msg: res.username,
-	// 						type: 'update-username',
-	// 						timestamp: 0,
-	// 						user: UserStore.getUserName()
-	// 					})
-	// 					StateStore.update({ username: res.username })
-	// 					UserStore.emit(res)
-	// 				}
-	// 			})
-	// 	}
-	// }
 	setupAvatarPreview($avatarInput, $avatarPreview)
-
 	setupUsernameFieldValidation($usernameValidateBtn)
 
 	updateUsername($usernameValidateBtn)
-
-	// if click on avatarValidateBtn, send to backend
+	updateAvatar()
 }
 
 function updateUsername(usernameValidateBtn: HTMLButtonElement) {
@@ -114,6 +63,11 @@ function updateUsername(usernameValidateBtn: HTMLButtonElement) {
 			return
 		}
 		const username = $usernameInput.value.trim()
+		if (username.length === 0) {
+			NotificationStore.notify('Username cannot be empty.', 'ERROR')
+			return
+		}
+
 		fetch(`https://${location.host}/update_username`, {
 			method: 'PUT',
 			headers: {
@@ -131,6 +85,7 @@ function updateUsername(usernameValidateBtn: HTMLButtonElement) {
 				return res.json()
 			})
 			.then(res => {
+				console.log('Update username response: ', res)
 				if (res?.error == true) {
 					NotificationStore.notify('Error updating username', 'ERROR')
 					return
@@ -148,6 +103,50 @@ function updateUsername(usernameValidateBtn: HTMLButtonElement) {
 					StateStore.update({ username: res.username })
 					UserStore.emit(res)
 				}
+			})
+	}
+}
+
+function updateAvatar() {
+	const $avatarLabel = $page.querySelector('.avatar-label') as HTMLLabelElement
+	const $avatarValidateBtn = $page.querySelector('#avatarValidateBtn') as HTMLButtonElement
+	const $avatarInput = $page.querySelector('input[name="avatar"]') as HTMLInputElement
+
+	$avatarValidateBtn.onclick = e => {
+		e.preventDefault()
+		if ($avatarLabel.classList.contains('field-invalid')) {
+			NotificationStore.notify('Avatar is invalid.', 'ERROR')
+			return
+		}
+		if (!$avatarInput.files || $avatarInput.files.length === 0) {
+			NotificationStore.notify('No avatar selected.', 'ERROR')
+			return
+		}
+		const avatarFile = $avatarInput.files[0]
+		const formData = new FormData()
+		formData.append('avatar', avatarFile)
+
+		fetch(`https://${location.host}/update_avatar`, {
+			method: 'PUT',
+			body: formData
+		})
+			.then(res => {
+				if (res.status >= 400) {
+					console.log('Error updating avatar: ', res)
+					return {
+						error: true
+					}
+				}
+				return res.json()
+			})
+			.then(res => {
+				console.log('Update avatar response: ', res)
+				if (res?.error == true) {
+					NotificationStore.notify('Error updating avatar.', 'ERROR')
+					return
+				}
+				NotificationStore.notify('Avatar updated.', 'SUCCESS')
+				UserStore.emit(res)
 			})
 	}
 }
