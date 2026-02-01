@@ -203,13 +203,17 @@ nav-right:hover {
 }
 
 .field-error-message {
-	justify-self: center;
-	text-align: center;
 	color: #ff0000;
 	text-shadow: 0 1px 5px black;
 	font-size: 0.875rem;
-	grid-column: 1 / -1;
-	margin-top: -0.7rem;
-	max-width: 20rem;
-	margin-right: 0;
+	grid-column: 2;
+	grid-row: 2;
+}
+
+@media (max-width: 700px) {
+	.field-error-message {
+		grid-column: 1;
+		grid-row: 4;
+		text-align: center;
+	}
 }

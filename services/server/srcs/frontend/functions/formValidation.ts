@@ -1,5 +1,4 @@
 export function hasInvalidFields(form: HTMLElement): boolean {
-	// either has .invalid-field class, for any input, or no input at all were given in at least one field
 	if (form.querySelectorAll('.invalid-field').length > 0)
 		return true
 	const fields = form.querySelectorAll<HTMLInputElement>('input[required]')
@@ -87,15 +86,21 @@ export function setupAllFieldValidation($form: HTMLElement) {
 }
 
 export function resetAvatarButton(resetBtn: HTMLButtonElement, avatarInput: HTMLInputElement, avatarPreview: HTMLImageElement) {
+	const $page = document.querySelector('page') as HTMLElement
+	const $validateBtn = document.querySelector('#avatarValidateBtn') as HTMLButtonElement
+
 	resetBtn.addEventListener('click', () => {
 		avatarPreview.src = '/images/avatars/baseAvatar.jpg'
-		avatarInput.value = ''
-		fieldValid(avatarInput)
+		fieldValid(avatarPreview.parentElement as HTMLElement)
+		if ($page.getAttribute('type') === 'update_profile')
+			$validateBtn.classList.add('hidden')
+
 	})
 }
 
 export function setupAvatarPreview(avatarInput: HTMLInputElement, avatarPreview: HTMLImageElement) {
-	avatarInput.value = ''
+	const $page = document.querySelector('page') as HTMLElement
+	const $validateBtn = document.querySelector('#avatarValidateBtn') as HTMLButtonElement
 	avatarPreview.src = '/images/avatars/baseAvatar.jpg'
 
 	let avatarObjectURL: string | null = null
@@ -103,16 +108,21 @@ export function setupAvatarPreview(avatarInput: HTMLInputElement, avatarPreview:
 		const file = avatarInput.files?.[0] || null
 		const avatarError = validateAvatarFormat(file)
 		if (avatarError) {
-			fieldInvalid(avatarInput, avatarError)
+			fieldInvalid(avatarPreview.parentElement as HTMLElement, avatarError)
 			return
-		} else fieldValid(avatarInput)
-		if (avatarObjectURL) {
+		}
+		fieldValid(avatarPreview.parentElement as HTMLElement)
+		if (avatarObjectURL) { // clean up previous image preview
 			URL.revokeObjectURL(avatarObjectURL)
 			avatarObjectURL = null
+			if ($page.getAttribute('type') === 'update_profile')
+				$validateBtn.classList.add('hidden')
 		}
-		if (file) {
+		if (file) { // create new image preview
 			avatarObjectURL = URL.createObjectURL(file)
 			avatarPreview.src = avatarObjectURL
+			if ($page.getAttribute('type') === 'update_profile')
+				$validateBtn.classList.remove('hidden')
 		}
 	})
 }

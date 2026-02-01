@@ -3,6 +3,11 @@ import { UserStore } from '../stores/user.store'
 import { NotificationStore } from '../stores/notification.store'
 import { start2FAFlow } from './twofa_auth'
 
+function onSuccess(res: any) {
+	NotificationStore.notify('Login successful', 'SUCCESS')
+	UserStore.emit(res)
+	navigate('')
+}
 
 export function fetchLogin(formData: FormData) {
 	fetch('/login', {
@@ -22,11 +27,7 @@ export function fetchLogin(formData: FormData) {
 			if (res.info.message === '2FA_REQUIRED') {
 				NotificationStore.notify('Two-Factor Authentication required. Please enter your 2FA code.', "INFO")
 				const $page: HTMLElement = document.querySelector('page[type=login]')!
-				start2FAFlow($page, 'login', () => {
-					NotificationStore.notify('Login successful', "SUCCESS")
-					UserStore.emit(res)
-					navigate('')
-				}, res)
+				start2FAFlow($page, 'login', () => onSuccess(res), () => null, res)
 				return
 			}
 			console.log('log: ', res)
