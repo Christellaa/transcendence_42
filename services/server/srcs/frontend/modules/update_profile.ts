@@ -1,7 +1,8 @@
 import {
+	fieldInvalid,
+	fieldValid,
 	resetAvatarButton,
 	setupAvatarPreview,
-	setupFieldValidation,
 	validateUsernameUpdateFormat
 } from '../functions/formValidation'
 import { UserStore } from '../stores/user.store'
@@ -11,34 +12,38 @@ import { ChatStore } from '../stores/chat.store'
 import { render2FAState, start2FAFlow } from '../functions/twofa_auth'
 import { GameStore } from '../stores/game.store'
 
-let trackEvent = false
-
-GameStore.send({type:"navigate", navigate:"update_profile"})
+GameStore.send({ type: "navigate", navigate: "update_profile" })
 
 const $page: HTMLElement = document.querySelector('page[type=update_profile]')!
 const $usernameInput: HTMLInputElement = document.querySelector('input[name="username"]')!
+const $toggle2FABtn = $page.querySelector('#toggle-2fa-btn') as HTMLButtonElement
 
 function onSuccess() {
+	$toggle2FABtn.removeAttribute('disabled')
 	NotificationStore.notify(`2FA ${UserStore.getUser2FAStatus() ? 'enabled' : 'disabled'}`, 'SUCCESS')
 }
 
+function onExit() {
+	$toggle2FABtn.removeAttribute('disabled')
+}
+
 function handleUpdateProfile() {
-	const $submitBtn = document.querySelector('span[type="submit"]') as HTMLElement
 	const $avatarInput = $page.querySelector('input[name="avatar"]') as HTMLInputElement
 	const $avatarPreview = $page.querySelector('#avatarPreview') as HTMLImageElement
 	const $resetAvatarBtn = $page.querySelector('#resetAvatarButton') as HTMLButtonElement
-	const $toggle2FABtn = $page.querySelector('#toggle-2fa-btn') as HTMLButtonElement
+	const $usernameValidateBtn = $page.querySelector('#usernameValidateBtn') as HTMLButtonElement
 
 	resetAvatarButton($resetAvatarBtn, $avatarInput, $avatarPreview)
 
 	render2FAState($toggle2FABtn, UserStore.getUser2FAStatus())
 	$toggle2FABtn.onclick = () => {
 		if ($toggle2FABtn.getAttribute('disabled') === 'true') return
+		$toggle2FABtn.setAttribute('disabled', 'true')
 		start2FAFlow(
 			$page,
 			UserStore.getUser2FAStatus() ? 'disable' : 'enable',
 			() => onSuccess(),
-			() => null,
+			() => onExit(),
 			null
 		)
 	}
