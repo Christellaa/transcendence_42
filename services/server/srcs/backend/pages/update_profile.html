@@ -52,10 +52,11 @@
 			justify-self: start;
 		}
 
-		.validate-btn {
+		validate-btn {
 			grid-column: 4;
 			grid-row: 1;
 			justify-self: start;
+			width: 70px;
 		}
 
 		input:focus {
@@ -112,7 +113,8 @@
 				text-align: center;
 			}
 
-			.field-input, .avatar-label {
+			.field-input,
+			.avatar-label {
 				grid-column: 1;
 				grid-row: 2;
 				justify-self: center;
@@ -141,8 +143,9 @@
 			<span>Username:</span>
 			<input id="usernameInput" class="field-input" type="text" name="username" autocomplete="username"
 				tabindex="1" />
-			<button id="usernameValidateBtn" type="button" class="validate-btn button text-xl hidden"
-				tabindex="2">check</button>
+			<validate-btn id="usernameValidateBtn" class="hidden" tabindex="2">
+				<img class="button text-xl" src="/images/validate.svg" alt="Validate username" />
+			</validate-btn>
 		</update-field>
 
 		<update-field>
@@ -152,8 +155,9 @@
 			</label>
 			<button type="button" id="resetAvatarButton" class="button text-2xl" tabindex="4">Reset</button>
 			<input id="avatarInput" type="file" accept="image/*" name="avatar" class="hidden" />
-			<button type="button" id="avatarValidateBtn" class="validate-btn button text-xl hidden"
-				tabindex="5">check</button>
+			<validate-btn id="avatarValidateBtn" class="hidden" tabindex="5">
+				<img class="button text-xl" src="/images/validate.svg" alt="Validate avatar" />
+			</validate-btn>
 		</update-field>
 
 		<update-field>
