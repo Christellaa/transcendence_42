@@ -48,59 +48,121 @@ function handleUpdateProfile() {
 		)
 	}
 
-	if (trackEvent === false) {
-		trackEvent = true
-		$submitBtn.onclick = e => {
-			e.preventDefault()
-			const username = $usernameInput.value.trim()
-			const avatarFile = $avatarInput.files ? $avatarInput.files[0] : null
+	// if (trackEvent === false) {
+	// 	trackEvent = true
+	// 	$submitBtn.onclick = e => {
+	// 		e.preventDefault()
+	// 		const username = $usernameInput.value.trim()
+	// 		const avatarFile = $avatarInput.files ? $avatarInput.files[0] : null
 
-			if (username === '' && !avatarFile) {
-				NotificationStore.notify('Please update at least one field before submitting', 'INFO')
-				return
-			}
+	// 		if (username === '' && !avatarFile) {
+	// 			NotificationStore.notify('Please update at least one field before submitting', 'INFO')
+	// 			return
+	// 		}
 
-			const formData = new FormData()
-			if (username !== '') formData.append('username', username)
-			if (avatarFile) formData.append('avatar', avatarFile)
-			fetch(`https://${location.host}/update_user`, {
-				method: 'PUT',
-				body: formData
-			})
-				.then(res => {
-					if (res.status >= 400) {
-						// console.log('Error: ', res)
-						return {
-							error: true
-						}
-					}
-					return res.json()
-				})
-				.then(res => {
-					if (res?.error == true) {
-						NotificationStore.notify('ERROR updating profile', 'ERROR')
-						return
-					}
-					if (res?.message === 'No changes made') {
-						NotificationStore.notify('No info changed', 'INFO')
-					} else {
-						NotificationStore.notify('User data updated', 'SUCCESS')
-						ChatStore.send({
-							msg: res.username,
-							type: 'update-username',
-							timestamp: 0,
-							user: UserStore.getUserName()
-						})
-						StateStore.update({ username: res.username })
-						UserStore.emit(res)
-					}
-				})
-		}
-	}
+	// 		const formData = new FormData()
+	// 		if (username !== '') formData.append('username', username)
+	// 		if (avatarFile) formData.append('avatar', avatarFile)
+	// 		fetch(`https://${location.host}/update_user`, {
+	// 			method: 'PUT',
+	// 			body: formData
+	// 		})
+	// 			.then(res => {
+	// 				if (res.status >= 400) {
+	// 					// console.log('Error: ', res)
+	// 					return {
+	// 						error: true
+	// 					}
+	// 				}
+	// 				return res.json()
+	// 			})
+	// 			.then(res => {
+	// 				if (res?.error == true) {
+	// 					NotificationStore.notify('ERROR updating profile', 'ERROR')
+	// 					return
+	// 				}
+	// 				if (res?.message === 'No changes made') {
+	// 					NotificationStore.notify('No info changed', 'INFO')
+	// 				} else {
+	// 					NotificationStore.notify('User data updated', 'SUCCESS')
+	// 					ChatStore.send({
+	// 						msg: res.username,
+	// 						type: 'update-username',
+	// 						timestamp: 0,
+	// 						user: UserStore.getUserName()
+	// 					})
+	// 					StateStore.update({ username: res.username })
+	// 					UserStore.emit(res)
+	// 				}
+	// 			})
+	// 	}
+	// }
 	setupAvatarPreview($avatarInput, $avatarPreview)
 
-	const $updateForm = document.querySelector('form') as HTMLElement
-	setupFieldValidation($updateForm.querySelector('input[name="username"]') as HTMLInputElement, validateUsernameUpdateFormat)
+	setupUsernameFieldValidation($usernameValidateBtn)
+
+	updateUsername($usernameValidateBtn)
+
+	// if click on avatarValidateBtn, send to backend
+}
+
+function updateUsername(usernameValidateBtn: HTMLButtonElement) {
+	usernameValidateBtn.onclick = e => {
+		e.preventDefault()
+		if ($usernameInput.classList.contains('field-invalid')) {
+			NotificationStore.notify('Username is invalid.', 'ERROR')
+			return
+		}
+		const username = $usernameInput.value.trim()
+		fetch(`https://${location.host}/update_username`, {
+			method: 'PUT',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({ username })
+		})
+			.then(res => {
+				if (res.status >= 400) {
+					console.log('Error updating username: ', res)
+					return {
+						error: true
+					}
+				}
+				return res.json()
+			})
+			.then(res => {
+				if (res?.error == true) {
+					NotificationStore.notify('Error updating username', 'ERROR')
+					return
+				}
+				if (res?.message === 'No changes made') {
+					NotificationStore.notify('Username is the same. No changes made.', 'INFO')
+				} else {
+					NotificationStore.notify('Username updated.', 'SUCCESS')
+					ChatStore.send({
+						msg: res.username,
+						type: 'update-username',
+						timestamp: 0,
+						user: UserStore.getUserName()
+					})
+					StateStore.update({ username: res.username })
+					UserStore.emit(res)
+				}
+			})
+	}
+}
+
+function setupUsernameFieldValidation(usernameValidateBtn: HTMLButtonElement) {
+	$usernameInput.addEventListener('input', () => {
+		const error = validateUsernameUpdateFormat($usernameInput.value)
+		usernameValidateBtn.classList.add('hidden')
+		if (error) fieldInvalid($usernameInput, error)
+		else {
+			fieldValid($usernameInput)
+			if ($usernameInput.value.trim().length > 0)
+				usernameValidateBtn.classList.remove('hidden')
+		}
+	})
 }
 
 handleUpdateProfile()

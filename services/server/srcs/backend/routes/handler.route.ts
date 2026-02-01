@@ -1,6 +1,6 @@
 import { FastifyInstance } from 'fastify'
 import { logoutUser, logUser, registerUser } from './auth.route.js'
-import { deleteUser, getUsers ,getUserProfile, updateUser, userDashboard, getUserFriends, getBlockedUser, getFriendUser } from './user.route.js'
+import { getUsers ,getUserProfile, updateUser, userDashboard, getUserFriends, getBlockedUser, getFriendUser, updateUsername } from './user.route.js'
 import { getMetrics } from './metrics.route.js'
 import { handlePOSTApiAuthRegister, handlePOSTApiAuthLogin, getClientID } from './api.route.js'
 import { getPayload } from '../crud/auth.crud.js'
@@ -77,10 +77,15 @@ export async function userRoutes(fastify: FastifyInstance) {
 		url: '/friends',
 		handler: getUserFriends
 	})
+	// fastify.route({
+	// 	method: 'PUT',
+	// 	url: '/update_user',
+	// 	handler: updateUser
+	// })
 	fastify.route({
 		method: 'PUT',
-		url: '/update_user',
-		handler: updateUser
+		url: '/update_username',
+		handler: updateUsername
 	})
 	fastify.route({
 		method:'POST',
