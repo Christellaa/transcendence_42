@@ -10,7 +10,7 @@ export function redirectIfAuthenticated() {
 		}
 	}).then(async res => {
 		const payload = await res.json()
-		if (payload) navigate('')
+		if (payload) await navigate('')
 	})
 }
 
@@ -23,7 +23,7 @@ export function redirectIfNotAuthenticated() {
 		}
 	}).then(async res => {
 		const payload = await res.json()
-		if (!payload) navigate('')
+		if (!payload) await navigate('')
 	})
 }
 

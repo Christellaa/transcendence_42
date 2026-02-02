@@ -51,14 +51,14 @@ const unsubCurrentButtonStore = CurrentButtonStore.subscribe(el => (currentButto
 
 start42OAuth(document.querySelector('nav-button'), `https://${location.host}/login`)
 
-function onSuccess(res: any) {
+async function onSuccess(res: any) {
 	NotificationStore.notify('Login successful', 'SUCCESS')
 	UserStore.emit(res)
-	navigate('')
+	await navigate('')
 }
 
-function onExit() {
-	navigate('login')
+async function onExit() {
+	await navigate('login')
 }
 
 if (codeParam) {
@@ -73,10 +73,10 @@ if (codeParam) {
 			$menuButtons.style.display = 'flex'
 			return res.json()
 		})
-		.then(res => {
+		.then(async res => {
 			if (res.info.status >= 400) {
 				NotificationStore.notify(res.info.message, 'ERROR')
-				navigate('login')
+				await navigate('login')
 				return
 			}
 			if (res.info.message === '2FA_REQUIRED') {
@@ -91,7 +91,7 @@ if (codeParam) {
 				return
 			}
 			UserStore.emit(res)
-			navigate('')
+			await navigate('')
 		})
 } else {
 	$spinner.style.display = 'none'
@@ -144,6 +144,7 @@ const unsubKeyStore = KeyboardStore.subscribe(key => {
 	if (['ArrowLeft', 'ArrowRight'].includes(key.value)) {
 		const data = currentButton?.dataset
 		if (data && data?.stateValue) {
+			//@ts-ignore
 			const action = actions[data.action]
 			const current = Number(data.stateValue)
 			const min = action.min

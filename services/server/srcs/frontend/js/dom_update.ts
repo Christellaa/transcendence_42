@@ -9,7 +9,7 @@ export async function loadPage(route: string) {
 	const res: Response = await window.fetch(location, { headers: { type: 'hydrate' } })
 
 	if (res.status >= 400) {
-		return navigate('forbidden')
+		return await navigate('forbidden')
 	}
 
 	const html: string = await res.text()

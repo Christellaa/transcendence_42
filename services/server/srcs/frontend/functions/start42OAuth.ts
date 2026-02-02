@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid'
 
-export async function start42OAuth(self: HTMLElement, uri: string) {
+export async function start42OAuth(self: HTMLElement | null, uri: string) {
+	if (self === null) return
 	const $el = document.createElement('a') as HTMLAnchorElement
 	const $form = document.querySelector('form') as HTMLFormElement
 

@@ -176,13 +176,13 @@ function handlePlayerInput(webSocket: WebSocket)
 
 let victoryModalShown = false
 
-function onKeyEscape(event : KeyboardEvent)
+async function onKeyEscape(event : KeyboardEvent)
 {
 	if (event.key === 'Escape')
 		{
 			const modal = document.querySelector('.victory-modal')
 			if (modal) modal.remove()
-			navigate("lobby")
+			await navigate("lobby")
 		}
 }
 
@@ -231,10 +231,10 @@ function showVictoryModal(winnerAliases: string[]): void
 		</div>
 	`
 
-	modal.addEventListener('click', e => {
+	modal.addEventListener('click', async e => {
 		if (e.target === modal)
 			modal.remove()
-			navigate("lobby")
+			await navigate("lobby")
 	})
 
 	document.addEventListener('keydown', onKeyEscape)

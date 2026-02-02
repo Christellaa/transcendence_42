@@ -72,12 +72,12 @@ KeyboardStore.subscribe(keyEvt => {
 	selectElement(nextIndex)
 })
 
-KeyboardStore.subscribe(keyEvt => {
+KeyboardStore.subscribe(async keyEvt => {
 	if (keyEvt.value === 'Enter') {
 		let currentButton = buttonList[currentTabIndex]
 		if (currentButton) {
 			const newRoute = currentButton.getAttribute('data-route')
-			if (newRoute != undefined) return navigate(newRoute)
+			if (newRoute != undefined) return await navigate(newRoute)
 			const $anchor = currentButton.querySelector('a')
 			if ($anchor) return $anchor.click()
 			currentButton.click()

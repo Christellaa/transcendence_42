@@ -67,9 +67,9 @@ function setFriends(friends: FriendType[], onlineList: string[] | null)
 				$tdStatus.innerText = 'Online'
 			}
 
-			$profileViewButton.addEventListener('click', () => {
+			$profileViewButton.addEventListener('click', async () => {
 				StateStore.update({ selectedProfile: friend })
-				navigate('profile')
+				await navigate('profile')
 			})
 			
 			$tdProfile.appendChild($profileViewButton)
