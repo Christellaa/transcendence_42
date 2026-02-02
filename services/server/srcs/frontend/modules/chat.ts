@@ -11,6 +11,7 @@ const $chatUsers = document.querySelector('chat-users') as HTMLElement
 GameStore.send({ type: 'navigate', navigate: 'chat' })
 
 function sendMessage() {
+	if (!$chatInput) return;
 	const chatValue = $chatInput?.value
 	let errorMsg = ''
 	if (chatValue === '') return
@@ -42,13 +43,14 @@ function sendMessage() {
 	}
 }
 
-document.querySelector('chat-input button')?.addEventListener('click', sendMessage)
+document?.querySelector('chat-input button')?.addEventListener('click', sendMessage)
 
-$chatInput.addEventListener('keydown', evt => {
+$chatInput?.addEventListener('keydown', evt => {
 	if (evt.code === 'Enter') sendMessage()
 })
 
 function mpUser(username: string) {
+	if (!$chatInput) return;
 	$chatInput.value = `/mp ${username} ${$chatInput.value}`
 	$chatInput.focus()
 }
@@ -115,6 +117,7 @@ function isFriend(user1: string, user2: string): Promise<boolean> {
 }
 
 async function updateUserList(users: string[]) {
+	if (!$chatUsers) return;
 	let usersEl = []
 
 	for (const user of users) {
@@ -177,11 +180,11 @@ async function updateUserList(users: string[]) {
 		usersEl.push($userLine)
 	}
 
-	$chatUsers.querySelectorAll('user-line').forEach(el => {
+	$chatUsers?.querySelectorAll('user-line').forEach(el => {
 		el.remove()
 	})
 
-	for (let el of usersEl) $chatUsers.appendChild(el)
+	for (let el of usersEl) $chatUsers?.appendChild(el)
 	updateButtons()
 }
 
@@ -215,6 +218,7 @@ function trimMessage(message: string): string[] {
 }
 
 function updateChat(newChat: MessageType[]) {
+	if (!$chatWindow) return;
 	$chatWindow.innerText = ''
 	newChat.forEach(chat => {
 		if (chat.type === 'users') {
@@ -276,8 +280,8 @@ const unsubChatStore = ChatStore.subscribe(chat => {
 updateChat(ChatStore.getChats())
 
 const cleanPage = () => {
-	$page.removeEventListener('cleanup', cleanPage)
+	$page?.removeEventListener('cleanup', cleanPage)
 	unsubChatStore()
 }
 
-$page.addEventListener('cleanup', cleanPage)
+$page?.addEventListener('cleanup', cleanPage)
