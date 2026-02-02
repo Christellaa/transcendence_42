@@ -6,6 +6,9 @@ ENV_FILE=".env"
 
 echo "Generating Ethereal account..."
 
+npm init --y
+npm i nodemailer
+
 RES=$(node -e "
     const nodemailer = require('nodemailer');
     nodemailer.createTestAccount((err, account) => {
