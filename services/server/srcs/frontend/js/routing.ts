@@ -11,7 +11,7 @@ window.addEventListener('popstate', () => {
 })
 
 document.addEventListener('DOMContentLoaded', _ => {
-	document.body.addEventListener('click', e => {
+	document.body.addEventListener('click', async e => {
 		if (e?.target) {
 			const target: HTMLElement = e.target as HTMLElement
 			if (target.tagName === 'NAV-RIGHT' || target.tagName === 'NAV-LEFT') return
@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', _ => {
 				const newRoute = $a.getAttribute('data-route')
 				if (newRoute != undefined) {
 					e.preventDefault()
-					navigate(newRoute)
+					await navigate(newRoute)
 				}
 			}
 		}

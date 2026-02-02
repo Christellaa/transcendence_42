@@ -59,19 +59,19 @@ if (codeParam) {
 			$menuButtons.style.display = 'flex'
 			return res.json()
 		})
-		.then(res => {
+		.then(async res => {
 			if (res.info.status >= 400) {
 				if (res.info.message?.errno === 19) {
 					NotificationStore.notify('Username or email already taken', 'ERROR')
 				} else {
 					NotificationStore.notify(res.info.message, 'ERROR')
 				}
-				navigate('register')
+				await navigate('register')
 				return
 			}
 			NotificationStore.notify('Register successful', 'SUCCESS')
 			UserStore.emit(res)
-			navigate('')
+			await navigate('')
 		})
 } else {
 	$spinner.style.display = 'none'

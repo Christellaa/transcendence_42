@@ -37,7 +37,7 @@ function createGameStore() {
 				if (!ws) return ;
 				ws.send(json_stringify({type: 'auth',username: UserStore.getUserName()}));
 			}
-		ws.onmessage = e => {
+		ws.onmessage = async e => {
 			const message: FrontType = json_parse(e.data) as FrontType
 			if (!message) return
 			switch (message.type)
@@ -63,7 +63,7 @@ function createGameStore() {
 				case 'start-game':
 				{
 					LobbyStore.refreshSessionId("")
-					return navigate('remote_game');
+					return await navigate('remote_game');
 				}
 				case 'session-id':
 				{

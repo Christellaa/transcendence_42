@@ -4,13 +4,13 @@ import { GameStore } from "../stores/game.store"
 import { LobbyStore } from "../stores/lobby.store"
 import { UserStore } from "../stores/user.store"
 
-export function clearUserState()
+export async function clearUserState()
 {
 	GameStore.removeWebGameSocket()
 	ChatStore.removeWebsocket()
 	UserStore.clear()
 	LobbyStore.clear()
-	navigate('')
+	await navigate('')
 }
 
 export async function handleLogout()

@@ -3,10 +3,10 @@ import { UserStore } from '../stores/user.store'
 import { NotificationStore } from '../stores/notification.store'
 import { start2FAFlow } from './twofa_auth'
 
-function onSuccess(res: any) {
+async function onSuccess(res: any) {
 	NotificationStore.notify('Login successful', 'SUCCESS')
 	UserStore.emit(res)
-	navigate('')
+	await navigate('')
 }
 
 export function fetchLogin(formData: FormData) {
@@ -19,7 +19,7 @@ export function fetchLogin(formData: FormData) {
 
 			return res.json()
 		})
-		.then(res => {
+		.then(async res => {
 			if (res?.status >= 400) {
 				NotificationStore.notify('User not found', 'ERROR')
 				return
@@ -32,7 +32,7 @@ export function fetchLogin(formData: FormData) {
 			}
 			console.log('log: ', res)
 			UserStore.emit(res)
-			navigate('')
+			await navigate('')
 		})
 }
 
@@ -52,13 +52,13 @@ export function fetchRegister(formData: FormData, registerForm: HTMLElement) {
 			}
 			return body
 		})
-		.then(res => {
+		.then(async res => {
 			if (res?.status >= 400) {
 				NotificationStore.notify('Form invalid', 'ERROR')
 				return
 			}
 			console.log('FRONTEND --- registering form response: ', res)
 			UserStore.emit(res)
-			navigate('')
+			await navigate('')
 		})
 }
