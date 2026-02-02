@@ -45,6 +45,11 @@ export type AuthType = {
 	username : string
 }
 
+export type UpdateUsernameType = {
+	type: 'udpate-username',
+	username: string
+}
+
 export type InfoType = {
 	type : 'info',
 	msg : string
@@ -86,7 +91,7 @@ export type JoinGameType = {
 }
 
 
-export type MessageType = InputType | DuelType | AuthType | InfoType | NavigateType | CreateGameType | LeaveGameType | JoinGameType | ListGame
+export type MessageType = InputType | DuelType | AuthType | UpdateUsernameType | InfoType | NavigateType | CreateGameType | LeaveGameType | JoinGameType | ListGame
 
 export type FrontType = FrontInfoType | FrontErrorType | FrontSystemType | DuelResponse | ListGameType | SessionId | StartGame | FrontLogoutType | ListUser;
 

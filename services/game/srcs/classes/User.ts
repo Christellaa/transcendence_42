@@ -24,6 +24,14 @@ export default class User
 		}
 	}
 
+	updateUsername(username: string) : boolean
+	{
+		if (username === this.pseudo)
+			return false
+		this.pseudo = username;
+		return true;
+	}
+
 	close(reason?: string)
 	{
 		this.socket?.close(1000, reason)
