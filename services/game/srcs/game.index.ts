@@ -11,6 +11,7 @@ import { createGameChannel } from './channels/create.game.channel.js'
 import { GameManager } from './classes/GameManager.js'
 import { joinGameChannel, listGamesChannel } from './channels/join.game.channel.js'
 import { leaveGameChannel } from './channels/leave.game.channel.js'
+import { updateUsernameChannel } from './channels/update.username.channel'
 
 // const cert_crt = await getVaultSecret<string>('services_crt', (value) =>
 // 	value.replace(/\\n/g, '\n').trim()
@@ -62,6 +63,7 @@ const server = Bun.serve({
 				case 'join-game': return joinGameChannel(ws, data, lobby);
 				case 'list-game': return listGamesChannel(ws, lobby);
 				case 'leave-game': return leaveGameChannel(ws, data, lobby);
+				case 'udpate-username': return updateUsernameChannel(ws, data, lobby);
 			}
 		},
 		close(ws: BunSocketType)

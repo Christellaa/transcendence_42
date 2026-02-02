@@ -18,6 +18,11 @@ export type AuthType = {
 	username : string
 }
 
+export type UpdateUsernameType = {
+	type: 'udpate-username',
+	username: string
+}
+
 export type NavigateType = {
 	type : 'navigate',
 	navigate : string
@@ -50,7 +55,7 @@ export type LeaveGameType = {
 	type: "leave-game"
 }
 
-export type MessageType = InputType | DuelType | AuthType | FrontInfoType | NavigateType | CreateGameType | JoinGameType | ListGameType | LeaveGameType;
+export type MessageType = InputType | DuelType | AuthType | FrontInfoType | NavigateType | CreateGameType | JoinGameType | ListGameType | LeaveGameType | UpdateUsernameType;
 
 export type FrontType = FrontInfoType | FrontErrorType | FrontSystemType | DuelResponse | ListGameType | SessionId | StartGame | FrontLogoutType | ListUser;
 
