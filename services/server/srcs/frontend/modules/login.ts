@@ -62,15 +62,15 @@ async function onExit() {
 }
 
 if (codeParam) {
-	$navButton.style.display = 'none'
+	if ($navButton) $navButton.style.display = 'none'
 	fetch('/api/auth/login', {
 		method: 'POST',
 		body: JSON.stringify({ code: codeParam, redirect: location.host })
 	})
 		.then(res => {
 			if (res.status === 200) return res.json()
-			$spinner.style.display = 'none'
-			$menuButtons.style.display = 'flex'
+			if ($spinner) $spinner.style.display = 'none'
+			if ($menuButtons) $menuButtons.style.display = 'flex'
 			return res.json()
 		})
 		.then(async res => {
@@ -94,12 +94,13 @@ if (codeParam) {
 			await navigate('')
 		})
 } else {
-	$spinner.style.display = 'none'
-	$menuButtons.style.display = 'flex'
-	$navButton.style.display = 'flex'
+	if ($spinner) $spinner.style.display = 'none'
+	if ($menuButtons) $menuButtons.style.display = 'flex'
+	if ($navButton) $navButton.style.display = 'flex'
 }
 
 function handleUserForm(self: HTMLElement) {
+	if (!$loginForm) return;
 	const $navLeft = document.createElement('nav-left')
 	const $navRight = document.createElement('nav-right')
 	const $span = document.createElement('span')
@@ -131,6 +132,7 @@ function handleUserForm(self: HTMLElement) {
 }
 
 function selectloginType(loginType: string, self: HTMLElement) {
+	if (!$loginForm) return;
 	if (loginType === '42') {
 		start42OAuth(self, `https://${location.host}/login`)
 		inertForm($loginForm, true)
@@ -172,9 +174,9 @@ const unsubKeyStore = KeyboardStore.subscribe(key => {
 })
 
 const cleanPage = () => {
-	$page.removeEventListener('cleanup', cleanPage)
+	$page?.removeEventListener('cleanup', cleanPage)
 	unsubCurrentButtonStore()
 	unsubKeyStore()
 }
 
-$page.addEventListener('cleanup', cleanPage)
+$page?.addEventListener('cleanup', cleanPage)

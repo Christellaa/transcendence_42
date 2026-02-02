@@ -49,7 +49,7 @@ type MatchType = {
 }
 
 function setWinLoss(matches: MatchType[], username: string) {
-	if (!$winStat) return;
+	if (!$winStat || !$lossesStat || !$ratioStat) return;
 	let win: number = matches.reduce((total: number, current: MatchType) => {
 		return total + (current.winner === username ? 1 : 0)
 	}, 0)
