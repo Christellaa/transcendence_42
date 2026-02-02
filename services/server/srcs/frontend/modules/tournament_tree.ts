@@ -206,6 +206,7 @@ Cleanup SPA
 
 function beforeunload(event: BeforeUnloadEvent)
 {
+	if (!event) return;
 	event.preventDefault()
 	event.returnValue = ""
 }

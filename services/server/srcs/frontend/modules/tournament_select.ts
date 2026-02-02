@@ -58,11 +58,11 @@ function validateUsername(value: string): ValidationResult
 	return { valid: true, message: '' }
 }
 
-const inputs = Array.from(
+const $inputs = Array.from(
 	document.querySelectorAll<HTMLInputElement>('input[id^="player"]')
 )
 
-const submitButton = document.getElementById('go') as HTMLButtonElement
+const $submitButton = document.getElementById('go') as HTMLButtonElement
 
 function setInputError(input: HTMLInputElement, message: string): void
 {
@@ -84,10 +84,11 @@ function setInputError(input: HTMLInputElement, message: string): void
 
 function validateAll(): boolean
 {
+	if (!$inputs || !$submitButton) false;
 	let isValid = true
-	const values = inputs.map(i => sanitize(i.value))
+	const values = $inputs.map(i => sanitize(i.value))
 
-	inputs.forEach((input, index) => {
+	$inputs.forEach((input, index) => {
 		const result = validateUsername(values[index])
 		setInputError(input, result.message)
 
@@ -101,7 +102,7 @@ function validateAll(): boolean
 
 	if (duplicates.length > 0)
 	{
-		inputs.forEach((input, index) => {
+		$inputs.forEach((input, index) => {
 			if (duplicates.includes(values[index]))
 			{
 				setInputError(input, ENG.alreadyUse)
@@ -110,19 +111,20 @@ function validateAll(): boolean
 		isValid = false
 	}
 
-	submitButton.disabled = !isValid
+	$submitButton.disabled = !isValid
 	return isValid
 }
 
-inputs.forEach(input => {input.addEventListener('input', validateAll)})
+$inputs?.forEach(input => {input.addEventListener('input', validateAll)})
 
 async function submitTournament(event : PointerEvent | undefined = undefined)
 {
+	if (!$inputs) return;
 	event?.preventDefault()
 
 	if (!validateAll()) return
 
-	const aliases = inputs.map(i => sanitize(i.value))
+	const aliases = $inputs.map(i => sanitize(i.value))
 
 	const players: TournamentPlayer[] = shuffle([
 		{ id: 'player1', color: 'red', alias: aliases[0] },
@@ -135,15 +137,16 @@ async function submitTournament(event : PointerEvent | undefined = undefined)
 	await navigate('tournament_tree')
 }
 
-submitButton.addEventListener('click', submitTournament)
-submitButton.focus()
+$submitButton?.addEventListener('click', submitTournament)
+$submitButton?.focus()
 
 const $pageTournamentSelect = document.querySelector('page[type=tournament_select]')!
 
 const unsubUserStore = UserStore.subscribe(user => {
+	if (!$inputs) return
 	if (user.isValid) {
-		inputs[0].value = user.username
-		inputs[0].setAttribute('disabled', 'true')
+		$inputs[0].value = user.username
+		$inputs[0].setAttribute('disabled', 'true')
 	}
 })
 
@@ -164,16 +167,17 @@ function shuffle<T>(array: T[]): T[] {
 function onBackNavigation()
 {
 	TournamentController?.reset()
+	GameStore.send({type:"navigate", navigate:"lobby"})
 }
 
 window.addEventListener("popstate", onBackNavigation)
 
 const cleanupTournamentSelect = () => {
 	window.removeEventListener('popstate', onBackNavigation)
-	inputs.forEach(input => {input.removeEventListener('input', validateAll)})
-	submitButton.removeEventListener('click', submitTournament)
+	$inputs?.forEach(input => {input.removeEventListener('input', validateAll)})
+	$submitButton?.removeEventListener('click', submitTournament)
 	unsubUserStore()
-	$pageTournamentSelect.removeEventListener('cleanup', cleanupTournamentSelect)
+	$pageTournamentSelect?.removeEventListener('cleanup', cleanupTournamentSelect)
 }
 
-$pageTournamentSelect.addEventListener('cleanup', cleanupTournamentSelect)
+$pageTournamentSelect?.addEventListener('cleanup', cleanupTournamentSelect)

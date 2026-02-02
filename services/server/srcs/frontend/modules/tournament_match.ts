@@ -1,5 +1,4 @@
 import { TournamentController } from "./tournament/tournament.controller.js";
-import type { TournamentMatch } from "./tournament/tournament.type.js";
 import { GameModel, GameView, GameController } from "../classes/OriginalPong2D.js";
 import { navigate } from "../js/routing.js";
 import { GameStore } from "../stores/game.store.js";
@@ -11,8 +10,6 @@ const gameView = new GameView();
 const gameController = new GameController(gameModel, gameView, false);
 
 GameStore.send({type:"navigate", navigate:"tournament"})
-
-
 
 await playMatch();
 
@@ -42,6 +39,7 @@ Cleanup SPA
 
 function beforeunload(event: BeforeUnloadEvent)
 {
+	if (!event) return;
 	event.preventDefault()
 	event.returnValue = ""
 }
