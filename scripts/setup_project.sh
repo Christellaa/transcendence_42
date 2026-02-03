@@ -22,16 +22,16 @@ while IFS='=' read -r key value || [[ -n "$key" ]]; do
 done < <(curl -s https://pastebin.com/raw/<CHANGE-ME>)
 
 # Give them each a value
-VAULT_UNSEAL_PASSPHRASE=""
+VAULT_UNSEAL_PASSPHRASE="123"
 LOGS_PATH="./logs"
-GF_ADMIN_USER=""
-GF_ADMIN_PWD=""
-GF_USER_NAME=""
-GF_USER_MAIL=""
-GF_USER_PWD=""
-MINIO_ROOT_USER=""
-MINIO_ROOT_PASSWORD=""
-ELASTICSEARCH_PWD=""
+GF_ADMIN_USER="123"
+GF_ADMIN_PWD="123"
+GF_USER_NAME="123"
+GF_USER_MAIL="123"
+GF_USER_PWD="123"
+MINIO_ROOT_USER="123"
+MINIO_ROOT_PASSWORD="123"
+ELASTICSEARCH_PWD="123"
 
 if [ "$(uname)" = "Darwin" ]; then
     SED="gsed -i"
