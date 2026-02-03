@@ -24,7 +24,7 @@ done < <(curl -s https://pastebin.com/raw/<CHANGE-ME>)
 # Give them each a value
 VAULT_UNSEAL_PASSPHRASE="123"
 LOGS_PATH="./logs"
-GF_ADMIN_USER="123"
+GF_ADMIN_USER="1234"
 GF_ADMIN_PWD="123"
 GF_USER_NAME="123"
 GF_USER_MAIL="123"
